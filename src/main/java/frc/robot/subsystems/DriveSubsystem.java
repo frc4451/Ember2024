@@ -5,6 +5,10 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,8 +18,12 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.utils.SwerveUtils;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -248,5 +256,31 @@ public class DriveSubsystem extends SubsystemBase {
      */
     public double getTurnRate() {
         return m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
+    }
+
+    // Assuming this method is part of a drivetrain subsystem that provides the
+    // necessary methods
+    public Command followTrajectoryCommand(PathPlannerTrajectory exampleTrajectory, boolean isFirstPath) {
+        return new SequentialCommandGroup(
+                new InstantCommand(() -> {
+                    // Reset odometry for the first path you run during auto
+                    if (isFirstPath) {
+                        this.resetOdometry(exampleTrajectory.getInitialHolonomicPose());
+                    }
+                }),
+                new PPSwerveControllerCommand(
+                        exampleTrajectory,
+                        this::getPose, // Pose supplier
+                        DriveConstants.kDriveKinematics, // SwerveDriveKinematics
+                        new PIDController(AutoConstants.kPXController, 0, 0),
+                        new PIDController(AutoConstants.kPYController, 0, 0),
+                        new PIDController(AutoConstants.kPThetaController, 0, 0), // Rotation controller. Tune these
+                                                                                  // values for your robot. Leaving them
+                                                                                  // 0 will only use feedforwards.
+                        this::setModuleStates, // Module states consumer
+                        false, // Should the path be automatically mirrored depending on alliance color.
+                               // Optional, defaults to true
+                        this // Requires this drive subsystem
+                ));
     }
 }

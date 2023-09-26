@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -70,6 +71,7 @@ public class Robot extends TimedRobot {
     public void disabledPeriodic() {
         if (m_robotContainer.m_driverController.b().getAsBoolean()) {
             m_robotContainer.m_robotDrive.zeroHeading();
+            m_robotContainer.m_robotDrive.resetOdometry(new Pose2d());
         }
         // m_robotContainer.m_driverController.b().onTrue(
         // new RunCommand(

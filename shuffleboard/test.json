@@ -19,12 +19,12 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Heading",
-              "_title": "SmartDashboard/Heading",
+              "_title": "Heading",
               "_glyph": 148,
               "_showGlyph": false
             }
           },
-          "2,1": {
+          "2,0": {
             "size": [
               1,
               1
@@ -37,7 +37,7 @@
               "_showGlyph": false
             }
           },
-          "2,0": {
+          "3,0": {
             "size": [
               1,
               1
@@ -46,6 +46,58 @@
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Y",
               "_title": "Y",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "2,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/PPSwerveControllerCommand/xErrorMeters",
+              "_title": "PP X Error",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/PPSwerveControllerCommand/yErrorMeters",
+              "_title": "PP Y Error",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "0,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/PPSwerveControllerCommand/rotationErrorDegrees",
+              "_title": "PP Heading Error",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,0": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/Auto Routines",
+              "_title": "Auto Routines",
               "_glyph": 148,
               "_showGlyph": false
             }
