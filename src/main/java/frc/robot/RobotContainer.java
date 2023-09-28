@@ -5,7 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.Auto.AutoRoutines;
+import frc.robot.Auto.AutoSelector;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.utils.CommandCustomController;
@@ -23,7 +23,7 @@ public class RobotContainer {
     // The robot's subsystems
     public final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
-    private AutoRoutines m_autoRoutines = new AutoRoutines(this);
+    private AutoSelector m_autoSelector = new AutoSelector(this);
 
     // The driver's controller
     final CommandCustomController m_driverController = new CommandCustomController(OIConstants.kDriverControllerPort);
@@ -70,6 +70,6 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return this.m_autoRoutines.getSelectedRoutine();
+        return this.m_autoSelector.getSelectedRoutine();
     }
 }

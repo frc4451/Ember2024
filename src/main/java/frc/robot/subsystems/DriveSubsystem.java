@@ -258,18 +258,16 @@ public class DriveSubsystem extends SubsystemBase {
         return m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
     }
 
-    // Assuming this method is part of a drivetrain subsystem that provides the
-    // necessary methods
-    public Command followTrajectoryCommand(PathPlannerTrajectory exampleTrajectory, boolean isFirstPath) {
+    public Command followTrajectoryCommand(PathPlannerTrajectory trajectory, boolean isFirstPath, boolean stopAfter) {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> {
                     // Reset odometry for the first path you run during auto
                     if (isFirstPath) {
-                        this.resetOdometry(exampleTrajectory.getInitialHolonomicPose());
+                        this.resetOdometry(trajectory.getInitialHolonomicPose());
                     }
                 }),
                 new PPSwerveControllerCommand(
-                        exampleTrajectory,
+                        trajectory,
                         this::getPose, // Pose supplier
                         DriveConstants.kDriveKinematics, // SwerveDriveKinematics
                         new PIDController(AutoConstants.kPXController, 0, 0),
@@ -281,6 +279,11 @@ public class DriveSubsystem extends SubsystemBase {
                         false, // Should the path be automatically mirrored depending on alliance color.
                                // Optional, defaults to true
                         this // Requires this drive subsystem
-                ));
+                ),
+                new InstantCommand(() -> {
+                    if (stopAfter) {
+                        this.drive(0, 0, 0, false, false);
+                    }
+                }));
     }
 }
