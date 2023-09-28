@@ -11,14 +11,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
-import frc.robot.Constants.AutoConstants;
+
+class Speeds {
+    public static final PathConstraints THREE = new PathConstraints(3.0, 3.0);
+}
 
 class PathPlannerGroups {
-    public static List<PathPlannerTrajectory> test = PathPlanner.loadPathGroup(
-            "test",
-            new PathConstraints(
-                    AutoConstants.kMaxSpeedMetersPerSecond,
-                    AutoConstants.kMaxAccelerationMetersPerSecondSquared));
+    public static List<PathPlannerTrajectory> test = PathPlanner.loadPathGroup("test", Speeds.THREE);
+    public static List<PathPlannerTrajectory> leftBlueTriPoop = PathPlanner.loadPathGroup(
+            "leftBlueTriPoop",
+            Speeds.THREE);
+    public static List<PathPlannerTrajectory> rightBlueTriPoop = PathPlanner.loadPathGroup(
+            "rightBlueTriPoop",
+            Speeds.THREE);
 }
 
 public class AutoSelector {
@@ -28,6 +33,16 @@ public class AutoSelector {
 
     public AutoSelector(RobotContainer robotContainer) {
         this.routines.put("test", AutoRoutines.getTestRoutine(robotContainer.m_robotDrive, PathPlannerGroups.test));
+
+        this.routines.put("Left Blue TriPoop",
+                AutoRoutines.getTriPoop(
+                        robotContainer.m_robotDrive,
+                        PathPlannerGroups.leftBlueTriPoop));
+
+        this.routines.put("Right Blue TriPoop",
+                AutoRoutines.getTriPoop(
+                        robotContainer.m_robotDrive,
+                        PathPlannerGroups.rightBlueTriPoop));
 
         this.registerDashboard();
     }

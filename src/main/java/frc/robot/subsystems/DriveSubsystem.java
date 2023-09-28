@@ -258,11 +258,11 @@ public class DriveSubsystem extends SubsystemBase {
         return m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
     }
 
-    public Command followTrajectoryCommand(PathPlannerTrajectory trajectory, boolean isFirstPath, boolean stopAfter) {
+    public Command followTrajectoryCommand(PathPlannerTrajectory trajectory, boolean resetOdometry, boolean stopAfter) {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> {
                     // Reset odometry for the first path you run during auto
-                    if (isFirstPath) {
+                    if (resetOdometry) {
                         this.resetOdometry(trajectory.getInitialHolonomicPose());
                     }
                 }),
