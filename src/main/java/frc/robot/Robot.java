@@ -59,7 +59,9 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().run();
         SmartDashboard.putNumber("X", m_robotContainer.m_robotDrive.getPose().getX());
         SmartDashboard.putNumber("Y", m_robotContainer.m_robotDrive.getPose().getY());
-        SmartDashboard.putNumber("Heading", m_robotContainer.m_robotDrive.getHeading());
+        SmartDashboard.putNumber("Pose Rotation",
+                m_robotContainer.m_robotDrive.getPose().getRotation().getDegrees());
+        SmartDashboard.putNumber("Gyro Heading", m_robotContainer.m_robotDrive.getHeading());
     }
 
     /** This function is called once each time the robot enters Disabled mode. */
