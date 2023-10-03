@@ -10,9 +10,15 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.PerpetualCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.RobotContainer;
 
 class Speeds {
+    public static final PathConstraints ONE = new PathConstraints(
+            1.0,
+            1.0);
     public static final PathConstraints TRI_POOP_SLOW = new PathConstraints(
             1.5,
             1.5);
@@ -38,6 +44,9 @@ class PathPlannerGroups {
     public static List<PathPlannerTrajectory> rightRedTriPoop = PathPlanner.loadPathGroup(
             "rightRedTriPoop",
             Speeds.TRI_POOP);
+    public static List<PathPlannerTrajectory> jankCenterBalance = PathPlanner.loadPathGroup(
+            "jankCenterBalance",
+            Speeds.ONE);
 }
 
 public class AutoSelector {
@@ -67,6 +76,16 @@ public class AutoSelector {
                 AutoRoutines.getTriPoop(
                         robotContainer.m_robotDrive,
                         PathPlannerGroups.rightRedTriPoop));
+
+        this.routines.put("Jank Center Balance",
+                robotContainer.m_robotDrive.followTrajectoryCommand(
+                        PathPlannerGroups.jankCenterBalance.get(0),
+                        true,
+                        true)
+                        .andThen(new RepeatCommand(
+                                new RunCommand(
+                                        robotContainer.m_robotDrive::setX,
+                                        robotContainer.m_robotDrive))));
 
         this.registerDashboard();
     }
