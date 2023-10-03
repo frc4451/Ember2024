@@ -13,17 +13,28 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 
 class Speeds {
-    public static final PathConstraints THREE = new PathConstraints(3.0, 3.0);
+    public static final PathConstraints TRI_POOP = new PathConstraints(
+            2.5,
+            2.5);
+    public static final PathConstraints THREE = new PathConstraints(
+            3.0,
+            3.0);
 }
 
 class PathPlannerGroups {
     public static List<PathPlannerTrajectory> test = PathPlanner.loadPathGroup("test", Speeds.THREE);
     public static List<PathPlannerTrajectory> leftBlueTriPoop = PathPlanner.loadPathGroup(
             "leftBlueTriPoop",
-            Speeds.THREE);
+            Speeds.TRI_POOP);
     public static List<PathPlannerTrajectory> rightBlueTriPoop = PathPlanner.loadPathGroup(
             "rightBlueTriPoop",
-            Speeds.THREE);
+            Speeds.TRI_POOP);
+    public static List<PathPlannerTrajectory> leftRedTriPoop = PathPlanner.loadPathGroup(
+            "leftRedTriPoop",
+            Speeds.TRI_POOP);
+    public static List<PathPlannerTrajectory> rightRedTriPoop = PathPlanner.loadPathGroup(
+            "rightRedTriPoop",
+            Speeds.TRI_POOP);
 }
 
 public class AutoSelector {
@@ -43,6 +54,16 @@ public class AutoSelector {
                 AutoRoutines.getTriPoop(
                         robotContainer.m_robotDrive,
                         PathPlannerGroups.rightBlueTriPoop));
+
+        this.routines.put("Left Red TriPoop",
+                AutoRoutines.getTriPoop(
+                        robotContainer.m_robotDrive,
+                        PathPlannerGroups.leftRedTriPoop));
+
+        this.routines.put("Right Red TriPoop",
+                AutoRoutines.getTriPoop(
+                        robotContainer.m_robotDrive,
+                        PathPlannerGroups.rightRedTriPoop));
 
         this.registerDashboard();
     }
