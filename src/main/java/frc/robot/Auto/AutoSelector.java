@@ -13,6 +13,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 
 class Speeds {
+    public static final PathConstraints TRI_POOP_SLOW = new PathConstraints(
+            1.5,
+            1.5);
     public static final PathConstraints TRI_POOP = new PathConstraints(
             2.5,
             2.5);
@@ -28,10 +31,10 @@ class PathPlannerGroups {
             Speeds.TRI_POOP);
     public static List<PathPlannerTrajectory> rightBlueTriPoop = PathPlanner.loadPathGroup(
             "rightBlueTriPoop",
-            Speeds.TRI_POOP);
+            Speeds.TRI_POOP_SLOW);
     public static List<PathPlannerTrajectory> leftRedTriPoop = PathPlanner.loadPathGroup(
             "leftRedTriPoop",
-            Speeds.TRI_POOP);
+            Speeds.TRI_POOP_SLOW);
     public static List<PathPlannerTrajectory> rightRedTriPoop = PathPlanner.loadPathGroup(
             "rightRedTriPoop",
             Speeds.TRI_POOP);
