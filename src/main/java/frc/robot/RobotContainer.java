@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Auto.AutoSelector;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.RollerSubsystem;
+import frc.robot.subsystems.RollerMode;
 import frc.utils.CommandCustomController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -23,10 +25,13 @@ public class RobotContainer {
     // The robot's subsystems
     public final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
+    public final RollerSubsystem m_intake = new RollerSubsystem();
+
     private AutoSelector m_autoSelector = new AutoSelector(this);
 
-    // The driver's controller
     final CommandCustomController m_driverController = new CommandCustomController(OIConstants.kDriverControllerPort);
+    final CommandCustomController m_operatorController = new CommandCustomController(
+            OIConstants.kOperatorControllerPort);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -62,6 +67,12 @@ public class RobotContainer {
                 .whileTrue(new RunCommand(
                         () -> m_robotDrive.setX(),
                         m_robotDrive));
+
+        m_operatorController
+                .leftTrigger().whileTrue(
+                        m_intake.runRollersCommand(RollerMode.SUCK))
+                .or(m_operatorController.rightTrigger()).whileTrue(
+                        m_intake.runRollersCommand(RollerMode.SHOOT));
     }
 
     /**
