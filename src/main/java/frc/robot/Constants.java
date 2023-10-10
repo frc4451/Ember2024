@@ -156,7 +156,9 @@ public final class Constants {
 
         public static final int kTopRollerCanId = -1;
         public static final int kBottomRollerCanId = -1;
-        public static final int kPivotCanId = -1;
         public static final int kBeamBreakChannel = -1;
+
+        public static final int kPivotCanId = -1;
+        public static final double kPivotVelocityRadiansPerSecond = Units.degreesToRadians(15.0);
     }
 }

@@ -4,10 +4,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Auto.AutoSelector;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.RollerSubsystem;
 import frc.robot.subsystems.RollerMode;
 import frc.utils.CommandCustomController;
@@ -22,10 +24,14 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+    private final PowerDistribution m_pdp = new PowerDistribution();
+
     // The robot's subsystems
     public final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
     public final RollerSubsystem m_intake = new RollerSubsystem();
+
+    public final PivotSubsystem m_pivot = new PivotSubsystem(m_pdp);
 
     private AutoSelector m_autoSelector = new AutoSelector(this);
 
@@ -51,6 +57,12 @@ public class RobotContainer {
                                 -m_driverController.getRightX(),
                                 true, true),
                         m_robotDrive));
+
+        m_pivot.setDefaultCommand(new RunCommand(() -> {
+            m_pivot.runAtPercent(m_operatorController.getRightY());
+        }, m_pivot));
+
+        // m_pivot.setDefaultCommand(m_pivot.getPivotCommand());
     }
 
     /**
@@ -73,6 +85,13 @@ public class RobotContainer {
                         m_intake.runRollersCommand(RollerMode.SUCK))
                 .or(m_operatorController.rightTrigger()).whileTrue(
                         m_intake.runRollersCommand(RollerMode.SHOOT));
+
+        // m_operatorController
+        // .x().onTrue(new RunCommand(() ->
+        // m_pivot.setSetpoint(Rotation2d.fromDegrees(15.0))))
+        // .or(m_operatorController.y())
+        // .onTrue(new RunCommand(() ->
+        // m_pivot.setSetpoint(Rotation2d.fromDegrees(30.0))));
     }
 
     /**
