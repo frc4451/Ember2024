@@ -3,7 +3,7 @@ package frc.robot.subsystems;
 public enum RollerMode {
     STOP(0.0, 0.0, false),
     SUCK(-0.3, -0.3, true),
-    SHOOT(0.3, 0.3, false);
+    SHOOT(0.7, 0.7, false);
 
     public double topPercent;
     public double bottomPercent;
