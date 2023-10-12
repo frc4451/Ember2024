@@ -57,9 +57,9 @@ public class RobotContainer {
                                 true, true),
                         m_robotDrive));
 
-        // m_pivot.setDefaultCommand(new RunCommand(() -> {
-        // m_pivot.runAtPercent(m_operatorController.getRightY());
-        // }, m_pivot));
+        m_pivot.setDefaultCommand(new RunCommand(() -> {
+            m_pivot.runAtPercent(m_operatorController.getRightY());
+        }, m_pivot));
 
         // m_pivot.setDefaultCommand(m_pivot.getPivotCommand());
     }

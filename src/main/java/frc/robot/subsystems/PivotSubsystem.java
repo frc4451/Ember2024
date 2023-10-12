@@ -42,8 +42,8 @@ public class PivotSubsystem extends SubsystemBase {
         this.setAngle(Rotation2d.fromDegrees(184.0));
 
         this.pivot.restoreFactoryDefaults();
-        this.pivot.setIdleMode(IdleMode.kCoast);
-        this.pivot.setClosedLoopRampRate(0.5);
+        this.pivot.setIdleMode(IdleMode.kBrake);
+        this.pivot.setClosedLoopRampRate(1.0);
         this.pivot.burnFlash();
     }
 
@@ -68,7 +68,13 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public void runAtPercent(double percent) {
-        this.pivot.set(percent);
+        double angleDegrees = this.getAngle().getDegrees();
+        if ((angleDegrees < IntakeConstants.kPivotMinDegrees && percent < 0.0)
+                || (angleDegrees > IntakeConstants.kPivotMaxDegrees && percent > 0.0)) {
+            this.pivot.set(0.0);
+        } else {
+            this.pivot.set(percent);
+        }
     }
 
     private void pivot() {
