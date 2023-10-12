@@ -11,7 +11,6 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.RollerSubsystem;
-import frc.robot.subsystems.RollerMode;
 import frc.utils.CommandCustomController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -31,7 +30,7 @@ public class RobotContainer {
 
     public final RollerSubsystem m_rollers = new RollerSubsystem();
 
-    // public final PivotSubsystem m_pivot = new PivotSubsystem(m_pdp);
+    public final PivotSubsystem m_pivot = new PivotSubsystem(m_pdp);
 
     private AutoSelector m_autoSelector = new AutoSelector(this);
 

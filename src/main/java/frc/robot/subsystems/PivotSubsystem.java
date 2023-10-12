@@ -39,16 +39,20 @@ public class PivotSubsystem extends SubsystemBase {
     public PivotSubsystem(PowerDistribution pdp) {
         this.pdp = pdp;
 
-        this.encoder.setPosition(0.0);
+        this.setAngle(Rotation2d.fromDegrees(184.0));
 
         this.pivot.restoreFactoryDefaults();
-        this.pivot.setIdleMode(IdleMode.kBrake);
+        this.pivot.setIdleMode(IdleMode.kCoast);
         this.pivot.setClosedLoopRampRate(0.5);
         this.pivot.burnFlash();
     }
 
+    public void setAngle(Rotation2d angle) {
+        this.encoder.setPosition(angle.getDegrees() / 360.0 * 240.0);
+    }
+
     public Rotation2d getAngle() {
-        return Rotation2d.fromRotations(this.encoder.getPosition());
+        return Rotation2d.fromRotations(this.encoder.getPosition() / 240.0);
     }
 
     public Rotation2d getSetpoint() {

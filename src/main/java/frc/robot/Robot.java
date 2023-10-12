@@ -63,8 +63,8 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("Pose Rotation",
                 m_robotContainer.m_robotDrive.getPose().getRotation().getDegrees());
         SmartDashboard.putNumber("Gyro Heading", m_robotContainer.m_robotDrive.getHeading());
-        // SmartDashboard.putNumber("Arm Pivot",
-        // m_robotContainer.m_pivot.getAngle().getDegrees());
+        SmartDashboard.putNumber("Arm Pivot Deg", m_robotContainer.m_pivot.getAngle().getDegrees());
+        SmartDashboard.putNumber("Arm Pivot Rad", m_robotContainer.m_pivot.getAngle().getRadians());
     }
 
     /** This function is called once each time the robot enters Disabled mode. */
