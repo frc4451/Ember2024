@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.RollerMode;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -62,7 +63,8 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("Pose Rotation",
                 m_robotContainer.m_robotDrive.getPose().getRotation().getDegrees());
         SmartDashboard.putNumber("Gyro Heading", m_robotContainer.m_robotDrive.getHeading());
-        SmartDashboard.putNumber("Arm Pivot", m_robotContainer.m_pivot.getAngle().getDegrees());
+        // SmartDashboard.putNumber("Arm Pivot",
+        // m_robotContainer.m_pivot.getAngle().getDegrees());
     }
 
     /** This function is called once each time the robot enters Disabled mode. */
@@ -122,6 +124,13 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
+        if (m_robotContainer.m_operatorController.leftTrigger().getAsBoolean()) {
+            m_robotContainer.m_rollers.runRollers(RollerMode.SUCK);
+        } else if (m_robotContainer.m_operatorController.rightTrigger().getAsBoolean()) {
+            m_robotContainer.m_rollers.runRollers(RollerMode.SHOOT);
+        } else {
+            m_robotContainer.m_rollers.runRollers(RollerMode.STOP);
+        }
     }
 
     @Override

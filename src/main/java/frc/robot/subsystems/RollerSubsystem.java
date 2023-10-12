@@ -23,6 +23,7 @@ public class RollerSubsystem extends SubsystemBase {
             roller.setNeutralMode(NeutralMode.Brake);
             roller.configSupplyCurrentLimit(IntakeConstants.rollerCurrentConfig);
         }
+        this.topRoller.setInverted(true);
     }
 
     private void runRollersPercent(double topPercent, double bottomPercent) {
@@ -31,7 +32,7 @@ public class RollerSubsystem extends SubsystemBase {
     }
 
     private boolean isBeamBreakActivated() {
-        return this.beamBreak.get();
+        return !this.beamBreak.get();
     }
 
     public void runRollers(RollerMode rollerMode) {

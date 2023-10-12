@@ -29,9 +29,9 @@ public class RobotContainer {
     // The robot's subsystems
     public final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
-    public final RollerSubsystem m_intake = new RollerSubsystem();
+    public final RollerSubsystem m_rollers = new RollerSubsystem();
 
-    public final PivotSubsystem m_pivot = new PivotSubsystem(m_pdp);
+    // public final PivotSubsystem m_pivot = new PivotSubsystem(m_pdp);
 
     private AutoSelector m_autoSelector = new AutoSelector(this);
 
@@ -58,9 +58,9 @@ public class RobotContainer {
                                 true, true),
                         m_robotDrive));
 
-        m_pivot.setDefaultCommand(new RunCommand(() -> {
-            m_pivot.runAtPercent(m_operatorController.getRightY());
-        }, m_pivot));
+        // m_pivot.setDefaultCommand(new RunCommand(() -> {
+        // m_pivot.runAtPercent(m_operatorController.getRightY());
+        // }, m_pivot));
 
         // m_pivot.setDefaultCommand(m_pivot.getPivotCommand());
     }
@@ -79,12 +79,6 @@ public class RobotContainer {
                 .whileTrue(new RunCommand(
                         () -> m_robotDrive.setX(),
                         m_robotDrive));
-
-        m_operatorController
-                .leftTrigger().whileTrue(
-                        m_intake.runRollersCommand(RollerMode.SUCK))
-                .or(m_operatorController.rightTrigger()).whileTrue(
-                        m_intake.runRollersCommand(RollerMode.SHOOT));
 
         // m_operatorController
         // .x().onTrue(new RunCommand(() ->
