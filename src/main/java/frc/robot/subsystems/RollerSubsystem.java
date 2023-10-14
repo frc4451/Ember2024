@@ -37,11 +37,19 @@ public class RollerSubsystem extends SubsystemBase {
 
     public void runRollers(RollerMode rollerMode) {
         if (rollerMode.isLimited && this.isBeamBreakActivated()) {
-            this.runRollersPercent(0, 0);
+            this.runRollersPercent(0.0, 0.0);
         } else {
             this.runRollersPercent(rollerMode.topPercent, rollerMode.bottomPercent);
         }
     }
+
+    // public void turnRollers() {
+    // if (this.isBeamBreakActivated()) {
+    // this.runRollersPercent(0.0, 0.1);
+    // } else {
+    // this.runRollersPercent(-0.1, 0.0);
+    // }
+    // }
 
     public Command runRollersCommand(RollerMode rollerMode) {
         return new InstantCommand(() -> this.runRollers(rollerMode), this);

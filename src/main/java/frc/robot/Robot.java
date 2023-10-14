@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -127,9 +128,29 @@ public class Robot extends TimedRobot {
         if (m_robotContainer.m_operatorController.leftTrigger().getAsBoolean()) {
             m_robotContainer.m_rollers.runRollers(RollerMode.SUCK);
         } else if (m_robotContainer.m_operatorController.rightTrigger().getAsBoolean()) {
-            m_robotContainer.m_rollers.runRollers(RollerMode.SHOOT);
+            m_robotContainer.m_rollers.runRollers(RollerMode.SHOOTLOW);
+        } else if (m_robotContainer.m_operatorController.leftBumper().getAsBoolean()) {
+            m_robotContainer.m_rollers.runRollers(RollerMode.SHOOTMID);
+        } else if (m_robotContainer.m_operatorController.rightBumper().getAsBoolean()) {
+            m_robotContainer.m_rollers.runRollers(RollerMode.SHOOTHIGH);
         } else {
             m_robotContainer.m_rollers.runRollers(RollerMode.STOP);
+        }
+
+        if (m_robotContainer.m_operatorController.povDown().getAsBoolean()) {
+            m_robotContainer.m_pivot.setSetpoint(Rotation2d.fromDegrees(167.25));
+            m_robotContainer.m_pivot.pivot();
+        } else if (m_robotContainer.m_operatorController.povUp().getAsBoolean()) {
+            m_robotContainer.m_pivot.setSetpoint(Rotation2d.fromDegrees(0.0));
+            m_robotContainer.m_pivot.pivot();
+        } else if (m_robotContainer.m_operatorController.povLeft().getAsBoolean()) {
+            m_robotContainer.m_pivot.setSetpoint(Rotation2d.fromDegrees(90.0));
+            m_robotContainer.m_pivot.pivot();
+        } else if (m_robotContainer.m_operatorController.povRight().getAsBoolean()) {
+            m_robotContainer.m_pivot.setSetpoint(Rotation2d.fromDegrees(160.0));
+            m_robotContainer.m_pivot.pivot();
+        } else {
+            m_robotContainer.m_pivot.runAtPercent(m_robotContainer.m_operatorController.getRightY());
         }
     }
 

@@ -114,6 +114,32 @@
               "_glyph": 148,
               "_showGlyph": false
             }
+          },
+          "6,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Arm Pivot Deg",
+              "_title": "Arm Pivot Deg",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Arm Pivot Rad",
+              "_title": "Arm Pivot Rad",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }

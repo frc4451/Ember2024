@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Auto.AutoSelector;
@@ -57,9 +58,9 @@ public class RobotContainer {
                                 true, true),
                         m_robotDrive));
 
-        m_pivot.setDefaultCommand(new RunCommand(() -> {
-            m_pivot.runAtPercent(m_operatorController.getRightY());
-        }, m_pivot));
+        // m_pivot.setDefaultCommand(new RunCommand(() -> {
+        // m_pivot.runAtPercent(m_operatorController.getRightY());
+        // }, m_pivot));
 
         // m_pivot.setDefaultCommand(m_pivot.getPivotCommand());
     }
@@ -76,15 +77,18 @@ public class RobotContainer {
     private void configureButtonBindings() {
         m_driverController.rightBumper()
                 .whileTrue(new RunCommand(
-                        () -> m_robotDrive.setX(),
+                        () -> m_robotDrive.setCross(),
                         m_robotDrive));
 
         // m_operatorController
-        // .x().onTrue(new RunCommand(() ->
-        // m_pivot.setSetpoint(Rotation2d.fromDegrees(15.0))))
-        // .or(m_operatorController.y())
+        // .povDown()
         // .onTrue(new RunCommand(() ->
-        // m_pivot.setSetpoint(Rotation2d.fromDegrees(30.0))));
+        // m_pivot.setSetpoint(Rotation2d.fromDegrees(0.0)))
+        // .andThen(m_pivot.getPivotCommand()))
+        // .or(m_operatorController.povUp())
+        // .onTrue(new RunCommand(() ->
+        // m_pivot.setSetpoint(Rotation2d.fromDegrees(167.25)))
+        // .andThen(m_pivot.getPivotCommand()));
     }
 
     /**

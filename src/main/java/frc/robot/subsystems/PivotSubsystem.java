@@ -28,7 +28,7 @@ public class PivotSubsystem extends SubsystemBase {
             0.0);
 
     private final PIDController feedback = new PIDController(
-            0.0,
+            0.00,
             0.0,
             0.0);
 
@@ -61,6 +61,7 @@ public class PivotSubsystem extends SubsystemBase {
 
     public void setSetpoint(Rotation2d angle) {
         this.setpoint = angle;
+        this.feedback.setSetpoint(angle.getRadians());
     }
 
     public Command getPivotCommand() {
@@ -77,17 +78,22 @@ public class PivotSubsystem extends SubsystemBase {
         }
     }
 
-    private void pivot() {
-        double feedforwardOut = this.feedforward.calculate(
-                this.getAngle().getRadians(),
-                IntakeConstants.kPivotVelocityRadiansPerSecond);
+    public void pivot() {
+        // double feedforwardOut = this.feedforward.calculate(
+        // this.getSetpoint().getRadians(),
+        // IntakeConstants.kPivotVelocityRadiansPerSecond);
 
-        double feedbackOut = this.feedback.calculate(
-                this.getAngle().getRadians(),
-                setpoint.getRadians());
+        // double feedbackOut = this.feedback.calculate(
+        // this.getAngle().getRadians());
 
-        double velocity = feedforwardOut + feedbackOut;
+        // double velocity = feedforwardOut + feedbackOut;
 
-        this.runAtPercent(velocity / pdp.getVoltage());
+        double algebrafeedback = 0.05 * (this.getSetpoint().getDegrees() - this.getAngle().getDegrees());
+        double velocity = algebrafeedback;
+
+        // this.runAtPercent(Math.min(Math.max(velocity / pdp.getVoltage(), -0.5),
+        // 0.5));
+        this.runAtPercent(Math.min(Math.max(velocity, -0.7), 0.7));
     }
+
 }
