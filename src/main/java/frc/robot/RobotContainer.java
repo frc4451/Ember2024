@@ -79,16 +79,6 @@ public class RobotContainer {
                 .whileTrue(new RunCommand(
                         () -> m_robotDrive.setCross(),
                         m_robotDrive));
-
-        // m_operatorController
-        // .povDown()
-        // .onTrue(new RunCommand(() ->
-        // m_pivot.setSetpoint(Rotation2d.fromDegrees(0.0)))
-        // .andThen(m_pivot.getPivotCommand()))
-        // .or(m_operatorController.povUp())
-        // .onTrue(new RunCommand(() ->
-        // m_pivot.setSetpoint(Rotation2d.fromDegrees(167.25)))
-        // .andThen(m_pivot.getPivotCommand()));
     }
 
     /**

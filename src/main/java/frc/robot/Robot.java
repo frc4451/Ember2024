@@ -128,11 +128,11 @@ public class Robot extends TimedRobot {
         if (m_robotContainer.m_operatorController.leftTrigger().getAsBoolean()) {
             m_robotContainer.m_rollers.runRollers(RollerMode.SUCK);
         } else if (m_robotContainer.m_operatorController.rightTrigger().getAsBoolean()) {
-            m_robotContainer.m_rollers.runRollers(RollerMode.SHOOTLOW);
+            m_robotContainer.m_rollers.runRollers(RollerMode.SHOOT_LOW);
         } else if (m_robotContainer.m_operatorController.leftBumper().getAsBoolean()) {
-            m_robotContainer.m_rollers.runRollers(RollerMode.SHOOTMID);
+            m_robotContainer.m_rollers.runRollers(RollerMode.SHOOT_MID);
         } else if (m_robotContainer.m_operatorController.rightBumper().getAsBoolean()) {
-            m_robotContainer.m_rollers.runRollers(RollerMode.SHOOTHIGH);
+            m_robotContainer.m_rollers.runRollers(RollerMode.SHOOT_HIGH);
         } else {
             m_robotContainer.m_rollers.runRollers(RollerMode.STOP);
         }
