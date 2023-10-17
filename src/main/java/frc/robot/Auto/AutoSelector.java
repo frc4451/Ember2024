@@ -30,22 +30,29 @@ class Speeds {
 }
 
 class PathPlannerGroups {
-    public static List<PathPlannerTrajectory> test = PathPlanner.loadPathGroup("test", Speeds.THREE);
     public static List<PathPlannerTrajectory> leftBlueTriPoop = PathPlanner.loadPathGroup(
             "leftBlueTriPoop",
             Speeds.TRI_POOP);
-    public static List<PathPlannerTrajectory> rightBlueTriPoop = PathPlanner.loadPathGroup(
+
+    public static List<PathPlannerTrajectory> rightBlueBiPoop = PathPlanner.loadPathGroup(
             "rightBlueTriPoop",
             Speeds.TRI_POOP_SLOW);
-    public static List<PathPlannerTrajectory> leftRedTriPoop = PathPlanner.loadPathGroup(
+
+    public static List<PathPlannerTrajectory> leftRedBiPoop = PathPlanner.loadPathGroup(
             "leftRedTriPoop",
             Speeds.TRI_POOP_SLOW);
+
     public static List<PathPlannerTrajectory> rightRedTriPoop = PathPlanner.loadPathGroup(
             "rightRedTriPoop",
             Speeds.TRI_POOP);
+
     public static List<PathPlannerTrajectory> jankCenterBalance = PathPlanner.loadPathGroup(
             "jankCenterBalance",
             Speeds.ONE);
+
+    public static List<PathPlannerTrajectory> centerPoopOver = PathPlanner.loadPathGroup(
+            "centerPoopOver",
+            Speeds.TRI_POOP_SLOW);
 }
 
 public class AutoSelector {
@@ -54,9 +61,6 @@ public class AutoSelector {
     private final LinkedHashMap<String, Command> routines = new LinkedHashMap<>();
 
     public AutoSelector(RobotContainer robotContainer) {
-        this.routines.put("test",
-                AutoRoutines.getTestRoutine(robotContainer.m_robotDrive, PathPlannerGroups.test));
-
         this.routines.put("Left Blue TriPoop",
                 AutoRoutines.getTriPoop(
                         PathPlannerGroups.leftBlueTriPoop,
@@ -64,16 +68,16 @@ public class AutoSelector {
                         robotContainer.m_rollers,
                         robotContainer.m_pivot));
 
-        this.routines.put("Right Blue TriPoop",
-                AutoRoutines.getTriPoop(
-                        PathPlannerGroups.rightBlueTriPoop,
+        this.routines.put("Right Blue BiPoop",
+                AutoRoutines.getBiPoop(
+                        PathPlannerGroups.rightBlueBiPoop,
                         robotContainer.m_robotDrive,
                         robotContainer.m_rollers,
                         robotContainer.m_pivot));
 
-        this.routines.put("Left Red TriPoop",
-                AutoRoutines.getTriPoop(
-                        PathPlannerGroups.leftRedTriPoop,
+        this.routines.put("Left Red BiPoop",
+                AutoRoutines.getBiPoop(
+                        PathPlannerGroups.leftRedBiPoop,
                         robotContainer.m_robotDrive,
                         robotContainer.m_rollers,
                         robotContainer.m_pivot));
@@ -94,6 +98,12 @@ public class AutoSelector {
                                 new RunCommand(
                                         robotContainer.m_robotDrive::setCross,
                                         robotContainer.m_robotDrive))));
+
+        this.routines.put("Center Poop Over",
+                AutoRoutines.getCenterPoopOver(
+                        PathPlannerGroups.centerPoopOver,
+                        robotContainer.m_robotDrive,
+                        robotContainer.m_rollers));
 
         this.registerDashboard();
     }
