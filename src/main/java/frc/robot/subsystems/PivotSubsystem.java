@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
@@ -35,7 +36,8 @@ public class PivotSubsystem extends SubsystemBase {
     public PivotSubsystem() {
         // this.pdp = pdp;
 
-        this.setAngle(Rotation2d.fromDegrees(184.0));
+        this.setAngle(PivotLocation.INITIAL.angle);
+        this.setSetpoint(PivotLocation.INITIAL.angle);
 
         this.pivot.restoreFactoryDefaults();
         this.pivot.setIdleMode(IdleMode.kBrake);
@@ -60,8 +62,8 @@ public class PivotSubsystem extends SubsystemBase {
         // this.feedback.setSetpoint(angle.getRadians());
     }
 
-    public Command getPivotCommand() {
-        return new InstantCommand(this::pivot, this);
+    public Command setSetpointCommand(Rotation2d angle) {
+        return new RunCommand(() -> this.setSetpoint(angle));
     }
 
     public void runAtPercent(double percent) {
@@ -89,7 +91,11 @@ public class PivotSubsystem extends SubsystemBase {
 
         // this.runAtPercent(Math.min(Math.max(velocity / pdp.getVoltage(), -0.5),
         // 0.5));
+        // if Math.abs(velocity) < 0.1
         this.runAtPercent(Math.min(Math.max(velocity, -0.7), 0.7));
     }
 
+    public Command pivotCommand() {
+        return new InstantCommand(this::pivot, this);
+    }
 }

@@ -31,7 +31,7 @@ public class RollerSubsystem extends SubsystemBase {
         this.bottomRoller.set(ControlMode.PercentOutput, bottomPercent);
     }
 
-    private boolean isBeamBreakActivated() {
+    public boolean isBeamBreakActivated() {
         return !this.beamBreak.get();
     }
 

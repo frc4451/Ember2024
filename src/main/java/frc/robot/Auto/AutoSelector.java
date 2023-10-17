@@ -22,8 +22,8 @@ class Speeds {
             1.5,
             1.5);
     public static final PathConstraints TRI_POOP = new PathConstraints(
-            2.5,
-            2.5);
+            2.3,
+            2.3);
     public static final PathConstraints THREE = new PathConstraints(
             3.0,
             3.0);
@@ -59,23 +59,31 @@ public class AutoSelector {
 
         this.routines.put("Left Blue TriPoop",
                 AutoRoutines.getTriPoop(
+                        PathPlannerGroups.leftBlueTriPoop,
                         robotContainer.m_robotDrive,
-                        PathPlannerGroups.leftBlueTriPoop));
+                        robotContainer.m_rollers,
+                        robotContainer.m_pivot));
 
         this.routines.put("Right Blue TriPoop",
                 AutoRoutines.getTriPoop(
+                        PathPlannerGroups.rightBlueTriPoop,
                         robotContainer.m_robotDrive,
-                        PathPlannerGroups.rightBlueTriPoop));
+                        robotContainer.m_rollers,
+                        robotContainer.m_pivot));
 
         this.routines.put("Left Red TriPoop",
                 AutoRoutines.getTriPoop(
+                        PathPlannerGroups.leftRedTriPoop,
                         robotContainer.m_robotDrive,
-                        PathPlannerGroups.leftRedTriPoop));
+                        robotContainer.m_rollers,
+                        robotContainer.m_pivot));
 
         this.routines.put("Right Red TriPoop",
                 AutoRoutines.getTriPoop(
+                        PathPlannerGroups.rightRedTriPoop,
                         robotContainer.m_robotDrive,
-                        PathPlannerGroups.rightRedTriPoop));
+                        robotContainer.m_rollers,
+                        robotContainer.m_pivot));
 
         this.routines.put("Jank Center Balance",
                 robotContainer.m_robotDrive.followTrajectoryCommand(

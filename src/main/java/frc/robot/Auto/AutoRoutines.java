@@ -5,30 +5,70 @@ import java.util.List;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.PivotLocation;
+import frc.robot.subsystems.PivotSubsystem;
+import frc.robot.subsystems.RollerMode;
+import frc.robot.subsystems.RollerSubsystem;
 
 public class AutoRoutines {
+    private static Command runCommandForSeconds(Command cmd, double seconds) {
+        return new WaitCommand(seconds).deadlineWith(cmd.repeatedly());
+    }
+
+    private static Command runCommandAfterSeconds(Command cmd, double seconds) {
+        return new WaitCommand(seconds).andThen(cmd);
+    }
+
     public static Command getTestRoutine(DriveSubsystem drive, List<PathPlannerTrajectory> paths) {
         return drive.followTrajectoryCommand(paths.get(0), true, true);
     }
 
-    public static Command getTriPoop(DriveSubsystem drive, List<PathPlannerTrajectory> paths) {
+    public static Command getTriPoop(
+            List<PathPlannerTrajectory> paths,
+            DriveSubsystem drive,
+            RollerSubsystem rollers,
+            PivotSubsystem pivot) {
         final PathPlannerTrajectory goGrabSecond = paths.get(0);
         final PathPlannerTrajectory goPoopSecond = paths.get(1);
         final PathPlannerTrajectory goGrabThird = paths.get(2);
         final PathPlannerTrajectory goPoopThird = paths.get(3);
 
-        return new SequentialCommandGroup(
-                // poop first game piece
-                drive.followTrajectoryCommand(goGrabSecond, true, true),
-                // actually grab
-                drive.followTrajectoryCommand(goPoopSecond, false, true),
-                // poop second game piece
-                drive.followTrajectoryCommand(goGrabThird, false, true),
-                // actually grab third piece
-                drive.followTrajectoryCommand(goPoopThird, false, true)
-        // poop second game piece
-        );
+        return new ParallelCommandGroup(
+                pivot.pivotCommand().repeatedly(),
+                new SequentialCommandGroup(
+                        // poop first game piece
+                        runCommandForSeconds(rollers.runRollersCommand(RollerMode.SHOOT_LOW), 0.25),
+                        // go to second piece and grab it
+                        new ParallelDeadlineGroup(
+                                drive.followTrajectoryCommand(goGrabSecond, true, true),
+                                runCommandAfterSeconds(
+                                        pivot.setSetpointCommand(PivotLocation.k0.angle),
+                                        1.0),
+                                rollers.runRollersCommand(RollerMode.SUCK).repeatedly()),
+                        // go back and poop second game piece
+                        new ParallelDeadlineGroup(
+                                new SequentialCommandGroup(
+                                        drive.followTrajectoryCommand(goPoopSecond, false, true),
+                                        runCommandForSeconds(rollers.runRollersCommand(RollerMode.SHOOT_LOW), 0.25)),
+                                pivot.setSetpointCommand(PivotLocation.k167.angle)),
+                        // actually grab third piece
+                        new ParallelDeadlineGroup(
+                                drive.followTrajectoryCommand(goGrabThird, true, true),
+                                runCommandAfterSeconds(
+                                        pivot.setSetpointCommand(PivotLocation.k0.angle),
+                                        1.0),
+                                rollers.runRollersCommand(RollerMode.SUCK).repeatedly()),
+                        // poop third game piece
+                        new ParallelDeadlineGroup(
+                                new SequentialCommandGroup(
+                                        drive.followTrajectoryCommand(goPoopThird, false, true),
+                                        runCommandForSeconds(rollers.runRollersCommand(RollerMode.SHOOT_LOW), 0.25),
+                                        rollers.runRollersCommand(RollerMode.STOP)),
+                                pivot.setSetpointCommand(PivotLocation.k167.angle))));
     }
 }

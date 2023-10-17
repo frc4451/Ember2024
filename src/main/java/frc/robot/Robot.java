@@ -5,11 +5,11 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.PivotLocation;
 import frc.robot.subsystems.RollerMode;
 
 /**
@@ -64,8 +64,10 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("Pose Rotation",
                 m_robotContainer.m_robotDrive.getPose().getRotation().getDegrees());
         SmartDashboard.putNumber("Gyro Heading", m_robotContainer.m_robotDrive.getHeading());
+        SmartDashboard.putBoolean("Roller Beambreak Activated", m_robotContainer.m_rollers.isBeamBreakActivated());
         SmartDashboard.putNumber("Arm Pivot Deg", m_robotContainer.m_pivot.getAngle().getDegrees());
         SmartDashboard.putNumber("Arm Pivot Rad", m_robotContainer.m_pivot.getAngle().getRadians());
+        SmartDashboard.putNumber("Arm Pivot Setpoint Deg", m_robotContainer.m_pivot.getSetpoint().getDegrees());
     }
 
     /** This function is called once each time the robot enters Disabled mode. */
@@ -138,16 +140,16 @@ public class Robot extends TimedRobot {
         }
 
         if (m_robotContainer.m_operatorController.povDown().getAsBoolean()) {
-            m_robotContainer.m_pivot.setSetpoint(Rotation2d.fromDegrees(167.25));
+            m_robotContainer.m_pivot.setSetpoint(PivotLocation.k167.angle);
             m_robotContainer.m_pivot.pivot();
         } else if (m_robotContainer.m_operatorController.povUp().getAsBoolean()) {
-            m_robotContainer.m_pivot.setSetpoint(Rotation2d.fromDegrees(0.0));
+            m_robotContainer.m_pivot.setSetpoint(PivotLocation.k0.angle);
             m_robotContainer.m_pivot.pivot();
         } else if (m_robotContainer.m_operatorController.povLeft().getAsBoolean()) {
-            m_robotContainer.m_pivot.setSetpoint(Rotation2d.fromDegrees(90.0));
+            m_robotContainer.m_pivot.setSetpoint(PivotLocation.k90.angle);
             m_robotContainer.m_pivot.pivot();
         } else if (m_robotContainer.m_operatorController.povRight().getAsBoolean()) {
-            m_robotContainer.m_pivot.setSetpoint(Rotation2d.fromDegrees(160.0));
+            m_robotContainer.m_pivot.setSetpoint(PivotLocation.k160.angle);
             m_robotContainer.m_pivot.pivot();
         } else {
             m_robotContainer.m_pivot.runAtPercent(m_robotContainer.m_operatorController.getRightY());
