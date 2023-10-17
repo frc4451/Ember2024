@@ -5,39 +5,35 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
 public class PivotSubsystem extends SubsystemBase {
-    // TODO make sure motor type is right
     private final CANSparkMax pivot = new CANSparkMax(IntakeConstants.kPivotCanId, MotorType.kBrushless);
 
     private final RelativeEncoder encoder = pivot.getEncoder();
 
     // https://docs.wpilib.org/en/stable/docs/software/advanced-controls/introduction/tuning-vertical-arm.html
-    private final ArmFeedforward feedforward = new ArmFeedforward(
-            0.0,
-            0.0,
-            0.0,
-            0.0);
+    // private final ArmFeedforward feedforward = new ArmFeedforward(
+    // 0.0,
+    // 0.0,
+    // 0.0,
+    // 0.0);
 
-    private final PIDController feedback = new PIDController(
-            0.00,
-            0.0,
-            0.0);
+    // private final PIDController feedback = new PIDController(
+    // 0.00,
+    // 0.0,
+    // 0.0);
 
-    private final PowerDistribution pdp;
+    // private final PowerDistribution pdp;
 
     private Rotation2d setpoint = new Rotation2d();
 
-    public PivotSubsystem(PowerDistribution pdp) {
-        this.pdp = pdp;
+    public PivotSubsystem() {
+        // this.pdp = pdp;
 
         this.setAngle(Rotation2d.fromDegrees(184.0));
 
@@ -61,7 +57,7 @@ public class PivotSubsystem extends SubsystemBase {
 
     public void setSetpoint(Rotation2d angle) {
         this.setpoint = angle;
-        this.feedback.setSetpoint(angle.getRadians());
+        // this.feedback.setSetpoint(angle.getRadians());
     }
 
     public Command getPivotCommand() {

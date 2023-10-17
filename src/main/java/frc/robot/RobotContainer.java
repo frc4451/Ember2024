@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Auto.AutoSelector;
@@ -24,14 +23,14 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    private final PowerDistribution m_pdp = new PowerDistribution();
+    // private final PowerDistribution m_pdp = new PowerDistribution();
 
     // The robot's subsystems
     public final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
     public final RollerSubsystem m_rollers = new RollerSubsystem();
 
-    public final PivotSubsystem m_pivot = new PivotSubsystem(m_pdp);
+    public final PivotSubsystem m_pivot = new PivotSubsystem();
 
     private AutoSelector m_autoSelector = new AutoSelector(this);
 
