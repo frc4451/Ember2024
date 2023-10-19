@@ -43,7 +43,7 @@ public class AutoRoutines {
                 pivot.pivotCommand().repeatedly(),
                 new SequentialCommandGroup(
                         // poop first game piece
-                        runCommandForSeconds(rollers.runRollersCommand(RollerMode.SHOOT_LOW), 0.25),
+                        runCommandForSeconds(rollers.runRollersCommand(RollerMode.SHOOT_LOW), 0.5),
                         // go to second piece and grab it
                         new ParallelDeadlineGroup(
                                 drive.followTrajectoryCommand(goGrabSecond, true, true),
@@ -86,7 +86,7 @@ public class AutoRoutines {
                 pivot.pivotCommand().repeatedly(),
                 new SequentialCommandGroup(
                         // poop first game piece
-                        runCommandForSeconds(rollers.runRollersCommand(RollerMode.SHOOT_LOW), 0.25),
+                        runCommandForSeconds(rollers.runRollersCommand(RollerMode.SHOOT_LOW), 0.5),
                         // go to second piece and grab it
                         new ParallelDeadlineGroup(
                                 drive.followTrajectoryCommand(goGrabSecond, true, true),
