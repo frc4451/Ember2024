@@ -92,7 +92,7 @@ public class PivotSubsystem extends SubsystemBase {
         // this.runAtPercent(Math.min(Math.max(velocity / pdp.getVoltage(), -0.5),
         // 0.5));
         // if Math.abs(velocity) < 0.1
-        this.runAtPercent(Math.min(Math.max(velocity, -0.7), 0.7));
+        this.runAtPercent(Math.min(Math.max(velocity, -0.8), 0.8));
     }
 
     public Command pivotCommand() {

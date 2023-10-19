@@ -80,6 +80,7 @@ public class Robot extends TimedRobot {
         if (m_robotContainer.m_driverController.b().getAsBoolean()) {
             m_robotContainer.m_robotDrive.zeroHeading();
             m_robotContainer.m_robotDrive.resetOdometry(new Pose2d());
+            m_robotContainer.m_pivot.setAngle(PivotLocation.INITIAL.angle);
         }
         // m_robotContainer.m_driverController.b().onTrue(
         // new RunCommand(
