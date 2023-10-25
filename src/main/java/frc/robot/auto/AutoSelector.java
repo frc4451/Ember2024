@@ -1,4 +1,4 @@
-package frc.robot.Auto;
+package frc.robot.auto;
 
 import java.util.LinkedHashMap;
 import java.util.List;
