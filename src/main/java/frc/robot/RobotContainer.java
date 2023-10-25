@@ -4,9 +4,9 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.Auto.AutoSelector;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import frc.robot.auto.AutoSelector;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    // private final PowerDistribution m_pdp = new PowerDistribution();
+    public final Field2d field = new Field2d();
 
     // The robot's subsystems
     public final DriveSubsystem m_robotDrive = new DriveSubsystem();
@@ -35,6 +35,7 @@ public class RobotContainer {
     private AutoSelector m_autoSelector = new AutoSelector(this);
 
     final CommandCustomController m_driverController = new CommandCustomController(OIConstants.kDriverControllerPort);
+
     final CommandCustomController m_operatorController = new CommandCustomController(
             OIConstants.kOperatorControllerPort);
 

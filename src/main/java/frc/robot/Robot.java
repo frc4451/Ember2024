@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -51,6 +52,11 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotPeriodic() {
+        final Pose2d pose = m_robotContainer.m_robotDrive.getPose();
+        // This just "moves" it for testing, doesn't actually do anything
+        m_robotContainer.m_robotDrive
+                .resetOdometry(new Pose2d(pose.getX() + 0.01, pose.getY() + 0.01, pose.getRotation()));
+        m_robotContainer.field.setRobotPose(pose);
         // Runs the Scheduler. This is responsible for polling buttons, adding
         // newly-scheduled
         // commands, running already-scheduled commands, removing finished or
@@ -68,6 +74,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("Arm Pivot Deg", m_robotContainer.m_pivot.getAngle().getDegrees());
         SmartDashboard.putNumber("Arm Pivot Rad", m_robotContainer.m_pivot.getAngle().getRadians());
         SmartDashboard.putNumber("Arm Pivot Setpoint Deg", m_robotContainer.m_pivot.getSetpoint().getDegrees());
+        SmartDashboard.putData("Field", m_robotContainer.field);
     }
 
     /** This function is called once each time the robot enters Disabled mode. */
