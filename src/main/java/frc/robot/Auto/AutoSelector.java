@@ -35,11 +35,11 @@ class PathPlannerGroups {
             Speeds.TRI_POOP);
 
     public static List<PathPlannerTrajectory> rightBlueBiPoop = PathPlanner.loadPathGroup(
-            "rightBlueTriPoop",
+            "rightBlueBiPoop",
             Speeds.TRI_POOP_SLOW);
 
     public static List<PathPlannerTrajectory> leftRedBiPoop = PathPlanner.loadPathGroup(
-            "leftRedTriPoop",
+            "leftRedBiPoop",
             Speeds.TRI_POOP_SLOW);
 
     public static List<PathPlannerTrajectory> rightRedTriPoop = PathPlanner.loadPathGroup(
