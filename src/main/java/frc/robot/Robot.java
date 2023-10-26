@@ -4,6 +4,11 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -22,7 +27,7 @@ import frc.robot.subsystems.RollerMode;
  * build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
     private Command m_autonomousCommand;
 
     private RobotContainer m_robotContainer;
@@ -34,9 +39,17 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
-        // Instantiate our RobotContainer. This will perform all our button bindings,
-        // and put our
-        // autonomous chooser on the dashboard.
+        // Running on a real robot, log to a USB stick
+        if (isReal()) {
+            Logger.getInstance().addDataReceiver(new WPILOGWriter("/U"));
+        }
+
+        // Always log to NetworkTables
+        Logger.getInstance().addDataReceiver(new NT4Publisher());
+
+        // Start AdvantageKit Logger
+        Logger.getInstance().start();
+
         m_robotContainer = new RobotContainer();
     }
 
@@ -52,11 +65,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotPeriodic() {
-        final Pose2d pose = m_robotContainer.m_robotDrive.getPose();
-        // This just "moves" it for testing, doesn't actually do anything
-        m_robotContainer.m_robotDrive
-                .resetOdometry(new Pose2d(pose.getX() + 0.01, pose.getY() + 0.01, pose.getRotation()));
-        m_robotContainer.field.setRobotPose(pose);
+        CommandScheduler.getInstance().run();
         // Runs the Scheduler. This is responsible for polling buttons, adding
         // newly-scheduled
         // commands, running already-scheduled commands, removing finished or
@@ -64,7 +73,9 @@ public class Robot extends TimedRobot {
         // and running subsystem periodic() methods. This must be called from the
         // robot's periodic
         // block in order for anything in the Command-based framework to work.
-        CommandScheduler.getInstance().run();
+        // m_robotContainer.field.setRobotPose(m_robotContainer.m_robotDrive.getPose());
+        m_robotContainer.field.setRobotPose(m_robotContainer.m_robotDrive.getPose());
+
         SmartDashboard.putNumber("X", m_robotContainer.m_robotDrive.getPose().getX());
         SmartDashboard.putNumber("Y", m_robotContainer.m_robotDrive.getPose().getY());
         SmartDashboard.putNumber("Pose Rotation",
