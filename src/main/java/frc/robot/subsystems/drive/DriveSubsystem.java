@@ -125,7 +125,7 @@ public class DriveSubsystem extends SubsystemBase {
         SwerveModulePosition[] moduleDeltas = getSwerveModulePositionDeltas();
         Twist2d twist = DriveConstants.kDriveKinematics.toTwist2d(moduleDeltas);
         if (m_gyroInputs.isConnected) {
-            twist = new Twist2d(twist.dx, twist.dy, m_lastYawPositionRad - twist.dtheta);
+            twist = new Twist2d(twist.dx, twist.dy, m_gyroInputs.yawPositionRad - m_lastYawPositionRad);
             m_lastYawPositionRad = m_gyroInputs.yawPositionRad;
         }
         m_odometryPose = m_odometryPose.exp(twist);
