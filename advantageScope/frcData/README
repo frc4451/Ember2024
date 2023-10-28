@@ -1,0 +1,5 @@
+This stuff in this folder is per-device and will not be automatically picked up by AdvantageScope copy everything in it to the configuration folder, to open the configuration folder, click "Help" > "Show FRC Data Folder". AdvantageScope must be restarted for changes to take effect.
+
+Models:
+ * Are not included in this repo & must be obtained manually
+ * For each robot json file there should be a Robot_NAME.glb
