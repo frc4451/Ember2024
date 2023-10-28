@@ -123,11 +123,16 @@ public class DriveSubsystem extends SubsystemBase {
 
         // Update the odometry pose
         SwerveModulePosition[] moduleDeltas = getSwerveModulePositionDeltas();
+        // The twist represents the motion of the robot since the last
+        // loop cycle in x, y, and theta based on only the modules,
+        // without the gyro. The gyro is always disconnected in simulation.
+        // If the gyro is connected we'll use that to calculate our theta instead.
         Twist2d twist = DriveConstants.kDriveKinematics.toTwist2d(moduleDeltas);
         if (m_gyroInputs.isConnected) {
             twist = new Twist2d(twist.dx, twist.dy, m_gyroInputs.yawPositionRad - m_lastYawPositionRad);
             m_lastYawPositionRad = m_gyroInputs.yawPositionRad;
         }
+        // Apply the twist (change since last loop cycle) to the current pose
         m_odometryPose = m_odometryPose.exp(twist);
         Logger.getInstance().recordOutput("Odometry/Robot", m_odometryPose);
     }
