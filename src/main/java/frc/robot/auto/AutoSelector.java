@@ -3,11 +3,12 @@ package frc.robot.auto;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
@@ -56,7 +57,7 @@ class PathPlannerGroups {
 }
 
 public class AutoSelector {
-    private final SendableChooser<Command> chooser = new SendableChooser<>();
+    private final LoggedDashboardChooser<Command> chooser = new LoggedDashboardChooser<>("Auto Routines");
 
     private final LinkedHashMap<String, Command> routines = new LinkedHashMap<>();
 
@@ -113,10 +114,10 @@ public class AutoSelector {
             chooser.addOption(label, cmd);
         });
 
-        SmartDashboard.putData("Auto Routines", chooser);
+        SmartDashboard.putData("Auto Routines", chooser.getSendableChooser());
     }
 
     public Command getSelectedRoutine() {
-        return this.chooser.getSelected();
+        return this.chooser.get();
     }
 }
