@@ -4,19 +4,15 @@
 
 package frc.robot.subsystems.drive;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.system.plant.DCMotor;
-
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.RelativeEncoder;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants.ModuleConstants;
 
 public class SwerveModuleSparkMax implements SwerveModuleIO {
@@ -29,10 +25,8 @@ public class SwerveModuleSparkMax implements SwerveModuleIO {
     private final SparkMaxPIDController m_drivingPIDController;
     private final SparkMaxPIDController m_turningPIDController;
 
-    private double m_chassisAngularOffset = 0;
+    private final double m_chassisAngularOffset;
     private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
-
-    private SwerveModulePosition lastPosition;
 
     /**
      * Constructs a MAXSwerveModule and configures the driving and turning motor,
@@ -43,8 +37,6 @@ public class SwerveModuleSparkMax implements SwerveModuleIO {
     public SwerveModuleSparkMax(int drivingCANId, int turningCANId, double chassisAngularOffset) {
         m_drivingSparkMax = new CANSparkMax(drivingCANId, MotorType.kBrushless);
         m_turningSparkMax = new CANSparkMax(turningCANId, MotorType.kBrushless);
-        REVPhysicsSim.getInstance().addSparkMax(m_drivingSparkMax, DCMotor.getNEO(1));
-        REVPhysicsSim.getInstance().addSparkMax(m_turningSparkMax, DCMotor.getNEO(1));
 
         // Factory reset, so we get the SPARKS MAX to a known state before configuring
         // them. This is useful in case a SPARK MAX is swapped out.
@@ -117,45 +109,16 @@ public class SwerveModuleSparkMax implements SwerveModuleIO {
         m_chassisAngularOffset = chassisAngularOffset;
         m_desiredState.angle = new Rotation2d(m_turningEncoder.getPosition());
         m_drivingEncoder.setPosition(0);
-
-        lastPosition = getPosition();
     }
 
-    /**
-     * Returns the current state of the module.
-     *
-     * @return The current state of the module.
-     */
-    public SwerveModuleState getState() {
-        // Apply chassis angular offset to the encoder position to get the position
-        // relative to the chassis.
-        return new SwerveModuleState(m_drivingEncoder.getVelocity(),
-                new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset));
+    public void updateInputs(SwerveModuleIOInputs inputs) {
+        inputs.drivePositionMeters = m_drivingEncoder.getPosition();
+        inputs.driveVelocityMetersPerSec = m_drivingEncoder.getVelocity();
+
+        inputs.turnAbsolutePositionRad = m_turningEncoder.getPosition();
+        inputs.turnAngularOffsetPositionRad = m_turningEncoder.getPosition() - m_chassisAngularOffset;
+        // inputs.turnVelocityRadPerSec = m_turningEncoder.getVelocity();
     }
-
-    /**
-     * Returns the current position of the module.
-     *
-     * @return The current position of the module.
-     */
-    public SwerveModulePosition getPosition() {
-        // Apply chassis angular offset to the encoder position to get the position
-        // relative to the chassis.
-        return new SwerveModulePosition(
-                m_drivingEncoder.getPosition(),
-                new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset));
-    }
-
-    /** Returns the module position delta since the last call to this method. */
-    public SwerveModulePosition getPositionDelta() {
-        SwerveModulePosition delta = new SwerveModulePosition(
-                getPosition().distanceMeters - lastPosition.distanceMeters,
-                new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset));
-
-        lastPosition = getPosition();
-
-        return delta;
-    };
 
     /**
      * Sets the desired state for the module.
@@ -164,25 +127,24 @@ public class SwerveModuleSparkMax implements SwerveModuleIO {
      */
     public void setDesiredState(SwerveModuleState desiredState) {
         // Apply chassis angular offset to the desired state.
-        SwerveModuleState correctedDesiredState = new SwerveModuleState();
-        correctedDesiredState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
-        correctedDesiredState.angle = desiredState.angle.plus(Rotation2d.fromRadians(m_chassisAngularOffset));
+        SwerveModuleState correctedDesiredState = new SwerveModuleState(
+                desiredState.speedMetersPerSecond,
+                desiredState.angle.plus(new Rotation2d(m_chassisAngularOffset)));
 
         // Optimize the reference state to avoid spinning further than 90 degrees.
-        SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(correctedDesiredState,
+        SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(
+                correctedDesiredState,
                 new Rotation2d(m_turningEncoder.getPosition()));
 
         // Command driving and turning SPARKS MAX towards their respective setpoints.
-        m_drivingPIDController.setReference(optimizedDesiredState.speedMetersPerSecond,
+        m_drivingPIDController.setReference(
+                optimizedDesiredState.speedMetersPerSecond,
                 CANSparkMax.ControlType.kVelocity);
-        m_turningPIDController.setReference(optimizedDesiredState.angle.getRadians(),
+
+        m_turningPIDController.setReference(
+                optimizedDesiredState.angle.getRadians(),
                 CANSparkMax.ControlType.kPosition);
 
         m_desiredState = desiredState;
-    }
-
-    /** Zeroes all the SwerveModule encoders. */
-    public void resetEncoders() {
-        m_drivingEncoder.setPosition(0);
     }
 }

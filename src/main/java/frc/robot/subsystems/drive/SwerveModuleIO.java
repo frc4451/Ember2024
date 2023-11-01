@@ -4,26 +4,22 @@
 
 package frc.robot.subsystems.drive;
 
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import org.littletonrobotics.junction.AutoLog;
+
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public interface SwerveModuleIO {
-    /**
-     * Returns the current state of the module.
-     *
-     * @return The current state of the module.
-     */
-    public SwerveModuleState getState();
+    @AutoLog
+    public static class SwerveModuleIOInputs {
+        public double drivePositionMeters = 0.0;
+        public double driveVelocityMetersPerSec = 0.0;
 
-    /**
-     * Returns the current position of the module.
-     *
-     * @return The current position of the module.
-     */
-    public SwerveModulePosition getPosition();
+        public double turnAbsolutePositionRad = 0.0;
+        public double turnAngularOffsetPositionRad = 0.0;
+        // public double turnVelocityRadPerSec = 0.0;
+    }
 
-    /** Returns the module position delta since the last call to this method. */
-    public SwerveModulePosition getPositionDelta();
+    public void updateInputs(SwerveModuleIOInputs inputs);
 
     /**
      * Sets the desired state for the module.

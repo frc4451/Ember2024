@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.drive;
 
+import java.util.Arrays;
+
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
@@ -20,24 +22,26 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.RobotBase;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
-import frc.utils.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.subsystems.drive.SwerveModuleIO.SwerveModuleIOInputs;
+import frc.utils.SwerveUtils;
 
 public class DriveSubsystem extends SubsystemBase {
-    // Create MAXSwerveModules
-    private final SwerveModuleIO m_frontLeft;
+    // Swerve Modules
+    private final SwerveModuleIO[] m_modules = new SwerveModuleIO[4]; // FL, FR, RL, RR
+    private final SwerveModuleIOInputsAutoLogged[] m_moduleInputs = new SwerveModuleIOInputsAutoLogged[] {
+            new SwerveModuleIOInputsAutoLogged(),
+            new SwerveModuleIOInputsAutoLogged(),
+            new SwerveModuleIOInputsAutoLogged(),
+            new SwerveModuleIOInputsAutoLogged(),
+    };
 
-    private final SwerveModuleIO m_frontRight;
-
-    private final SwerveModuleIO m_rearLeft;
-
-    private final SwerveModuleIO m_rearRight;
-
+    // Gyro
     private final SwerveGyroIO m_gyro;
     private final SwerveGyroIOInputsAutoLogged m_gyroInputs = new SwerveGyroIOInputsAutoLogged();
 
@@ -51,85 +55,106 @@ public class DriveSubsystem extends SubsystemBase {
     private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
     // Odometry for tracking robot pose
-    private double m_lastYawPositionRad;
+    // We use these variables to keep track of the
+    // previous values so we can get deltas for odometry
+    private double[] m_lastModulePositionsMeters = new double[4];
+    private double m_lastYawPositionRad = 0.0;
     private Pose2d m_odometryPose = new Pose2d();
 
     /** Creates a new DriveSubsystem. */
     public DriveSubsystem() {
         if (RobotBase.isReal()) {
-            m_frontLeft = new SwerveModuleSparkMax(
+            m_modules[0] = new SwerveModuleSparkMax(
                     DriveConstants.kFrontLeftDrivingCanId,
                     DriveConstants.kFrontLeftTurningCanId,
                     DriveConstants.kFrontLeftChassisAngularOffset);
 
-            m_frontRight = new SwerveModuleSparkMax(
+            m_modules[1] = new SwerveModuleSparkMax(
                     DriveConstants.kFrontRightDrivingCanId,
                     DriveConstants.kFrontRightTurningCanId,
                     DriveConstants.kFrontRightChassisAngularOffset);
 
-            m_rearLeft = new SwerveModuleSparkMax(
+            m_modules[2] = new SwerveModuleSparkMax(
                     DriveConstants.kRearLeftDrivingCanId,
                     DriveConstants.kRearLeftTurningCanId,
                     DriveConstants.kBackLeftChassisAngularOffset);
 
-            m_rearRight = new SwerveModuleSparkMax(
+            m_modules[3] = new SwerveModuleSparkMax(
                     DriveConstants.kRearRightDrivingCanId,
                     DriveConstants.kRearRightTurningCanId,
                     DriveConstants.kBackRightChassisAngularOffset);
 
             m_gyro = new SwerveGyroPigeon2();
         } else {
-            m_frontLeft = new SwerveModuleSim(DriveConstants.kFrontLeftChassisAngularOffset);
-            m_frontRight = new SwerveModuleSim(DriveConstants.kFrontRightChassisAngularOffset);
-            m_rearLeft = new SwerveModuleSim(DriveConstants.kBackLeftChassisAngularOffset);
-            m_rearRight = new SwerveModuleSim(DriveConstants.kBackRightChassisAngularOffset);
+            m_modules[0] = new SwerveModuleSim(DriveConstants.kFrontLeftChassisAngularOffset);
+            m_modules[1] = new SwerveModuleSim(DriveConstants.kFrontRightChassisAngularOffset);
+            m_modules[2] = new SwerveModuleSim(DriveConstants.kBackLeftChassisAngularOffset);
+            m_modules[3] = new SwerveModuleSim(DriveConstants.kBackRightChassisAngularOffset);
             m_gyro = new SwerveGyroIO() {
             };
         }
     }
 
-    public SwerveModuleState[] getSwerveModuleStates() {
-        return new SwerveModuleState[] {
-                m_frontLeft.getState(),
-                m_frontRight.getState(),
-                m_rearLeft.getState(),
-                m_rearRight.getState()
-        };
+    private SwerveModuleState getModuleState(SwerveModuleIOInputs inputs) {
+        return new SwerveModuleState(
+                inputs.driveVelocityMetersPerSec,
+                new Rotation2d(inputs.turnAngularOffsetPositionRad));
     }
 
-    public SwerveModulePosition[] getSwerveModulePositions() {
-        return new SwerveModulePosition[] {
-                m_frontLeft.getPosition(),
-                m_frontRight.getPosition(),
-                m_rearLeft.getPosition(),
-                m_rearRight.getPosition()
-        };
+    public SwerveModuleState[] getModuleStates() {
+        return Arrays.stream(m_moduleInputs)
+                .map(inputs -> getModuleState(inputs))
+                .toArray(SwerveModuleState[]::new);
     }
 
-    public SwerveModulePosition[] getSwerveModulePositionDeltas() {
-        return new SwerveModulePosition[] {
-                m_frontLeft.getPositionDelta(),
-                m_frontRight.getPositionDelta(),
-                m_rearLeft.getPositionDelta(),
-                m_rearRight.getPositionDelta()
-        };
+    private SwerveModulePosition getModulePosition(SwerveModuleIOInputs inputs) {
+        return new SwerveModulePosition(
+                inputs.drivePositionMeters,
+                new Rotation2d(inputs.turnAngularOffsetPositionRad));
+    }
+
+    public SwerveModuleState[] getModulePositions() {
+        return Arrays.stream(m_moduleInputs)
+                .map(inputs -> getModulePosition(inputs))
+                .toArray(SwerveModuleState[]::new);
+    }
+
+    public SwerveModulePosition[] getModuleWheelDeltas() {
+        SwerveModulePosition[] output = new SwerveModulePosition[m_moduleInputs.length];
+        for (int i = 0; i < m_moduleInputs.length; i++) {
+            output[i] = new SwerveModulePosition(
+                    m_moduleInputs[i].drivePositionMeters - m_lastModulePositionsMeters[i],
+                    new Rotation2d(m_moduleInputs[i].turnAngularOffsetPositionRad));
+        }
+        return output;
     }
 
     @Override
     public void periodic() {
         m_gyro.updateInputs(m_gyroInputs);
         Logger.getInstance().processInputs("Drive/Gyro", m_gyroInputs);
-        Logger.getInstance().recordOutput("SwerveStates/Measured", getSwerveModuleStates());
+
+        // Update the modules' inputs and other data
+        m_lastModulePositionsMeters = Arrays.stream(m_moduleInputs)
+                .mapToDouble((inputs) -> inputs.drivePositionMeters)
+                .toArray();
+
+        for (int i = 0; i < m_modules.length; i++) {
+            m_modules[i].updateInputs(m_moduleInputs[i]);
+            Logger.getInstance().processInputs("Drive/Module" + Integer.toString(i), m_moduleInputs[i]);
+        }
+
+        Logger.getInstance().recordOutput("SwerveStates/Measured", getModuleStates());
 
         // Update the odometry pose
-        SwerveModulePosition[] moduleDeltas = getSwerveModulePositionDeltas();
+        SwerveModulePosition[] moduleDeltas = getModuleWheelDeltas();
         // The twist represents the motion of the robot since the last
         // loop cycle in x, y, and theta based on only the modules,
         // without the gyro. The gyro is always disconnected in simulation.
         // If the gyro is connected we'll use that to calculate our theta instead.
         Twist2d twist = DriveConstants.kDriveKinematics.toTwist2d(moduleDeltas);
         if (m_gyroInputs.isConnected) {
-            twist = new Twist2d(twist.dx, twist.dy, m_gyroInputs.yawPositionRad - m_lastYawPositionRad);
+            twist.dtheta = m_gyroInputs.yawPositionRad - m_lastYawPositionRad;
             m_lastYawPositionRad = m_gyroInputs.yawPositionRad;
         }
         // Apply the twist (change since last loop cycle) to the current pose
@@ -229,20 +254,19 @@ public class DriveSubsystem extends SubsystemBase {
                         : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
         SwerveDriveKinematics.desaturateWheelSpeeds(
                 swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
-        m_frontLeft.setDesiredState(swerveModuleStates[0]);
-        m_frontRight.setDesiredState(swerveModuleStates[1]);
-        m_rearLeft.setDesiredState(swerveModuleStates[2]);
-        m_rearRight.setDesiredState(swerveModuleStates[3]);
+        for (int i = 0; i < swerveModuleStates.length; i++) {
+            m_modules[i].setDesiredState(swerveModuleStates[i]);
+        }
     }
 
     /**
      * Sets the wheels into an X formation to prevent movement.
      */
     public void setCross() {
-        m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
-        m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-        m_rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-        m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+        m_modules[0].setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+        m_modules[1].setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
+        m_modules[2].setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
+        m_modules[3].setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
     }
 
     /**
@@ -253,10 +277,9 @@ public class DriveSubsystem extends SubsystemBase {
     public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(
                 desiredStates, DriveConstants.kMaxSpeedMetersPerSecond);
-        m_frontLeft.setDesiredState(desiredStates[0]);
-        m_frontRight.setDesiredState(desiredStates[1]);
-        m_rearLeft.setDesiredState(desiredStates[2]);
-        m_rearRight.setDesiredState(desiredStates[3]);
+        for (int i = 0; i < desiredStates.length; i++) {
+            m_modules[i].setDesiredState(desiredStates[i]);
+        }
     }
 
     /** Zeroes the heading of the robot. */
