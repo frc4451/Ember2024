@@ -19,12 +19,14 @@ public interface SwerveModuleIO {
         // public double turnVelocityRadPerSec = 0.0;
     }
 
-    public void updateInputs(SwerveModuleIOInputs inputs);
+    public default void updateInputs(SwerveModuleIOInputs inputs) {
+    }
 
     /**
      * Sets the desired state for the module.
      *
      * @param desiredState Desired state with speed and angle.
      */
-    public void setDesiredState(SwerveModuleState desiredState);
+    public default void setDesiredState(SwerveModuleState desiredState) {
+    }
 }

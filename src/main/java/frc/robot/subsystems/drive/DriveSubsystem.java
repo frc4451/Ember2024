@@ -21,11 +21,11 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.drive.SwerveModuleIO.SwerveModuleIOInputs;
@@ -63,35 +63,50 @@ public class DriveSubsystem extends SubsystemBase {
 
     /** Creates a new DriveSubsystem. */
     public DriveSubsystem() {
-        if (RobotBase.isReal()) {
-            m_modules[0] = new SwerveModuleSparkMax(
-                    DriveConstants.kFrontLeftDrivingCanId,
-                    DriveConstants.kFrontLeftTurningCanId,
-                    DriveConstants.kFrontLeftChassisAngularOffset);
+        switch (AdvantageKitConstants.getMode()) {
+            case REAL:
+                m_modules[0] = new SwerveModuleSparkMax(
+                        DriveConstants.kFrontLeftDrivingCanId,
+                        DriveConstants.kFrontLeftTurningCanId,
+                        DriveConstants.kFrontLeftChassisAngularOffset);
 
-            m_modules[1] = new SwerveModuleSparkMax(
-                    DriveConstants.kFrontRightDrivingCanId,
-                    DriveConstants.kFrontRightTurningCanId,
-                    DriveConstants.kFrontRightChassisAngularOffset);
+                m_modules[1] = new SwerveModuleSparkMax(
+                        DriveConstants.kFrontRightDrivingCanId,
+                        DriveConstants.kFrontRightTurningCanId,
+                        DriveConstants.kFrontRightChassisAngularOffset);
 
-            m_modules[2] = new SwerveModuleSparkMax(
-                    DriveConstants.kRearLeftDrivingCanId,
-                    DriveConstants.kRearLeftTurningCanId,
-                    DriveConstants.kBackLeftChassisAngularOffset);
+                m_modules[2] = new SwerveModuleSparkMax(
+                        DriveConstants.kRearLeftDrivingCanId,
+                        DriveConstants.kRearLeftTurningCanId,
+                        DriveConstants.kBackLeftChassisAngularOffset);
 
-            m_modules[3] = new SwerveModuleSparkMax(
-                    DriveConstants.kRearRightDrivingCanId,
-                    DriveConstants.kRearRightTurningCanId,
-                    DriveConstants.kBackRightChassisAngularOffset);
+                m_modules[3] = new SwerveModuleSparkMax(
+                        DriveConstants.kRearRightDrivingCanId,
+                        DriveConstants.kRearRightTurningCanId,
+                        DriveConstants.kBackRightChassisAngularOffset);
 
-            m_gyro = new SwerveGyroPigeon2();
-        } else {
-            m_modules[0] = new SwerveModuleSim(DriveConstants.kFrontLeftChassisAngularOffset);
-            m_modules[1] = new SwerveModuleSim(DriveConstants.kFrontRightChassisAngularOffset);
-            m_modules[2] = new SwerveModuleSim(DriveConstants.kBackLeftChassisAngularOffset);
-            m_modules[3] = new SwerveModuleSim(DriveConstants.kBackRightChassisAngularOffset);
-            m_gyro = new SwerveGyroIO() {
-            };
+                m_gyro = new SwerveGyroPigeon2();
+
+                break;
+
+            case SIM:
+                m_modules[0] = new SwerveModuleSim(DriveConstants.kFrontLeftChassisAngularOffset);
+                m_modules[1] = new SwerveModuleSim(DriveConstants.kFrontRightChassisAngularOffset);
+                m_modules[2] = new SwerveModuleSim(DriveConstants.kBackLeftChassisAngularOffset);
+                m_modules[3] = new SwerveModuleSim(DriveConstants.kBackRightChassisAngularOffset);
+                m_gyro = new SwerveGyroIO() {
+                };
+                break;
+
+            case REPLAY:
+            default:
+                for (int i = 0; i < m_modules.length; i++) {
+                    m_modules[i] = new SwerveModuleIO() {
+                    };
+                }
+                m_gyro = new SwerveGyroIO() {
+                };
+                break;
         }
     }
 

@@ -4,15 +4,18 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.subsystems.PivotLocation;
 import frc.robot.subsystems.RollerMode;
 
@@ -37,13 +40,25 @@ public class Robot extends LoggedRobot {
      */
     @Override
     public void robotInit() {
-        // Running on a real robot, log to a USB stick
-        if (isReal()) {
-            Logger.getInstance().addDataReceiver(new WPILOGWriter("/U"));
+        switch (AdvantageKitConstants.getMode()) {
+            case REAL:
+                // Running on a real robot, log to a file
+                // Logger.getInstance().addDataReceiver(
+                // new WPILOGWriter("/some/epic/path/here"));
+                Logger.getInstance().addDataReceiver(new NT4Publisher());
+                break;
+            case SIM:
+                // Logger.getInstance().addDataReceiver(
+                // new WPILOGWriter("/home/lewis/log_dir")); // Log to my pc for testing replay
+                Logger.getInstance().addDataReceiver(new NT4Publisher());
+                break;
+            case REPLAY:
+                String path = LogFileUtil.findReplayLog();
+                Logger.getInstance().setReplaySource(new WPILOGReader(path));
+                Logger.getInstance().addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(path, "_sim")));
+                setUseTiming(false); // Run as fast as possible since we're replaying a log
+                break;
         }
-
-        // Always log to NetworkTables
-        Logger.getInstance().addDataReceiver(new NT4Publisher());
 
         // Start AdvantageKit Logger
         Logger.getInstance().start();
