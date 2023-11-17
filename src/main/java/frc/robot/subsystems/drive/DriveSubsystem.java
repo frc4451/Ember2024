@@ -128,10 +128,10 @@ public class DriveSubsystem extends SubsystemBase {
                 new Rotation2d(inputs.turnAngularOffsetPositionRad));
     }
 
-    public SwerveModuleState[] getModulePositions() {
+    public SwerveModulePosition[] getModulePositions() {
         return Arrays.stream(m_moduleInputs)
                 .map(inputs -> getModulePosition(inputs))
-                .toArray(SwerveModuleState[]::new);
+                .toArray(SwerveModulePosition[]::new);
     }
 
     public SwerveModulePosition[] getModuleWheelDeltas() {
