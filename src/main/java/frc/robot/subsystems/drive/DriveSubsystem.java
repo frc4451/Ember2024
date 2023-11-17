@@ -12,6 +12,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -58,8 +59,12 @@ public class DriveSubsystem extends SubsystemBase {
     // We use these variables to keep track of the
     // previous values so we can get deltas for odometry
     private double[] m_lastModulePositionsMeters = new double[4];
-    private double m_lastYawPositionRad = 0.0;
-    private Pose2d m_odometryPose = new Pose2d();
+    private Rotation2d m_trackedRotation = new Rotation2d();
+    private final SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
+            DriveConstants.kDriveKinematics,
+            m_trackedRotation,
+            getModulePositions(),
+            new Pose2d());
 
     /** Creates a new DriveSubsystem. */
     public DriveSubsystem() {
@@ -161,20 +166,22 @@ public class DriveSubsystem extends SubsystemBase {
 
         Logger.getInstance().recordOutput("SwerveStates/Measured", getModuleStates());
 
-        // Update the odometry pose
-        SwerveModulePosition[] moduleDeltas = getModuleWheelDeltas();
-        // The twist represents the motion of the robot since the last
-        // loop cycle in x, y, and theta based on only the modules,
-        // without the gyro. The gyro is always disconnected in simulation.
-        // If the gyro is connected we'll use that to calculate our theta instead.
-        Twist2d twist = DriveConstants.kDriveKinematics.toTwist2d(moduleDeltas);
+        // If a gyro is connected we'll just read that directly.
+        // Otherwise add to our tracked value by calculating a twist from modules.
         if (m_gyroInputs.isConnected) {
-            twist.dtheta = m_gyroInputs.yawPositionRad - m_lastYawPositionRad;
-            m_lastYawPositionRad = m_gyroInputs.yawPositionRad;
+            m_trackedRotation = new Rotation2d(m_gyroInputs.yawPositionRad);
+        } else {
+            SwerveModulePosition[] moduleDeltas = getModuleWheelDeltas();
+            // The twist represents the motion of the robot since the last
+            // loop cycle in x, y, and theta based on only the modules,
+            // without the gyro. The gyro is always disconnected in simulation.
+            Twist2d twist = DriveConstants.kDriveKinematics.toTwist2d(moduleDeltas);
+            m_trackedRotation = m_trackedRotation.plus(new Rotation2d(twist.dtheta));
         }
-        // Apply the twist (change since last loop cycle) to the current pose
-        m_odometryPose = m_odometryPose.exp(twist);
-        Logger.getInstance().recordOutput("Odometry/Robot", m_odometryPose);
+
+        m_poseEstimator.update(m_trackedRotation, getModulePositions());
+
+        Logger.getInstance().recordOutput("Odometry/Robot", getPose());
     }
 
     /**
@@ -183,7 +190,7 @@ public class DriveSubsystem extends SubsystemBase {
      * @return The pose.
      */
     public Pose2d getPose() {
-        return m_odometryPose;
+        return m_poseEstimator.getEstimatedPosition();
     }
 
     /**
@@ -191,8 +198,8 @@ public class DriveSubsystem extends SubsystemBase {
      *
      * @param pose The pose to which to set the odometry.
      */
-    public void setPose(Pose2d pose) {
-        m_odometryPose = pose;
+    public void resetPose(Pose2d pose) {
+        m_poseEstimator.resetPosition(m_trackedRotation, getModulePositions(), pose);
     }
 
     /**
@@ -265,7 +272,7 @@ public class DriveSubsystem extends SubsystemBase {
         var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
                 fieldRelative
                         ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
-                                getRotation())
+                                getPose().getRotation())
                         : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
         SwerveDriveKinematics.desaturateWheelSpeeds(
                 swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
@@ -298,18 +305,19 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     /** Zeroes the heading of the robot. */
-    public void zeroRotation() {
+    public void zeroHeading() {
         m_gyro.zero();
+        // If no gyro is connected we have to manually reset our tracked rotation.
         if (!m_gyroInputs.isConnected) {
-            m_gyroInputs.yawPositionRad = 0.0;
+            m_trackedRotation = new Rotation2d();
         }
     }
 
     /**
-     * Returns the rotation of the robot.
+     * Returns the gyro heading. If none is connected always return 0.
      */
-    public Rotation2d getRotation() {
-        return m_odometryPose.getRotation();
+    public Rotation2d getHeading() {
+        return new Rotation2d(m_gyroInputs.isConnected ? m_gyroInputs.yawPositionRad : 0);
     }
 
     /**
@@ -324,7 +332,7 @@ public class DriveSubsystem extends SubsystemBase {
                 new InstantCommand(() -> {
                     // Reset odometry for the first path you run during auto
                     if (resetOdometry) {
-                        this.setPose(trajectory.getInitialHolonomicPose());
+                        this.resetPose(trajectory.getInitialHolonomicPose());
                     }
                 }),
                 new PPSwerveControllerCommand(

@@ -12,6 +12,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -91,9 +92,8 @@ public class Robot extends LoggedRobot {
 
         SmartDashboard.putNumber("X", m_robotContainer.m_robotDrive.getPose().getX());
         SmartDashboard.putNumber("Y", m_robotContainer.m_robotDrive.getPose().getY());
-        SmartDashboard.putNumber("Pose Rotation",
-                m_robotContainer.m_robotDrive.getPose().getRotation().getDegrees());
-        SmartDashboard.putNumber("Gyro Heading", m_robotContainer.m_robotDrive.getRotation().getDegrees());
+        SmartDashboard.putNumber("Pose Rotation", m_robotContainer.m_robotDrive.getPose().getRotation().getDegrees());
+        SmartDashboard.putNumber("Gyro Heading", m_robotContainer.m_robotDrive.getHeading().getDegrees());
         SmartDashboard.putBoolean("Roller Beambreak Activated", m_robotContainer.m_rollers.isBeamBreakActivated());
         SmartDashboard.putNumber("Arm Pivot Deg", m_robotContainer.m_pivot.getAngle().getDegrees());
         SmartDashboard.putNumber("Arm Pivot Rad", m_robotContainer.m_pivot.getAngle().getRadians());
@@ -109,14 +109,10 @@ public class Robot extends LoggedRobot {
     @Override
     public void disabledPeriodic() {
         if (m_robotContainer.m_driverController.b().getAsBoolean()) {
-            m_robotContainer.m_robotDrive.zeroRotation();
-            m_robotContainer.m_robotDrive.setPose(new Pose2d());
+            m_robotContainer.m_robotDrive.zeroHeading();
+            m_robotContainer.m_robotDrive.resetPose(new Pose2d());
             m_robotContainer.m_pivot.setAngle(PivotLocation.INITIAL.angle);
         }
-        // m_robotContainer.m_driverController.b().onTrue(
-        // new RunCommand(
-        // m_robotContainer.m_robotDrive::zeroHeading,
-        // m_robotContainer.m_robotDrive));
     }
 
     /**

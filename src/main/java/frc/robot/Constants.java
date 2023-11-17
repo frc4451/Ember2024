@@ -33,7 +33,7 @@ public final class Constants {
             SIM
         }
 
-        private static Mode kfakeMode = Mode.REPLAY;
+        private static Mode kfakeMode = Mode.SIM;
 
         public static Mode getMode() {
             return RobotBase.isReal() ? Mode.REAL : kfakeMode;
