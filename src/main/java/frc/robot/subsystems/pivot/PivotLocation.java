@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.pivot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 

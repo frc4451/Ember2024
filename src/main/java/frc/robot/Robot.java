@@ -12,12 +12,11 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.AdvantageKitConstants;
-import frc.robot.subsystems.PivotLocation;
+import frc.robot.subsystems.pivot.PivotLocation;
 import frc.robot.subsystems.RollerMode;
 
 /**

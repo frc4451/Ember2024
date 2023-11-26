@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.pivot;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;

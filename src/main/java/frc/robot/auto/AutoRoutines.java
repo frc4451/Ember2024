@@ -11,8 +11,8 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.drive.DriveSubsystem;
-import frc.robot.subsystems.PivotLocation;
-import frc.robot.subsystems.PivotSubsystem;
+import frc.robot.subsystems.pivot.PivotLocation;
+import frc.robot.subsystems.pivot.PivotSubsystem;
 import frc.robot.subsystems.RollerMode;
 import frc.robot.subsystems.RollerSubsystem;
 
