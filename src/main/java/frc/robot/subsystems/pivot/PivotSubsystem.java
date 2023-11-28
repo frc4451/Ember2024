@@ -15,6 +15,7 @@ public class PivotSubsystem extends SubsystemBase {
     private final PivotIO io;
     private final PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
 
+    private Rotation2d angle = new Rotation2d();
     private Rotation2d setpoint = new Rotation2d();
 
     public PivotSubsystem() {
@@ -35,8 +36,6 @@ public class PivotSubsystem extends SubsystemBase {
         setAngle(PivotLocation.INITIAL.angle);
         setSetpoint(PivotLocation.INITIAL.angle);
     }
-
-    private Rotation2d angle = new Rotation2d();
 
     @Override
     public void periodic() {
