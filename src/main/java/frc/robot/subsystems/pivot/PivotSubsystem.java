@@ -1,56 +1,62 @@
 package frc.robot.subsystems.pivot;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.IntakeConstants;
 
 public class PivotSubsystem extends SubsystemBase {
-    private final CANSparkMax pivot = new CANSparkMax(IntakeConstants.kPivotCanId, MotorType.kBrushless);
-
-    private final RelativeEncoder encoder = pivot.getEncoder();
-
-    // https://docs.wpilib.org/en/stable/docs/software/advanced-controls/introduction/tuning-vertical-arm.html
-    // private final ArmFeedforward feedforward = new ArmFeedforward(
-    // 0.0,
-    // 0.0,
-    // 0.0,
-    // 0.0);
-
-    // private final PIDController feedback = new PIDController(
-    // 0.00,
-    // 0.0,
-    // 0.0);
-
-    // private final PowerDistribution pdp;
+    private final PivotIO io;
+    private final PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
 
     private Rotation2d setpoint = new Rotation2d();
 
     public PivotSubsystem() {
-        // this.pdp = pdp;
+        switch (AdvantageKitConstants.getMode()) {
+            case REAL:
+                io = new PivotIOSparkMax();
+                break;
+            case SIM:
+                io = new PivotIOSim();
+                break;
+            case REPLAY:
+            default:
+                io = new PivotIO() {
+                };
+                break;
+        }
 
-        this.setAngle(PivotLocation.INITIAL.angle);
-        this.setSetpoint(PivotLocation.INITIAL.angle);
+        setAngle(PivotLocation.INITIAL.angle);
+        setSetpoint(PivotLocation.INITIAL.angle);
+    }
 
-        this.pivot.restoreFactoryDefaults();
-        this.pivot.setIdleMode(IdleMode.kBrake);
-        this.pivot.setClosedLoopRampRate(1.0);
-        this.pivot.burnFlash();
+    private Rotation2d angle = new Rotation2d();
+
+    @Override
+    public void periodic() {
+        // Make sure the motor actually stops when the robot disabled
+        if (DriverStation.isDisabled()) {
+            this.io.stop();
+        }
+
+        this.io.updateInputs(this.inputs);
+        Logger.getInstance().processInputs("Intake/Pivot", this.inputs);
+
+        this.angle = new Rotation2d(this.inputs.relativeAngleRad);
     }
 
     public void setAngle(Rotation2d angle) {
-        this.encoder.setPosition(angle.getDegrees() / 360.0 * 240.0);
+        this.io.setAngle(angle);
     }
 
     public Rotation2d getAngle() {
-        return Rotation2d.fromRotations(this.encoder.getPosition() / 240.0);
+        return this.angle;
     }
 
     public Rotation2d getSetpoint() {
@@ -59,7 +65,6 @@ public class PivotSubsystem extends SubsystemBase {
 
     public void setSetpoint(Rotation2d angle) {
         this.setpoint = angle;
-        // this.feedback.setSetpoint(angle.getRadians());
     }
 
     public Command setSetpointCommand(Rotation2d angle) {
@@ -70,29 +75,15 @@ public class PivotSubsystem extends SubsystemBase {
         double angleDegrees = this.getAngle().getDegrees();
         if ((angleDegrees < IntakeConstants.kPivotMinDegrees && percent < 0.0)
                 || (angleDegrees > IntakeConstants.kPivotMaxDegrees && percent > 0.0)) {
-            this.pivot.set(0.0);
+            this.io.stop();
         } else {
-            this.pivot.set(percent);
+            this.io.setVoltage(12.0 * percent / 2.0);
         }
     }
 
     public void pivot() {
-        // double feedforwardOut = this.feedforward.calculate(
-        // this.getSetpoint().getRadians(),
-        // IntakeConstants.kPivotVelocityRadiansPerSecond);
-
-        // double feedbackOut = this.feedback.calculate(
-        // this.getAngle().getRadians());
-
-        // double velocity = feedforwardOut + feedbackOut;
-
-        double algebrafeedback = 0.05 * (this.getSetpoint().getDegrees() - this.getAngle().getDegrees());
-        double velocity = algebrafeedback;
-
-        // this.runAtPercent(Math.min(Math.max(velocity / pdp.getVoltage(), -0.5),
-        // 0.5));
-        // if Math.abs(velocity) < 0.1
-        this.runAtPercent(Math.min(Math.max(velocity, -0.8), 0.8));
+        double velocity = 0.6 * this.getSetpoint().minus(this.getAngle()).getDegrees();
+        this.io.setVoltage(velocity);
     }
 
     public Command pivotCommand() {
