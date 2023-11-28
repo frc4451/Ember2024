@@ -10,7 +10,7 @@ import frc.robot.Constants.IntakeConstants;
 // I think we could change the code in the real implementation to start at 0 instead of 184 degrees to make them line up.
 // Won't be doing that right now but that might work.
 public class PivotIOSim implements PivotIO {
-    SingleJointedArmSim armSim = new SingleJointedArmSim(
+    private final SingleJointedArmSim armSim = new SingleJointedArmSim(
             DCMotor.getNEO(1),
             IntakeConstants.kPivotReduction,
             0.3, // moment of intertia (I think this is in kg * m^2) (number is wrong)
