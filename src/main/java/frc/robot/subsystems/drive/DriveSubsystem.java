@@ -16,7 +16,6 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -58,7 +57,6 @@ public class DriveSubsystem extends SubsystemBase {
     // Odometry for tracking robot pose
     // We use these variables to keep track of the
     // previous values so we can get deltas for odometry
-    private double[] m_lastModulePositionsMeters = new double[4];
     private Rotation2d m_trackedRotation = new Rotation2d();
     private final SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
             DriveConstants.kDriveKinematics,
@@ -139,47 +137,32 @@ public class DriveSubsystem extends SubsystemBase {
                 .toArray(SwerveModulePosition[]::new);
     }
 
-    public SwerveModulePosition[] getModuleWheelDeltas() {
-        SwerveModulePosition[] output = new SwerveModulePosition[m_moduleInputs.length];
-        for (int i = 0; i < m_moduleInputs.length; i++) {
-            output[i] = new SwerveModulePosition(
-                    m_moduleInputs[i].drivePositionMeters - m_lastModulePositionsMeters[i],
-                    new Rotation2d(m_moduleInputs[i].turnAngularOffsetPositionRad));
-        }
-        return output;
-    }
-
     @Override
     public void periodic() {
         m_gyro.updateInputs(m_gyroInputs);
         Logger.getInstance().processInputs("Drive/Gyro", m_gyroInputs);
-
-        // Update the modules' inputs and other data
-        m_lastModulePositionsMeters = Arrays.stream(m_moduleInputs)
-                .mapToDouble((inputs) -> inputs.drivePositionMeters)
-                .toArray();
 
         for (int i = 0; i < m_modules.length; i++) {
             m_modules[i].updateInputs(m_moduleInputs[i]);
             Logger.getInstance().processInputs("Drive/Module" + Integer.toString(i), m_moduleInputs[i]);
         }
 
-        Logger.getInstance().recordOutput("SwerveStates/Measured", getModuleStates());
+        // These shouldn't change after updateInput so we only need to get them once
+        SwerveModuleState[] moduleStates = getModuleStates();
+        SwerveModulePosition[] modulePositions = getModulePositions();
+
+        Logger.getInstance().recordOutput("SwerveStates/Measured", moduleStates);
 
         // If a gyro is connected we'll just read that directly.
-        // Otherwise add to our tracked value by calculating a twist from modules.
+        // Otherwise add to our tracked value by using the speed of the chassis
         if (m_gyroInputs.isConnected) {
             m_trackedRotation = new Rotation2d(m_gyroInputs.yawPositionRad);
         } else {
-            SwerveModulePosition[] moduleDeltas = getModuleWheelDeltas();
-            // The twist represents the motion of the robot since the last
-            // loop cycle in x, y, and theta based on only the modules,
-            // without the gyro. The gyro is always disconnected in simulation.
-            Twist2d twist = DriveConstants.kDriveKinematics.toTwist2d(moduleDeltas);
-            m_trackedRotation = m_trackedRotation.plus(new Rotation2d(twist.dtheta));
+            ChassisSpeeds speeds = DriveConstants.kDriveKinematics.toChassisSpeeds(moduleStates);
+            m_trackedRotation = m_trackedRotation.plus(new Rotation2d(speeds.omegaRadiansPerSecond));
         }
 
-        m_poseEstimator.update(m_trackedRotation, getModulePositions());
+        m_poseEstimator.update(m_trackedRotation, modulePositions);
 
         Logger.getInstance().recordOutput("Odometry/Robot", getPose());
     }
@@ -271,14 +254,14 @@ public class DriveSubsystem extends SubsystemBase {
 
         var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
                 fieldRelative
-                        ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
+                        ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                                xSpeedDelivered,
+                                ySpeedDelivered,
+                                rotDelivered,
                                 getPose().getRotation())
                         : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
-        SwerveDriveKinematics.desaturateWheelSpeeds(
-                swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
-        for (int i = 0; i < swerveModuleStates.length; i++) {
-            m_modules[i].setDesiredState(swerveModuleStates[i]);
-        }
+
+        setModuleStates(swerveModuleStates);
     }
 
     /**
