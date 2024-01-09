@@ -2,6 +2,7 @@ package frc.robot.subsystems.pivot;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants.IntakeConstants;
 
@@ -17,7 +18,8 @@ public class PivotIOSim implements PivotIO {
             0.8, // arm length (m) (number is wrong)
             0.0, // physical min (rad)
             Math.PI, // physical max (rad)
-            false); // whether to simulate gravity
+            false, // whether to simulate gravity
+            PivotLocation.INITIAL.angle.getRadians()); // starting angle
 
     private double appliedVoltage = 0.0;
 

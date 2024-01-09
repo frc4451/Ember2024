@@ -6,13 +6,11 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import frc.robot.auto.AutoSelector;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.pivot.PivotSubsystem;
 import frc.robot.subsystems.RollerSubsystem;
 import frc.utils.CommandCustomController;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
@@ -31,8 +29,6 @@ public class RobotContainer {
     public final RollerSubsystem m_rollers = new RollerSubsystem();
 
     public final PivotSubsystem m_pivot = new PivotSubsystem();
-
-    private AutoSelector m_autoSelector = new AutoSelector(this);
 
     final CommandCustomController m_driverController = new CommandCustomController(OIConstants.kDriverControllerPort);
 
@@ -79,14 +75,5 @@ public class RobotContainer {
                 .whileTrue(new RunCommand(
                         () -> m_robotDrive.setCross(),
                         m_robotDrive));
-    }
-
-    /**
-     * Use this to pass the autonomous command to the main {@link Robot} class.
-     *
-     * @return the command to run in autonomous
-     */
-    public Command getAutonomousCommand() {
-        return this.m_autoSelector.getSelectedRoutine();
     }
 }

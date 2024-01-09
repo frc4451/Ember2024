@@ -8,9 +8,6 @@ import java.util.Arrays;
 
 import org.littletonrobotics.junction.Logger;
 
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.commands.PPSwerveControllerCommand;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -308,34 +305,5 @@ public class DriveSubsystem extends SubsystemBase {
      */
     public double getTurnRate() {
         return m_gyroInputs.yawVelocityRadPerSec;
-    }
-
-    public Command followTrajectoryCommand(PathPlannerTrajectory trajectory, boolean resetOdometry, boolean stopAfter) {
-        return new SequentialCommandGroup(
-                new InstantCommand(() -> {
-                    // Reset odometry for the first path you run during auto
-                    if (resetOdometry) {
-                        this.resetPose(trajectory.getInitialHolonomicPose());
-                    }
-                }),
-                new PPSwerveControllerCommand(
-                        trajectory,
-                        this::getPose, // Pose supplier
-                        DriveConstants.kDriveKinematics, // SwerveDriveKinematics
-                        new PIDController(AutoConstants.kPXController, 0, 0),
-                        new PIDController(AutoConstants.kPYController, 0, 0),
-                        new PIDController(AutoConstants.kPThetaController, 0, 0), // Rotation controller. Tune these
-                                                                                  // values for your robot. Leaving them
-                                                                                  // 0 will only use feedforwards.
-                        this::setModuleStates, // Module states consumer
-                        false, // Should the path be automatically mirrored depending on alliance color.
-                               // Optional, defaults to true
-                        this // Requires this drive subsystem
-                ),
-                new InstantCommand(() -> {
-                    if (stopAfter) {
-                        this.drive(0, 0, 0, false, false);
-                    }
-                }));
     }
 }
