@@ -1,21 +1,32 @@
 package frc.robot.subsystems.drive;
 
-import com.ctre.phoenix.ErrorCode;
-import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.Pigeon2Configuration;
+import com.ctre.phoenix6.configs.Pigeon2Configurator;
+import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.DriveConstants;
 
 public class SwerveGyroPigeon2 implements SwerveGyroIO {
-    private final WPI_Pigeon2 pigeon = new WPI_Pigeon2(DriveConstants.kGyroCanId);
+    private final Pigeon2 pigeon = new Pigeon2(DriveConstants.kGyroCanId);
+
+    private final StatusSignal<Double> yaw = pigeon.getYaw();
+    private final StatusSignal<Double> yawRate = pigeon.getAngularVelocityZWorld();
+
+    public SwerveGyroPigeon2() {
+        Pigeon2Configurator configurator = pigeon.getConfigurator();
+        configurator.apply(new Pigeon2Configuration()); // reset default settings
+        configurator.setYaw(0); // reset yaw on initialization (is this neccessary?)
+    }
 
     public void updateInputs(SwerveGyroIOInputs inputs) {
-        inputs.isConnected = this.pigeon.getLastError().equals(ErrorCode.OK);
-        inputs.yawPositionRad = Units.degreesToRadians(-this.pigeon.getAngle());
-        inputs.yawVelocityRadPerSec = Units.degreesToRadians(-this.pigeon.getRate());
+        inputs.isConnected = StatusSignal.refreshAll(yaw, yawRate).isOK();
+        inputs.yawPositionRad = Units.degreesToRadians(yaw.getValueAsDouble());
+        inputs.yawVelocityRadPerSec = Units.degreesToRadians(yawRate.getValueAsDouble());
     }
 
     public void zero() {
-        this.pigeon.reset();
+        pigeon.reset();
     }
 }

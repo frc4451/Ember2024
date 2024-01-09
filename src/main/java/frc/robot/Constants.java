@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -163,11 +163,10 @@ public final class Constants {
     }
 
     public static final class IntakeConstants {
-        public static final SupplyCurrentLimitConfiguration rollerCurrentConfig = new SupplyCurrentLimitConfiguration(
-                true,
-                30.0,
-                35.0,
-                0.5);
+        public static final CurrentLimitsConfigs rollerCurrentConfig = new CurrentLimitsConfigs()
+                .withSupplyCurrentLimit(30.0)
+                .withSupplyCurrentThreshold(35.0)
+                .withSupplyTimeThreshold(0.5);
 
         public static final int kTopRollerCanId = 2;
         public static final int kBottomRollerCanId = 3;
