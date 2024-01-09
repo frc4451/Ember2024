@@ -137,18 +137,18 @@ public class DriveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         m_gyro.updateInputs(m_gyroInputs);
-        Logger.getInstance().processInputs("Drive/Gyro", m_gyroInputs);
+        Logger.processInputs("Drive/Gyro", m_gyroInputs);
 
         for (int i = 0; i < m_modules.length; i++) {
             m_modules[i].updateInputs(m_moduleInputs[i]);
-            Logger.getInstance().processInputs("Drive/Module" + Integer.toString(i), m_moduleInputs[i]);
+            Logger.processInputs("Drive/Module" + Integer.toString(i), m_moduleInputs[i]);
         }
 
         // These shouldn't change after updateInput so we only need to get them once
         SwerveModuleState[] moduleStates = getModuleStates();
         SwerveModulePosition[] modulePositions = getModulePositions();
 
-        Logger.getInstance().recordOutput("SwerveStates/Measured", moduleStates);
+        Logger.recordOutput("SwerveStates/Measured", moduleStates);
 
         // If a gyro is connected we'll just read that directly.
         // Otherwise add to our tracked value by using the speed of the chassis
@@ -161,7 +161,7 @@ public class DriveSubsystem extends SubsystemBase {
 
         m_poseEstimator.update(m_trackedRotation, modulePositions);
 
-        Logger.getInstance().recordOutput("Odometry/Robot", getPose());
+        Logger.recordOutput("Odometry/Robot", getPose());
     }
 
     /**

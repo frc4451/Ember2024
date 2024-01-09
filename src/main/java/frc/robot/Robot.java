@@ -41,25 +41,25 @@ public class Robot extends LoggedRobot {
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
                 // Running on a real robot, log to a file
-                // Logger.getInstance().addDataReceiver(
+                // Logger.addDataReceiver(
                 // new WPILOGWriter("/some/epic/path/here"));
-                Logger.getInstance().addDataReceiver(new NT4Publisher());
+                Logger.addDataReceiver(new NT4Publisher());
                 break;
             case SIM:
-                // Logger.getInstance().addDataReceiver(
+                // Logger.addDataReceiver(
                 // new WPILOGWriter("/home/lewis/log_dir")); // Log to my pc for testing replay
-                Logger.getInstance().addDataReceiver(new NT4Publisher());
+                Logger.addDataReceiver(new NT4Publisher());
                 break;
             case REPLAY:
                 String path = LogFileUtil.findReplayLog();
-                Logger.getInstance().setReplaySource(new WPILOGReader(path));
-                Logger.getInstance().addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(path, "_sim")));
+                Logger.setReplaySource(new WPILOGReader(path));
+                Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(path, "_sim")));
                 setUseTiming(false); // Run as fast as possible since we're replaying a log
                 break;
         }
 
         // Start AdvantageKit Logger
-        Logger.getInstance().start();
+        Logger.start();
 
         m_robotContainer = new RobotContainer();
     }
