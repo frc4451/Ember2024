@@ -12,6 +12,7 @@ import com.revrobotics.SparkAbsoluteEncoder.Type;
 import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants.ModuleConstants;
 
@@ -118,6 +119,10 @@ public class SwerveModuleSparkMax implements SwerveModuleIO {
         inputs.turnAbsolutePositionRad = m_turningEncoder.getPosition();
         inputs.turnAngularOffsetPositionRad = m_turningEncoder.getPosition() - m_chassisAngularOffset;
         // inputs.turnVelocityRadPerSec = m_turningEncoder.getVelocity();
+
+        Rotation2d angle = new Rotation2d(inputs.turnAngularOffsetPositionRad);
+        inputs.state = new SwerveModuleState(inputs.driveVelocityMetersPerSec, angle);
+        inputs.position = new SwerveModulePosition(inputs.drivePositionMeters, angle);
     }
 
     /**

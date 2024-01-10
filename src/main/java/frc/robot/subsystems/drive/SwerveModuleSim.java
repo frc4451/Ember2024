@@ -5,6 +5,7 @@
 package frc.robot.subsystems.drive;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -55,6 +56,10 @@ public class SwerveModuleSim implements SwerveModuleIO {
 
         inputs.turnAbsolutePositionRad = state.angle.getRadians();
         inputs.turnAngularOffsetPositionRad = state.angle.getRadians() - chassisAngularOffset;
+
+        Rotation2d angle = new Rotation2d(inputs.turnAngularOffsetPositionRad);
+        inputs.state = new SwerveModuleState(fakeSpeed, angle);
+        inputs.position = new SwerveModulePosition(fakePos, angle);
     }
 
     /**

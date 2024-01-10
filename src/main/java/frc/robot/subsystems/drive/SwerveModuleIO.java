@@ -6,6 +6,7 @@ package frc.robot.subsystems.drive;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public interface SwerveModuleIO {
@@ -17,6 +18,9 @@ public interface SwerveModuleIO {
         public double turnAbsolutePositionRad = 0.0;
         public double turnAngularOffsetPositionRad = 0.0;
         // public double turnVelocityRadPerSec = 0.0;
+
+        public SwerveModuleState state = new SwerveModuleState();
+        public SwerveModulePosition position = new SwerveModulePosition();
     }
 
     public default void updateInputs(SwerveModuleIOInputs inputs) {

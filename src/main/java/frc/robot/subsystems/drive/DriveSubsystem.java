@@ -20,7 +20,6 @@ import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.subsystems.drive.SwerveModuleIO.SwerveModuleIOInputs;
 import frc.utils.SwerveUtils;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -47,8 +46,6 @@ public class DriveSubsystem extends SubsystemBase {
     private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
     // Odometry for tracking robot pose
-    // We use these variables to keep track of the
-    // previous values so we can get deltas for odometry
     private Rotation2d m_trackedRotation = new Rotation2d();
     private final SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
             DriveConstants.kDriveKinematics,
@@ -105,27 +102,15 @@ public class DriveSubsystem extends SubsystemBase {
         }
     }
 
-    private SwerveModuleState getModuleState(SwerveModuleIOInputs inputs) {
-        return new SwerveModuleState(
-                inputs.driveVelocityMetersPerSec,
-                new Rotation2d(inputs.turnAngularOffsetPositionRad));
-    }
-
     public SwerveModuleState[] getModuleStates() {
         return Arrays.stream(m_moduleInputs)
-                .map(inputs -> getModuleState(inputs))
+                .map(input -> input.state)
                 .toArray(SwerveModuleState[]::new);
-    }
-
-    private SwerveModulePosition getModulePosition(SwerveModuleIOInputs inputs) {
-        return new SwerveModulePosition(
-                inputs.drivePositionMeters,
-                new Rotation2d(inputs.turnAngularOffsetPositionRad));
     }
 
     public SwerveModulePosition[] getModulePositions() {
         return Arrays.stream(m_moduleInputs)
-                .map(inputs -> getModulePosition(inputs))
+                .map(input -> input.position)
                 .toArray(SwerveModulePosition[]::new);
     }
 
