@@ -57,9 +57,8 @@ public class Robot extends LoggedRobot {
 
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
-                // Running on a real robot, log to a file
-                // Logger.addDataReceiver(
-                // new WPILOGWriter("/some/epic/path/here"));
+                // Running on a real robot, log to a USB stick (default is "/U/logs on RIO")
+                Logger.addDataReceiver(new WPILOGWriter());
                 Logger.addDataReceiver(new NT4Publisher());
                 break;
             case SIM:
