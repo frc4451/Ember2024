@@ -1,13 +1,19 @@
 package frc.robot.subsystems.pivot;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.IntakeConstants;
 
@@ -37,6 +43,7 @@ public class PivotSubsystem extends SubsystemBase {
         setSetpoint(PivotLocation.INITIAL.angle);
     }
 
+
     @Override
     public void periodic() {
         // Make sure the motor actually stops when the robot disabled
@@ -56,6 +63,11 @@ public class PivotSubsystem extends SubsystemBase {
 
     public Rotation2d getAngle() {
         return this.angle;
+    }
+
+    @AutoLogOutput(key="Pivot/AngleDegrees")
+    public double getAngleDegrees() {
+        return this.angle.getDegrees();
     }
 
     public Rotation2d getSetpoint() {
@@ -84,6 +96,28 @@ public class PivotSubsystem extends SubsystemBase {
         double velocity = 0.6 * this.getSetpoint().minus(this.getAngle()).getDegrees();
         this.io.setVoltage(velocity);
     }
+
+
+    // TODO: use this
+    public PIDCommand PivotPIDCommand() {
+        return new PIDCommand(
+            new PIDController(
+                Constants.IntakeConstants.kPivotP,
+                Constants.IntakeConstants.kPivotI,
+                Constants.IntakeConstants.kPivotD            
+            ),
+            this::getAngleDegrees,
+            this.setpoint.getDegrees(),
+            output -> useOutput(output),
+            this
+        );
+    }
+
+    public void useOutput(double output) {
+        this.io.setVoltage(MathUtil.clamp(output, -12, 12));
+    }
+    
+    
 
     public Command pivotCommand() {
         return new InstantCommand(this::pivot, this);

@@ -25,6 +25,11 @@ import edu.wpi.first.wpilibj.RobotBase;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+    public static int pdp = 0;
+
+    
+
     public static final class AdvantageKitConstants {
         public static enum Mode {
             REAL,
@@ -163,5 +168,10 @@ public final class Constants {
 
         public static final int kPivotCanId = 4;
         public static final double kPivotVelocityRadiansPerSecond = Units.degreesToRadians(15.0);
+
+        public static final double kPivotP = 0.6;
+        public static final double kPivotI = 0.0;
+        public static final double kPivotD = 0.0;
     }
+
 }

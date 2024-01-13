@@ -4,7 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -22,6 +24,8 @@ import frc.utils.CommandCustomController;
  */
 public class RobotContainer {
     public final Field2d field = new Field2d();
+
+    public final PowerDistribution pdp = new PowerDistribution(Constants.pdp, ModuleType.kCTRE);
 
     // The robot's subsystems
     public final DriveSubsystem m_robotDrive = new DriveSubsystem();
