@@ -78,6 +78,9 @@ dependencies {
     // For AdvantageKit annotations like @AutoLog
     def akitJson = new groovy.json.JsonSlurper().parseText(new File(projectDir.getAbsolutePath() + "/vendordeps/AdvantageKit.json").text)
     annotationProcessor "org.littletonrobotics.akit.junction:junction-autolog:$akitJson.version"
+
+    // Nullability Annotations
+    implementation "org.jetbrains:annotations:24.0.1"
 }
 
 test {
