@@ -4,8 +4,16 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
@@ -26,23 +34,29 @@ public class RobotContainer {
     // The robot's subsystems
     public final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
-    public final RollerSubsystem m_rollers = new RollerSubsystem();
+    // public final RollerSubsystem m_rollers = new RollerSubsystem();
 
-    public final PivotSubsystem m_pivot = new PivotSubsystem();
+    // public final PivotSubsystem m_pivot = new PivotSubsystem();
 
-    final CommandCustomController m_driverController = new CommandCustomController(OIConstants.kDriverControllerPort);
+    final CommandCustomController m_driverController = new CommandCustomController(
+            OIConstants.kDriverControllerPort);
 
     final CommandCustomController m_operatorController = new CommandCustomController(
             OIConstants.kOperatorControllerPort);
+
+    // private final SendableChooser<Command> autoChooser;
+    public final LoggedDashboardChooser<Command> m_autoChooser;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
         // Configure the button bindings
+        configureNamedCommands();
         configureButtonBindings();
 
         // Configure default commands
+        // m_robotDrive.
         m_robotDrive.setDefaultCommand(
                 // The left stick controls translation of the robot.
                 // Turning is controlled by the X axis of the right stick.
@@ -59,6 +73,15 @@ public class RobotContainer {
         // }, m_pivot));
 
         // m_pivot.setDefaultCommand(m_pivot.getPivotCommand());
+
+        // Build an auto chooser. You can make a default auto by passing in their name
+        m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
+    }
+
+    /**
+     * Register the commands with PathPlanner
+     */
+    private void configureNamedCommands() {
     }
 
     /**
@@ -75,5 +98,12 @@ public class RobotContainer {
                 .whileTrue(new RunCommand(
                         () -> m_robotDrive.setCross(),
                         m_robotDrive));
+
+        m_driverController.povUp()
+                .whileTrue(Paths.getTestPath())
+                .and(m_driverController.a().negate());
+
+        // Make a SmartDashboard button
+        SmartDashboard.putData("Run Test Path", Paths.getTestPath());
     }
 }
