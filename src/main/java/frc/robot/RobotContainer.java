@@ -100,8 +100,7 @@ public class RobotContainer {
                         m_robotDrive));
 
         m_driverController.povUp()
-                .whileTrue(Paths.getTestPath())
-                .and(m_driverController.a().negate());
+                .whileTrue(Paths.getTestPath());
 
         // Make a SmartDashboard button
         SmartDashboard.putData("Run Test Path", Paths.getTestPath());
