@@ -5,14 +5,15 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.photonvision.EstimatedRobotPose;
+
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import frc.robot.VisionConstants;
 import frc.robot.Constants.AdvantageKitConstants;
+import frc.robot.VisionConstants;
 import frc.robot.subsystems.vision.apriltag.AprilTagIO;
-import frc.robot.subsystems.vision.apriltag.AprilTagPhoton;
 import frc.robot.subsystems.vision.apriltag.AprilTagIO.AprilTagIOInputs;
+import frc.robot.subsystems.vision.apriltag.AprilTagPhoton;
 import frc.utils.VirtualSubsystem;
 
 public class VisionSubsystem extends VirtualSubsystem {
@@ -69,9 +70,13 @@ public class VisionSubsystem extends VirtualSubsystem {
         // For each camera we need to do the following:
         for (AprilTagCam cam : aprilTagCameras) {
             cam.io.updateInputs(cam.inputs);
-            // Add our estimated position and deviation to be used by our
-            // SwerveDrivePoseEstimator
-            // visionMeasurements.add(new VisionMeasurement(estimatedPose, confidence));
+
+            if (cam.inputs.estimatedPose != null) {
+                // Add estimated position and deviation to be used by SwerveDrivePoseEstimator
+                // AprilTagMeasurementFinder
+                // .findVisionMeasurement(cam.inputs)
+                // .ifPresent(visionMeasurements::add);
+            }
         }
     }
 

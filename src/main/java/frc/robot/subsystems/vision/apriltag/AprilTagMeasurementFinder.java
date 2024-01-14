@@ -1,8 +1,10 @@
 package frc.robot.subsystems.vision.apriltag;
 
+import java.util.ArrayList;
 import java.util.Optional;
+
 import org.photonvision.EstimatedRobotPose;
-import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
@@ -11,16 +13,21 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import frc.robot.VisionConstants;
 import frc.robot.subsystems.vision.VisionSubsystem.VisionMeasurement;
+import frc.robot.subsystems.vision.apriltag.AprilTagIO.AprilTagIOInputs;
 
 public class AprilTagMeasurementFinder {
     /**
-     * Using all available camera estimators, we poll each and try to build
-     * our VisionMeasurements to help correct our position and odometry.
+     * Create a {@link VisionMeasurement} with a pose & confidence value from an
+     * {@link EstimatedRobotPose}
      */
-    public static Optional<VisionMeasurement> findVisionMeasurement(
-            PhotonPipelineResult frame,
-            EstimatedRobotPose estimatedPose) {
-        AprilTagFiltering.removeTooFarTargets(frame);
+    public static Optional<VisionMeasurement> findVisionMeasurement(AprilTagIOInputs inputs) {
+        // For ease of porting from old system do this for now
+        EstimatedRobotPose estimatedPose = new EstimatedRobotPose(
+                inputs.estimatedPose,
+                inputs.estimatedPoseTimestamp,
+                // Arrays.asList(inputs.estimatedPoseTargetsUsed),
+                new ArrayList<PhotonTrackedTarget>(),
+                null); // The strategy used doesn't actually matter here so let's go with null
 
         // Check if we only have one target in sight, and check that it's clear enough
         // to read.
