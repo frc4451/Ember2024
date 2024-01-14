@@ -12,6 +12,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.RollerSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.pivot.PivotSubsystem;
+import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.utils.CommandCustomController;
 
 /*
@@ -29,6 +30,8 @@ public class RobotContainer {
     public final RollerSubsystem m_rollers = new RollerSubsystem();
 
     public final PivotSubsystem m_pivot = new PivotSubsystem();
+
+    public final VisionSubsystem m_vision = new VisionSubsystem();
 
     final CommandCustomController m_driverController = new CommandCustomController(OIConstants.kDriverControllerPort);
 

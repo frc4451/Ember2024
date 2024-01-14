@@ -3,6 +3,8 @@ package frc.robot.subsystems.vision.apriltag;
 import java.util.Optional;
 
 import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
@@ -12,7 +14,7 @@ import edu.wpi.first.math.numbers.N3;
 import frc.robot.VisionConstants;
 import frc.robot.subsystems.vision.VisionSubsystem.VisionMeasurement;
 
-public class AprilTagMeasurementFinder {
+public class AprilTagAlgorithms {
     /**
      * Create a {@link VisionMeasurement} with a pose & confidence value from an
      * {@link EstimatedRobotPose}
@@ -52,5 +54,16 @@ public class AprilTagMeasurementFinder {
                 .computeDeviation(averageDistance);
 
         return Optional.of(new VisionMeasurement(estimatedPose, confidence));
+    }
+
+    public static Optional<EstimatedRobotPose> estimateRobotPose(
+            PhotonPipelineResult frame,
+            PhotonPoseEstimator estimator) {
+        // Check if our frame has invalid targets
+        if (AprilTagFiltering.shouldIgnoreFrame(frame, AprilTagFiltering.getAllowedIDs())) {
+            return Optional.empty();
+        } else {
+            return estimator.update(frame);
+        }
     }
 }

@@ -6,19 +6,19 @@ import org.littletonrobotics.junction.AutoLog;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.targeting.PhotonPipelineResult;
 
+import edu.wpi.first.apriltag.AprilTagPoseEstimate;
+
 public interface AprilTagIO {
     @AutoLog
     public static class AprilTagIOInputs {
         public PhotonPipelineResult frame = new PhotonPipelineResult();
+        // public PoseEstimate estimatedRobotPose;
     }
 
-    public default void updateInputs() {
+    public default void updateInputs(AprilTagIOInputs inputs) {
     }
 
-    public default void periodic() {
-    };
-
-    public default Optional<EstimatedRobotPose> getEstimatedRobotPose() {
+    public default Optional<EstimatedRobotPose> estimateRobotPose(PhotonPipelineResult frame) {
         return Optional.empty();
     }
 }

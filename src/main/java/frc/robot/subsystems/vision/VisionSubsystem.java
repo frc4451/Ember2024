@@ -1,18 +1,26 @@
 package frc.robot.subsystems.vision;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.VisionConstants;
+import frc.robot.VisionConstants.VisionSource;
 import frc.robot.subsystems.vision.apriltag.AprilTagIO;
-import frc.robot.subsystems.vision.apriltag.AprilTagMeasurementFinder;
+import frc.robot.subsystems.vision.apriltag.AprilTagIOInputsAutoLogged;
+import frc.robot.subsystems.vision.apriltag.AprilTagAlgorithms;
 import frc.robot.subsystems.vision.apriltag.AprilTagPhoton;
 import frc.utils.VirtualSubsystem;
 
@@ -20,7 +28,10 @@ public class VisionSubsystem extends VirtualSubsystem {
     public static record VisionMeasurement(EstimatedRobotPose estimation, Matrix<N3, N1> confidence) {
     }
 
-    private final List<AprilTagIO> aprilTagCameras = new ArrayList<>();
+    public static record AprilTagCamera(AprilTagIO io, AprilTagIOInputsAutoLogged inputs, VisionSource source) {
+    }
+
+    private final List<AprilTagCamera> aprilTagCameras = new ArrayList<>();
 
     private ConcurrentLinkedQueue<VisionMeasurement> visionMeasurements = new ConcurrentLinkedQueue<>();
 
@@ -45,9 +56,8 @@ public class VisionSubsystem extends VirtualSubsystem {
                     };
                     break;
             }
-            aprilTagCameras.add(io);
+            aprilTagCameras.add(new AprilTagCamera(io, new AprilTagIOInputsAutoLogged(), source));
         }
-
     }
 
     // Enforce periodic method for VirtualSubsystem
@@ -65,19 +75,20 @@ public class VisionSubsystem extends VirtualSubsystem {
      */
     private void findVisionMeasurements() {
         // For each camera we need to do the following:
-        for (AprilTagIO cam : aprilTagCameras) {
-            cam.updateInputs();
-
-            cam.periodic();
+        for (AprilTagCamera cam : aprilTagCameras) {
+            cam.io.updateInputs(cam.inputs);
+            Logger.processInputs("AprilTagCamera/" + cam.source.name(), cam.inputs);
 
             // Add estimated position and deviation to be used by SwerveDrivePoseEstimator
-            cam.getEstimatedRobotPose()
-                    .flatMap(AprilTagMeasurementFinder::findVisionMeasurement)
+            cam.io.estimateRobotPose(cam.inputs.frame)
+                    .flatMap(AprilTagAlgorithms::findVisionMeasurement)
                     .ifPresent(visionMeasurements::add);
         }
     }
 
-    // Return the head of the Queue as a single measurement
+    /**
+     * Return the head of the Queue as a single measurement
+     */
     public VisionMeasurement pollLatestVisionMeasurement() {
         return visionMeasurements.poll();
     }
@@ -85,28 +96,28 @@ public class VisionSubsystem extends VirtualSubsystem {
     /**
      * Gets a list of the Fiducial IDs for April Tags we detect
      *
-     * @return Pipe concatonated list of IDs
+     * @return Pipe concatenated list of IDs
      */
-    // public String getVisibleTargets() {
-    // List<Integer> targetIds = new ArrayList<>();
+    public String getVisibleTargets() {
+        List<Integer> targetIds = new ArrayList<>();
 
-    // for (CameraEstimator cameraEstimator : aprilTagInputs) {
-    // PhotonPipelineResult result = cameraEstimator.camera().getLatestResult();
-    // for (PhotonTrackedTarget target : result.targets) {
-    // targetIds.add(target.getFiducialId());
-    // }
-    // }
+        for (AprilTagCamera cam : aprilTagCameras) {
+            PhotonPipelineResult frame = cam.inputs.frame;
+            for (PhotonTrackedTarget target : frame.targets) {
+                targetIds.add(target.getFiducialId());
+            }
+        }
 
-    // Set<Integer> uniqueIds = new HashSet<>(targetIds);
-    // List<Integer> organizedIds = new ArrayList<>(uniqueIds);
+        Set<Integer> uniqueIds = new HashSet<>(targetIds);
+        List<Integer> organizedIds = new ArrayList<>(uniqueIds);
 
-    // Collections.sort(organizedIds);
+        Collections.sort(organizedIds);
 
-    // String visibleTargets = organizedIds.stream()
-    // .map(Object::toString)
-    // .reduce((s1, s2) -> s1 + " | " + s2)
-    // .orElse("");
+        String visibleTargets = organizedIds.stream()
+                .map(Object::toString)
+                .reduce((s1, s2) -> s1 + " | " + s2)
+                .orElse("");
 
-    // return visibleTargets;
-    // }
+        return visibleTargets;
+    }
 }
