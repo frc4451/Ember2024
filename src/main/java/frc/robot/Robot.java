@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.subsystems.RollerMode;
 import frc.robot.subsystems.pivot.PivotLocation;
+import frc.utils.VirtualSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -92,6 +93,7 @@ public class Robot extends LoggedRobot {
      */
     @Override
     public void robotPeriodic() {
+        VirtualSubsystem.runPeriodically();
         CommandScheduler.getInstance().run();
         // Runs the Scheduler. This is responsible for polling buttons, adding
         // newly-scheduled
