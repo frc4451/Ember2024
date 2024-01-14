@@ -17,11 +17,11 @@ public class AprilTagFiltering {
     /***************************************************************************
      * Process the frame and determine if we need to ignore it.
      *
-     * Our criteria for ignoring a frame is either
-     * 1) We don't have targets to capture
+     * Our criteria for ignoring a frame is either:<br>
+     * 1) We don't have targets to capture<br>
      * 2) The number of targets we see exceed our max threshold.
-     * - As of now, this is 4. We shouldn't see 4 tags on one alliance.
-     * 3) Targets within a frame do not meet our possible combinations
+     * As of now, this is 4. We shouldn't see 4 tags on one alliance.<br>
+     * 3) Targets within a frame do not meet our possible combinations<br>
      *
      * @param frame      - Current {@link PhotonPipelineResult} we process
      * @param allowedIds - AprilTag IDs we check. Check {@link VisionConstants}.
@@ -46,7 +46,7 @@ public class AprilTagFiltering {
 
     /**
      * Remove targets that are too far to be reliably read.
-     * 
+     *
      * @param frame - Current {@link PhotonPipelineResult} we process
      */
     public static void removeTooFarTargets(PhotonPipelineResult frame) {

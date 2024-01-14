@@ -1,10 +1,8 @@
 package frc.robot.subsystems.vision.apriltag;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 import org.photonvision.EstimatedRobotPose;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
@@ -13,24 +11,14 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import frc.robot.VisionConstants;
 import frc.robot.subsystems.vision.VisionSubsystem.VisionMeasurement;
-import frc.robot.subsystems.vision.apriltag.AprilTagIO.AprilTagIOInputs;
 
 public class AprilTagMeasurementFinder {
     /**
      * Create a {@link VisionMeasurement} with a pose & confidence value from an
      * {@link EstimatedRobotPose}
      */
-    public static Optional<VisionMeasurement> findVisionMeasurement(AprilTagIOInputs inputs) {
-        // For ease of porting from old system do this for now
-        EstimatedRobotPose estimatedPose = new EstimatedRobotPose(
-                inputs.estimatedPose,
-                inputs.estimatedPoseTimestamp,
-                // Arrays.asList(inputs.estimatedPoseTargetsUsed),
-                new ArrayList<PhotonTrackedTarget>(),
-                null); // The strategy used doesn't actually matter here so let's go with null
-
-        // Check if we only have one target in sight, and check that it's clear enough
-        // to read.
+    public static Optional<VisionMeasurement> findVisionMeasurement(EstimatedRobotPose estimatedPose) {
+        // Empty if we only have one target, and it's not good enough to read
         if (estimatedPose.targetsUsed.size() == 1
                 && (estimatedPose.targetsUsed.get(0).getPoseAmbiguity() > VisionConstants.POSE_AMBIGUITY_CUTOFF
                         || estimatedPose.targetsUsed.get(0).getPoseAmbiguity() == -1)) {

@@ -1,23 +1,24 @@
 package frc.robot.subsystems.vision.apriltag;
 
-import org.jetbrains.annotations.Nullable;
-import org.littletonrobotics.junction.AutoLog;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
+import java.util.Optional;
 
-import edu.wpi.first.math.geometry.Pose3d;
+import org.littletonrobotics.junction.AutoLog;
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 public interface AprilTagIO {
     @AutoLog
     public static class AprilTagIOInputs {
         public PhotonPipelineResult frame = new PhotonPipelineResult();
-        @Nullable
-        public Pose3d estimatedPose = null;
-        public double estimatedPoseTimestamp = -1.0;
-        // @Nullable
-        // public PhotonTrackedTarget[] estimatedPoseTargetsUsed = null;
     }
 
-    public default void updateInputs(AprilTagIOInputs inputs) {
+    public default void updateInputs() {
+    }
+
+    public default void periodic() {
+    };
+
+    public default Optional<EstimatedRobotPose> getEstimatedRobotPose() {
+        return Optional.empty();
     }
 }

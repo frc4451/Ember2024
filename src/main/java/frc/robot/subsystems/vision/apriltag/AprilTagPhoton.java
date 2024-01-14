@@ -2,20 +2,23 @@ package frc.robot.subsystems.vision.apriltag;
 
 import java.util.Optional;
 
-import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 import frc.robot.VisionConstants;
 import frc.robot.VisionConstants.VisionSource;
 
 public class AprilTagPhoton implements AprilTagIO {
+    private final AprilTagIOInputsAutoLogged inputs = new AprilTagIOInputsAutoLogged();
+
     private final PhotonCamera camera;
     private final PhotonPoseEstimator estimator;
     private final DuplicateTracker dupeTracker = new DuplicateTracker();
+
+    private Optional<EstimatedRobotPose> estimatedPose = Optional.empty();
 
     public AprilTagPhoton(VisionSource source) {
         camera = new PhotonCamera(source.name());
@@ -29,37 +32,28 @@ public class AprilTagPhoton implements AprilTagIO {
         estimator.setMultiTagFallbackStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
     }
 
-    @AutoLogOutput
-    private PhotonPipelineResult frame = new PhotonPipelineResult();
-
-    private void setNoEstimateInputs(AprilTagIOInputs inputs) {
-        inputs.estimatedPose = null;
-        inputs.estimatedPoseTimestamp = -1.0;
-        // inputs.estimatedPoseTargetsUsed = new PhotonTrackedTarget[] {};
+    @Override
+    public void updateInputs() {
+        PhotonPipelineResult frame = camera.getLatestResult();
+        AprilTagFiltering.removeTooFarTargets(frame);
+        inputs.frame = frame;
     }
 
     @Override
-    public void updateInputs(AprilTagIOInputs inputs) {
-        frame = camera.getLatestResult();
-
-        AprilTagFiltering.removeTooFarTargets(frame);
-
-        inputs.frame = frame;
-
+    public void periodic() {
         // Check if our frame contains duplicates or targets are invalid
-        if (dupeTracker.isDuplicateFrame(frame)
-                || AprilTagFiltering.shouldIgnoreFrame(frame, AprilTagFiltering.getAllowedIDs())) {
-            setNoEstimateInputs(inputs);
+        if (dupeTracker.isDuplicateFrame(inputs.frame)
+                || AprilTagFiltering.shouldIgnoreFrame(inputs.frame, AprilTagFiltering.getAllowedIDs())) {
+            estimatedPose = Optional.empty();
         } else {
-            Optional<EstimatedRobotPose> possibleRobotPose = estimator.update(frame);
-            possibleRobotPose.ifPresentOrElse((estimatedRobotPose) -> {
-                inputs.estimatedPose = estimatedRobotPose.estimatedPose;
-                inputs.estimatedPoseTimestamp = estimatedRobotPose.timestampSeconds;
-                // inputs.estimatedPoseTargetsUsed =
-                // estimatedRobotPose.targetsUsed.toArray(PhotonTrackedTarget[]::new);
-            }, () -> {
-                setNoEstimateInputs(inputs);
-            });
+            estimatedPose = estimator.update(inputs.frame);
         }
+
+        Logger.processInputs("AprilTagCam/" + camera.getName(), inputs);
+    }
+
+    @Override
+    public Optional<EstimatedRobotPose> getEstimatedRobotPose() {
+        return estimatedPose;
     }
 }

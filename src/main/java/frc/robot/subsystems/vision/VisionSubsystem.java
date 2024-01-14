@@ -12,7 +12,7 @@ import edu.wpi.first.math.numbers.N3;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.VisionConstants;
 import frc.robot.subsystems.vision.apriltag.AprilTagIO;
-import frc.robot.subsystems.vision.apriltag.AprilTagIO.AprilTagIOInputs;
+import frc.robot.subsystems.vision.apriltag.AprilTagMeasurementFinder;
 import frc.robot.subsystems.vision.apriltag.AprilTagPhoton;
 import frc.utils.VirtualSubsystem;
 
@@ -20,10 +20,7 @@ public class VisionSubsystem extends VirtualSubsystem {
     public static record VisionMeasurement(EstimatedRobotPose estimation, Matrix<N3, N1> confidence) {
     }
 
-    public static record AprilTagCam(AprilTagIO io, AprilTagIOInputs inputs) {
-    }
-
-    private final List<AprilTagCam> aprilTagCameras = new ArrayList<>();
+    private final List<AprilTagIO> aprilTagCameras = new ArrayList<>();
 
     private ConcurrentLinkedQueue<VisionMeasurement> visionMeasurements = new ConcurrentLinkedQueue<>();
 
@@ -42,13 +39,13 @@ public class VisionSubsystem extends VirtualSubsystem {
                 // case SIM:
                 // io = new AprilTagPhoton(source);
                 // break;
-                case REPLAY:
+                // case REPLAY:
                 default:
                     io = new AprilTagIO() {
                     };
                     break;
             }
-            aprilTagCameras.add(new AprilTagCam(io, new AprilTagIOInputs()));
+            aprilTagCameras.add(io);
         }
 
     }
@@ -68,15 +65,15 @@ public class VisionSubsystem extends VirtualSubsystem {
      */
     private void findVisionMeasurements() {
         // For each camera we need to do the following:
-        for (AprilTagCam cam : aprilTagCameras) {
-            cam.io.updateInputs(cam.inputs);
+        for (AprilTagIO cam : aprilTagCameras) {
+            cam.updateInputs();
 
-            if (cam.inputs.estimatedPose != null) {
-                // Add estimated position and deviation to be used by SwerveDrivePoseEstimator
-                // AprilTagMeasurementFinder
-                // .findVisionMeasurement(cam.inputs)
-                // .ifPresent(visionMeasurements::add);
-            }
+            cam.periodic();
+
+            // Add estimated position and deviation to be used by SwerveDrivePoseEstimator
+            cam.getEstimatedRobotPose()
+                    .flatMap(AprilTagMeasurementFinder::findVisionMeasurement)
+                    .ifPresent(visionMeasurements::add);
         }
     }
 
