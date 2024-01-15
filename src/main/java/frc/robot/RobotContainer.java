@@ -24,14 +24,14 @@ import frc.utils.CommandCustomController;
 public class RobotContainer {
     public final Field2d field = new Field2d();
 
+    public final VisionSubsystem m_vision = new VisionSubsystem();
+
     // The robot's subsystems
-    public final DriveSubsystem m_robotDrive = new DriveSubsystem();
+    public final DriveSubsystem m_robotDrive = new DriveSubsystem(m_vision::pollLatestVisionMeasurement);
 
     public final RollerSubsystem m_rollers = new RollerSubsystem();
 
     public final PivotSubsystem m_pivot = new PivotSubsystem();
-
-    public final VisionSubsystem m_vision = new VisionSubsystem();
 
     final CommandCustomController m_driverController = new CommandCustomController(OIConstants.kDriverControllerPort);
 

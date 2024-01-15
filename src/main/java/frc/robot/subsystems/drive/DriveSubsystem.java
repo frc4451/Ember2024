@@ -5,6 +5,7 @@
 package frc.robot.subsystems.drive;
 
 import java.util.Arrays;
+import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -21,6 +22,7 @@ import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.subsystems.vision.VisionSubsystem.VisionMeasurement;
 import frc.utils.SwerveUtils;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -55,8 +57,12 @@ public class DriveSubsystem extends SubsystemBase {
             getModulePositions(),
             new Pose2d());
 
+    private final Supplier<VisionMeasurement> m_visionSupplier;
+
     /** Creates a new DriveSubsystem. */
-    public DriveSubsystem() {
+    public DriveSubsystem(Supplier<VisionMeasurement> visionSupplier) {
+        m_visionSupplier = visionSupplier;
+
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
                 m_modules[0] = new SwerveModuleSparkMax(
@@ -156,8 +162,23 @@ public class DriveSubsystem extends SubsystemBase {
         }
 
         m_poseEstimator.update(m_trackedRotation, getModulePositions());
+        addVisionMeasurements();
 
         Logger.recordOutput("Odometry/Robot", getPose());
+    }
+
+    private void addVisionMeasurements() {
+        Pose2d currentPose = getPose();
+
+        VisionMeasurement visionMeasurement;
+        while ((visionMeasurement = m_visionSupplier.get()) != null) {
+            Pose2d visionPose = visionMeasurement.estimation().estimatedPose.toPose2d();
+            m_poseEstimator.addVisionMeasurement(
+                    // Ignore the vision pose's rotation
+                    new Pose2d(visionPose.getTranslation(), currentPose.getRotation()),
+                    visionMeasurement.estimation().timestampSeconds,
+                    visionMeasurement.confidence());
+        }
     }
 
     /**
