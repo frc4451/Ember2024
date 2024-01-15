@@ -1,4 +1,4 @@
-package frc.utils;
+package frc.robot.pathplanner;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Translation2d;

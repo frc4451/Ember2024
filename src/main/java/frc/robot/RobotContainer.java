@@ -7,8 +7,6 @@ package frc.robot;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.pathfinding.Pathfinding;
-
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,7 +19,6 @@ import frc.robot.pathplanner.paths.AmpPaths;
 import frc.robot.pathplanner.paths.SpeakerPaths;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.utils.CommandCustomController;
-import frc.utils.LocalADStarAK;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -52,8 +49,8 @@ public class RobotContainer {
          * The container for the robot. Contains subsystems, OI devices, and commands.
          */
         public RobotContainer() {
-                // Configure PathPlanner for generative pathfinding
-                Pathfinding.setPathfinder(new LocalADStarAK());
+                // Configure PathPlanner logging with AdvantageKit
+                PathPlannerUtils.configureLogging();
 
                 // Configure the button bindings
                 configureNamedCommands();

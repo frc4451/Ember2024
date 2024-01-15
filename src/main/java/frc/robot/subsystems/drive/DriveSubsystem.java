@@ -11,7 +11,6 @@ import org.littletonrobotics.junction.Logger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -80,21 +79,6 @@ public class DriveSubsystem extends SubsystemBase {
                 () -> DriverStation.getAlliance().isPresent()
                         && DriverStation.getAlliance().get() == Alliance.Red,
                 this);
-
-        PathPlannerLogging.setLogActivePathCallback(
-                (activePath) -> {
-                    Logger.recordOutput(
-                            "Pathplanner/Trajectory",
-                            activePath.toArray(Pose2d[]::new));
-                });
-        PathPlannerLogging.setLogTargetPoseCallback(
-                (targetPose) -> {
-                    Logger.recordOutput("Pathplanner/TrajectoryTarget", targetPose);
-                });
-
-        // Initial Values
-        Logger.recordOutput("Pathplanner/Trajectory", new Pose2d[0]);
-        Logger.recordOutput("Pathplanner/TrajectoryTarget", new Pose2d());
 
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
