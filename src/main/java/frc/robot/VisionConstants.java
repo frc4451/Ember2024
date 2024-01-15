@@ -1,9 +1,12 @@
 package frc.robot;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.photonvision.simulation.VisionSystemSim;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -16,12 +19,18 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants.AdvantageKitConstants;
+import frc.robot.Constants.AdvantageKitConstants.Mode;
 
 public final class VisionConstants {
     public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
     public static record VisionSource(String name, Transform3d robotToCamera) {
     }
+
+    public static final Optional<VisionSystemSim> VISION_SYSTEM_SIM = AdvantageKitConstants.getMode() == Mode.SIM
+            ? Optional.of(new VisionSystemSim("VisionSim"))
+            : Optional.empty();
 
     // Establish all Cameras, their names, and where they are on the robot.
     //
