@@ -32,11 +32,11 @@ public class AprilTagAlgorithms {
         double sumDistance = estimatedPose.targetsUsed.stream()
                 .mapToDouble(
                         target -> {
-                            Transform3d target_position = target.getBestCameraToTarget();
+                            Transform3d targetPosition = target.getBestCameraToTarget();
                             return Math.sqrt(
-                                    Math.pow(target_position.getX(), 2)
-                                            + Math.pow(target_position.getY(), 2)
-                                            + Math.pow(target_position.getZ(), 2));
+                                    Math.pow(targetPosition.getX(), 2)
+                                            + Math.pow(targetPosition.getY(), 2)
+                                            + Math.pow(targetPosition.getZ(), 2));
                         })
                 .sum();
 
