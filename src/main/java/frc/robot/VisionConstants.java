@@ -45,7 +45,7 @@ public final class VisionConstants {
                                     Units.inchesToMeters(8.5)), // up+
                             new Rotation3d(
                                     0, Units.degreesToRadians(-20),
-                                    Units.degreesToRadians(180 + 45)))),
+                                    Units.degreesToRadians(180 + 30)))),
             new VisionSource(
                     "RG_Camera_2",
                     new Transform3d(
@@ -55,7 +55,7 @@ public final class VisionConstants {
                                     Units.inchesToMeters(8.5)), // up+
                             new Rotation3d(
                                     0, Units.degreesToRadians(-20),
-                                    Units.degreesToRadians(180 - 45)))));
+                                    Units.degreesToRadians(180 - 30)))));
 
     public static final List<VisionSource> COLORED_SHAPE_SOURCES = List.of(
     // This isn't going to be installed on the robot when we start, but this is the
