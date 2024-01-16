@@ -9,9 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
-import frc.robot.subsystems.RollerSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
-import frc.robot.subsystems.pivot.PivotSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.utils.CommandCustomController;
 
@@ -28,10 +26,6 @@ public class RobotContainer {
 
     // The robot's subsystems
     public final DriveSubsystem m_robotDrive = new DriveSubsystem(m_vision::pollLatestVisionMeasurement);
-
-    public final RollerSubsystem m_rollers = new RollerSubsystem();
-
-    public final PivotSubsystem m_pivot = new PivotSubsystem();
 
     final CommandCustomController m_driverController = new CommandCustomController(OIConstants.kDriverControllerPort);
 
