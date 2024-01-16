@@ -16,15 +16,20 @@ public enum PathPlannerPaths {
     SPEAKER_LEFT(
             "SpeakerLeft",
             new Pose2d(14.33, 6.0, Rotation2d.fromDegrees(-30)),
-            new Pose2d(1.83, 6.0, Rotation2d.fromDegrees(-150))),
+            new Pose2d(1.83, 5.0, Rotation2d.fromDegrees(150))),
     SPEAKER_RIGHT(
             "SpeakerRight",
             new Pose2d(14.33, 5.0, Rotation2d.fromDegrees(30)),
-            new Pose2d(1.83, 5.0, Rotation2d.fromDegrees(150))),
+            new Pose2d(1.83, 6.0, Rotation2d.fromDegrees(-150))),
     AMP(
             "Amp",
             new Pose2d(14.70, 8.0, Rotation2d.fromDegrees(90)),
-            new Pose2d(1.84, 8.0, Rotation2d.fromDegrees(90)));
+            new Pose2d(1.84, 8.0, Rotation2d.fromDegrees(90))),
+
+    HUMAN_PLAYER(
+            "HumanPlayer",
+            new Pose2d(1.0, 1.0, Rotation2d.fromDegrees(-120)),
+            new Pose2d(15.5, 1.25, Rotation2d.fromDegrees(-60)));
 
     public final String label;
 
