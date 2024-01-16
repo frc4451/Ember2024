@@ -95,8 +95,14 @@ public class RobotContainer {
      */
     private void configurePathChooser() {
         m_pathChooser = new LoggedDashboardChooser<>("Path Chooser", new SendableChooser<>());
-        for (PathPlannerPaths path : PathPlannerPaths.values()) {
-            m_pathChooser.addOption(path.label, path.getCommand());
+
+        if (PathPlannerPaths.values().length != 0) {
+            PathPlannerPaths defaultPath = PathPlannerPaths.values()[0];
+            m_pathChooser.addDefaultOption(defaultPath.label, defaultPath.getCommand());
+
+            for (PathPlannerPaths path : PathPlannerPaths.values()) {
+                m_pathChooser.addOption(path.label, path.getCommand());
+            }
         }
     }
 
@@ -119,6 +125,9 @@ public class RobotContainer {
                 .whileTrue(
                         Commands.deferredProxy(
                                 () -> m_pathChooser.get()));
+
+        SmartDashboard.putData("Run Chosen Path", Commands.deferredProxy(
+                () -> m_pathChooser.get()));
 
         // Make a SmartDashboard button
         SmartDashboard.putData("Run Test Path", PathPlannerUtils.getTestPath());
