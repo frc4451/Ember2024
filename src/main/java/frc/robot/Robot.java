@@ -10,8 +10,8 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.AdvantageKitConstants;
@@ -72,6 +72,8 @@ public class Robot extends LoggedRobot {
                 setUseTiming(false); // Run as fast as possible since we're replaying a log
                 break;
         }
+
+        DriverStation.silenceJoystickConnectionWarning(true);
 
         // Start AdvantageKit Logger
         Logger.start();
@@ -154,5 +156,15 @@ public class Robot extends LoggedRobot {
     /** This function is called periodically during test mode. */
     @Override
     public void testPeriodic() {
+    }
+
+    @Override
+    public void simulationInit() {
+        m_robotContainer.m_vision.robotPoseSupplier = m_robotContainer.m_robotDrive::getPose;
+    }
+
+    @Override
+    public void simulationPeriodic() {
+        VirtualSubsystem.runSimulationPeriodically();
     }
 }

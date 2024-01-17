@@ -38,6 +38,17 @@ public abstract class VirtualSubsystem {
     }
   }
 
+  /** Call {@link #simulationPeriodic()} on every virtual subsystem. */
+  public static void runSimulationPeriodically() {
+    for (VirtualSubsystem subsystem : virtualSubsystems) {
+      subsystem.simulationPeriodic();
+    }
+  }
+
   /** Method to run on every thread update. */
   public abstract void periodic();
+
+  /** Method to run on every simulated thread update. */
+  public abstract void simulationPeriodic();
+
 }

@@ -19,7 +19,8 @@ public class DuplicateTracker {
      */
     public boolean isDuplicateFrame(PhotonPipelineResult frame) {
         double timestamp = frame.getTimestampSeconds();
+        boolean isDuplicate = lastTimestamp == timestamp;
         this.lastTimestamp = timestamp;
-        return timestamp == this.lastTimestamp;
+        return isDuplicate;
     }
 }
