@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems.drive;
 
-import java.util.Arrays;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -13,7 +12,6 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -111,15 +109,19 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public SwerveModuleState[] getModuleStates() {
-        return Arrays.stream(m_moduleInputs)
-                .map(input -> input.state)
-                .toArray(SwerveModuleState[]::new);
+        SwerveModuleState[] states = new SwerveModuleState[m_modules.length];
+        for (int i = 0; i < m_moduleInputs.length; i++) {
+            states[i] = m_moduleInputs[i].state;
+        }
+        return states;
     }
 
     public SwerveModulePosition[] getModulePositions() {
-        return Arrays.stream(m_moduleInputs)
-                .map(input -> input.position)
-                .toArray(SwerveModulePosition[]::new);
+        SwerveModulePosition[] positions = new SwerveModulePosition[m_modules.length];
+        for (int i = 0; i < m_moduleInputs.length; i++) {
+            positions[i] = m_moduleInputs[i].position;
+        }
+        return positions;
     }
 
     public SwerveModulePosition[] getModuleWheelDeltas() {
@@ -137,31 +139,29 @@ public class DriveSubsystem extends SubsystemBase {
         m_gyro.updateInputs(m_gyroInputs);
         Logger.processInputs("Drive/Gyro", m_gyroInputs);
 
-        m_lastModulePositionsMeters = Arrays.stream(m_moduleInputs)
-                .mapToDouble((input -> input.drivePositionMeters))
-                .toArray();
-
         for (int i = 0; i < m_modules.length; i++) {
             m_modules[i].updateInputs(m_moduleInputs[i]);
             Logger.processInputs("Drive/Module" + Integer.toString(i), m_moduleInputs[i]);
         }
 
-        Logger.recordOutput("SwerveStates/Measured", getModuleStates());
+        SwerveModuleState[] states = getModuleStates();
+        SwerveModulePosition[] positions = getModulePositions();
+
+        Logger.recordOutput("SwerveStates/Measured", states);
 
         // If a gyro is connected we'll just read that directly.
         // Otherwise add to our tracked value by calculating a twist from modules.
         if (m_gyroInputs.isConnected) {
             m_trackedRotation = new Rotation2d(m_gyroInputs.yawPositionRad);
         } else {
-            SwerveModulePosition[] moduleDeltas = getModuleWheelDeltas();
-            // The twist represents the motion of the robot since the last
+            // The ChassisSpeeds represents the motion of the robot since the last
             // loop cycle in x, y, and theta based on only the modules,
             // without the gyro. The gyro is always disconnected in simulation.
-            Twist2d twist = DriveConstants.kDriveKinematics.toTwist2d(moduleDeltas);
-            m_trackedRotation = m_trackedRotation.plus(new Rotation2d(twist.dtheta));
+            ChassisSpeeds speeds = DriveConstants.kDriveKinematics.toChassisSpeeds(states);
+            m_trackedRotation = m_trackedRotation.plus(new Rotation2d(speeds.omegaRadiansPerSecond * 0.02));
         }
 
-        m_poseEstimator.update(m_trackedRotation, getModulePositions());
+        m_poseEstimator.update(m_trackedRotation, positions);
         addVisionMeasurements();
 
         Logger.recordOutput("Odometry/Robot", getPose());
