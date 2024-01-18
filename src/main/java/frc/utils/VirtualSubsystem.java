@@ -13,6 +13,8 @@ import java.util.List;
 public abstract class VirtualSubsystem {
     private static List<VirtualSubsystem> virtualSubsystems = new ArrayList<>();
 
+    private static Thread subprocessThread;
+
     /**
      * Every subsystem that extends VirtualSubsystem gets added to the list of
      * Subsystems that are
@@ -20,6 +22,36 @@ public abstract class VirtualSubsystem {
      */
     public VirtualSubsystem() {
         virtualSubsystems.add(this);
+    }
+
+    public static void runInThread() {
+        subprocessThread = new Thread(
+                () -> {
+                    while (!Thread.currentThread().isInterrupted()) {
+                        virtualSubsystems.forEach(VirtualSubsystem::periodic);
+
+                        try {
+                            Thread.sleep(10);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                });
+    }
+
+    public static void runInThreadSimulation() {
+        subprocessThread = new Thread(
+                () -> {
+                    while (!Thread.currentThread().isInterrupted()) {
+                        virtualSubsystems.forEach(VirtualSubsystem::simulationPeriodic);
+
+                        try {
+                            Thread.sleep(10);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                });
     }
 
     public static void listVirtualSubsystems() {
