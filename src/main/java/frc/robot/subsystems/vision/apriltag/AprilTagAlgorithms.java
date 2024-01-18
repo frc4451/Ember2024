@@ -27,6 +27,9 @@ public class AprilTagAlgorithms {
             return Optional.empty();
         }
 
+        // Remove targets that are not April Tags when calculating estimated pose
+        estimatedPose.targetsUsed.removeIf(target -> target.getFiducialId() == -1);
+
         // Calculates the sums of every distance using Euclidiean Norm.
         // Think of it as the Pythagorean theorem except in three dimensions.
         double sumDistance = estimatedPose.targetsUsed.stream()

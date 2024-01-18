@@ -1,0 +1,72 @@
+package frc.robot.subsystems.vision.object_detection;
+
+import org.photonvision.PhotonCamera;
+import org.photonvision.estimation.TargetModel;
+import org.photonvision.simulation.PhotonCameraSim;
+import org.photonvision.simulation.SimCameraProperties;
+import org.photonvision.simulation.VisionTargetSim;
+import org.photonvision.targeting.PhotonPipelineResult;
+
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.util.Units;
+import frc.robot.VisionConstants;
+import frc.robot.VisionConstants.VisionSource;
+
+public class ObjectDetectionPhotonSim implements ObjectDetectionIO {
+    private final PhotonCamera camera;
+    private PhotonCameraSim cameraSim;
+
+    public ObjectDetectionPhotonSim(VisionSource source) {
+        camera = new PhotonCamera(source.name());
+
+        VisionConstants.VISION_SYSTEM_SIM.ifPresent(visionSim -> {
+            // This creates a 10inx10inx2in rectangular prism,
+            // but we eventually want to try making a more efficient
+            // vertices object
+            TargetModel notePlaceholder = new TargetModel(
+                    Units.inchesToMeters(10),
+                    Units.inchesToMeters(10),
+                    Units.inchesToMeters(2));
+
+            // TargetModel noteVertices = new TargetModel(
+            // List.of(
+            // new Translation3d(0.0, Units.inchesToMeters(-10), Units.inchesToMeters(-2)),
+            // new Translation3d(0.0, Units.inchesToMeters(10), Units.inchesToMeters(2)),
+            // new Translation3d(0.0, Units.inchesToMeters(10), Units.inchesToMeters(-2)),
+            // new Translation3d(0.0, Units.inchesToMeters(20), Units.inchesToMeters(2)),
+            // new Translation3d(0.0, Units.inchesToMeters(-20), Units.inchesToMeters(2))
+            // ));
+
+            visionSim.addVisionTargets(
+                    "note",
+                    new VisionTargetSim(
+                            new Pose3d(8.25, 4.0, 0.0, new Rotation3d()),
+                            notePlaceholder));
+
+            SimCameraProperties simCameraProperties = new SimCameraProperties();
+
+            // All of our AprilTag cameras use 16:9 FHD resolution
+            simCameraProperties.setCalibration(1280, 800, Rotation2d.fromDegrees(70));
+            // I read this from the docs, but this may need adjusting
+            simCameraProperties.setCalibError(0.25, 0.08);
+            simCameraProperties.setFPS(20.0);
+            simCameraProperties.setAvgLatencyMs(35);
+            simCameraProperties.setLatencyStdDevMs(5);
+
+            cameraSim = new PhotonCameraSim(camera, simCameraProperties);
+
+            visionSim.addCamera(cameraSim, source.robotToCamera());
+            cameraSim.enableDrawWireframe(true);
+            cameraSim.setMaxSightRange(10.0);
+            cameraSim.setWireframeResolution(1);
+        });
+    }
+
+    @Override
+    public void updateInputs(ObjectDetectionIOInputs inputs) {
+        PhotonPipelineResult frame = camera.getLatestResult();
+        inputs.frame = frame;
+    }
+}

@@ -26,6 +26,11 @@ import frc.robot.subsystems.vision.apriltag.AprilTagAlgorithms;
 import frc.robot.subsystems.vision.apriltag.AprilTagPhoton;
 import frc.robot.subsystems.vision.apriltag.AprilTagPhotonSim;
 import frc.robot.subsystems.vision.apriltag.DuplicateTracker;
+import frc.robot.subsystems.vision.object_detection.ObjectDetectionFiltering;
+import frc.robot.subsystems.vision.object_detection.ObjectDetectionIO;
+import frc.robot.subsystems.vision.object_detection.ObjectDetectionIOInputsAutoLogged;
+import frc.robot.subsystems.vision.object_detection.ObjectDetectionPhoton;
+import frc.robot.subsystems.vision.object_detection.ObjectDetectionPhotonSim;
 import frc.utils.VirtualSubsystem;
 
 public class VisionSubsystem extends VirtualSubsystem {
@@ -39,7 +44,15 @@ public class VisionSubsystem extends VirtualSubsystem {
             DuplicateTracker dupeTracker) {
     }
 
+    public static record ObjectDetectionCamera(
+            ObjectDetectionIO io,
+            ObjectDetectionIOInputsAutoLogged inputs,
+            VisionSource source,
+            DuplicateTracker dupeTracker) {
+    }
+
     private final List<AprilTagCamera> aprilTagCameras = new ArrayList<>();
+    private final List<ObjectDetectionCamera> objectDetectionCameras = new ArrayList<>();
 
     private ConcurrentLinkedQueue<VisionMeasurement> visionMeasurements = new ConcurrentLinkedQueue<>();
 
@@ -48,8 +61,8 @@ public class VisionSubsystem extends VirtualSubsystem {
     public VisionSubsystem() {
         // Initialize all cameras that we have pre-configured from VisionConstants.
         //
-        // Using the VISION_SOURCES constants, we read each camera established in the
-        // Constants file and populate our camera_estimators available.
+        // Using the APRIL_TAG_SOURCES constants, we read each camera established in the
+        // Constants file and populate our camera_estimators available for April Tags.
         for (VisionConstants.VisionSource source : VisionConstants.APRIL_TAG_SOURCES) {
             AprilTagIO io;
 
@@ -73,13 +86,42 @@ public class VisionSubsystem extends VirtualSubsystem {
                             source,
                             new DuplicateTracker()));
         }
+
+        // Initialize cameras used exclusively for Object Detection (Notes)
+        for (VisionConstants.VisionSource source : VisionConstants.OBJECT_DETECTION_SOURCES) {
+            ObjectDetectionIO io;
+
+            switch (AdvantageKitConstants.getMode()) {
+                case REAL:
+                    io = new ObjectDetectionPhoton(source);
+                    break;
+                case SIM:
+                    io = new ObjectDetectionPhotonSim(source);
+                    break;
+                default:
+                    io = new ObjectDetectionIO() {
+
+                    };
+                    break;
+            }
+            objectDetectionCameras.add(
+                    new ObjectDetectionCamera(
+                            io,
+                            new ObjectDetectionIOInputsAutoLogged(),
+                            source,
+                            new DuplicateTracker()));
+        }
+
     }
 
     // Enforce periodic method for VirtualSubsystem
     @Override
     public void periodic() {
-        // Check for updates to Measurements
+        // Check for updates to Measurements from April Tags
         findVisionMeasurements();
+
+        // Check for updates to Measurements away from Notes
+        findClosestObjectYaw();
     }
 
     public void simulationPeriodic() {
@@ -108,8 +150,8 @@ public class VisionSubsystem extends VirtualSubsystem {
 
             Logger.recordOutput(cameraLogRoot + "Targets",
                     cam.inputs.frame.getTargets().stream()
-                            .distinct()
                             .mapToInt(PhotonTrackedTarget::getFiducialId)
+                            .distinct()
                             .toArray());
 
             // Add estimated position and deviation to be used by SwerveDrivePoseEstimator
@@ -127,6 +169,38 @@ public class VisionSubsystem extends VirtualSubsystem {
                         Logger.recordOutput(cameraLogRoot + "EstimatedPose", new Pose2d());
                         Logger.recordOutput(cameraLogRoot + "EstimatedPoseTimestamp", -1.0);
                     });
+        }
+    }
+
+    /**
+     * Alternative strategy for Notes, we need to find _where_ the note is
+     * and how we need to rotate the robot to be in-line with the note.
+     */
+    public void findClosestObjectYaw() {
+        for (ObjectDetectionCamera cam : objectDetectionCameras) {
+            cam.io.updateInputs(cam.inputs);
+
+            // If we have a duplicate frame, don't bother updating anything
+            if (cam.dupeTracker.isDuplicateFrame(cam.inputs.frame)) {
+                continue;
+            }
+
+            String cameraLogRoot = "ObjectDetection/" + cam.source.name() + "/";
+            Logger.processInputs(cameraLogRoot, cam.inputs);
+
+            List<PhotonTrackedTarget> nonFiducialTargets = ObjectDetectionFiltering
+                    .getNonFiducialTargets(cam.inputs.frame);
+
+            Logger.recordOutput(cameraLogRoot + "HasNotes", !nonFiducialTargets.isEmpty());
+
+            // PhotonVision orders targets by "best", which in their `getBestTarget` method
+            // just gets the first target, assuming there is a target. We just get that.
+            // If there isn't a valid non-fiducial target, we display NaN.
+            double yawFromRobotCenter = nonFiducialTargets.isEmpty()
+                    ? Double.NaN
+                    : nonFiducialTargets.get(0).getYaw();
+
+            Logger.recordOutput(cameraLogRoot + "YawFromRobotCenter", yawFromRobotCenter);
         }
     }
 
@@ -163,5 +237,12 @@ public class VisionSubsystem extends VirtualSubsystem {
                 .orElse("");
 
         return visibleTargets;
+    }
+
+    /**
+     * Eventually return whether or not we see "notes"
+     */
+    public boolean doWeSeeNotes() {
+        return false;
     }
 }
