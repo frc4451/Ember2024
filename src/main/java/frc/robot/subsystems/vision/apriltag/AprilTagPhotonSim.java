@@ -15,8 +15,21 @@ import frc.robot.VisionConstants.VisionSource;
 public class AprilTagPhotonSim implements AprilTagIO {
     private final PhotonCamera camera;
     private final PhotonPoseEstimator estimator;
+    private final DuplicateTracker duplicateTracker = new DuplicateTracker();
 
     private PhotonCameraSim cameraSim;
+
+    private final Thread periodicThread = new Thread(() -> {
+        while (!Thread.currentThread().isInterrupted()) {
+            periodic();
+
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    });
 
     public AprilTagPhotonSim(VisionSource source) {
         camera = new PhotonCamera(source.name());
@@ -51,22 +64,39 @@ public class AprilTagPhotonSim implements AprilTagIO {
             cameraSim.setMaxSightRange(10.0);
             cameraSim.setWireframeResolution(1);
         });
+
+        periodicThread.setPriority(Thread.MAX_PRIORITY);
+        periodicThread.start();
+    }
+
+    private PhotonPipelineResult frame = new PhotonPipelineResult();
+    private boolean isDuplicateFrame = false;
+    private Optional<EstimatedRobotPose> estimatedRobotPose = Optional.empty();
+
+    private void periodic() {
+        PhotonPipelineResult frame = camera.getLatestResult();
+
+        isDuplicateFrame = duplicateTracker.isDuplicateFrame(frame);
+
+        if (isDuplicateFrame) {
+            return;
+        }
+
+        AprilTagFiltering.removeTooFarTargets(frame);
+        this.frame = frame;
+        estimatedRobotPose = AprilTagAlgorithms.estimateRobotPose(frame, estimator);
     }
 
     @Override
     public void updateInputs(AprilTagIOInputs inputs) {
-        PhotonPipelineResult frame = camera.getLatestResult();
-
-        AprilTagFiltering.removeTooFarTargets(frame);
         inputs.frame = frame;
+        inputs.isDuplicateFrame = isDuplicateFrame;
     }
 
     @Override
-    public Optional<EstimatedRobotPose> estimateRobotPose(PhotonPipelineResult frame) {
-        Optional<EstimatedRobotPose> estimatedPose = AprilTagAlgorithms.estimateRobotPose(frame, estimator);
-
+    public Optional<EstimatedRobotPose> getEstimatedRobotPose() {
         VisionConstants.VISION_SYSTEM_SIM.ifPresent((visionSystemSim) -> {
-            estimatedPose.ifPresentOrElse(
+            estimatedRobotPose.ifPresentOrElse(
                     (est) -> {
                         visionSystemSim
                                 .getDebugField()
@@ -81,6 +111,6 @@ public class AprilTagPhotonSim implements AprilTagIO {
                     });
         });
 
-        return estimatedPose;
+        return estimatedRobotPose;
     }
 }

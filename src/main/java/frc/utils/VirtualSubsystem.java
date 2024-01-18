@@ -11,9 +11,35 @@ import java.util.List;
  * Examples could be: - VisionSubsystem - PathPlannerSubsystem
  */
 public abstract class VirtualSubsystem {
-    private static List<VirtualSubsystem> virtualSubsystems = new ArrayList<>();
+    private static final List<VirtualSubsystem> virtualSubsystems = new ArrayList<>();
 
-    private static Thread subprocessThread;
+    private static final Thread periodicThread = new Thread(() -> {
+        while (!Thread.currentThread().isInterrupted()) {
+            for (VirtualSubsystem subsystem : virtualSubsystems) {
+                subsystem.periodic();
+            }
+
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    });
+
+    private static final Thread simulationPeriodicThread = new Thread(
+            () -> {
+                while (!Thread.currentThread().isInterrupted()) {
+                    for (VirtualSubsystem subsystem : virtualSubsystems) {
+                        subsystem.simulationPeriodic();
+                    }
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+            });
 
     /**
      * Every subsystem that extends VirtualSubsystem gets added to the list of
@@ -24,34 +50,14 @@ public abstract class VirtualSubsystem {
         virtualSubsystems.add(this);
     }
 
-    public static void runInThread() {
-        subprocessThread = new Thread(
-                () -> {
-                    while (!Thread.currentThread().isInterrupted()) {
-                        virtualSubsystems.forEach(VirtualSubsystem::periodic);
-
-                        try {
-                            Thread.sleep(10);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                        }
-                    }
-                });
+    public static void startPeriodicThread() {
+        periodicThread.setPriority(9);
+        periodicThread.start();
     }
 
-    public static void runInThreadSimulation() {
-        subprocessThread = new Thread(
-                () -> {
-                    while (!Thread.currentThread().isInterrupted()) {
-                        virtualSubsystems.forEach(VirtualSubsystem::simulationPeriodic);
-
-                        try {
-                            Thread.sleep(10);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                        }
-                    }
-                });
+    public static void startSimulationPeriodicThread() {
+        periodicThread.setPriority(10);
+        simulationPeriodicThread.start();
     }
 
     public static void listVirtualSubsystems() {

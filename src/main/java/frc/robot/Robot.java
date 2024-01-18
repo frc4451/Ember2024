@@ -10,9 +10,9 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.AdvantageKitConstants;
@@ -79,12 +79,6 @@ public class Robot extends LoggedRobot {
         // Start AdvantageKit Logger
         Logger.start();
 
-        // if (AdvantageKitConstants.getMode() == AdvantageKitConstants.Mode.REAL) {
-        // VirtualSubsystem.runInThread();
-        // } else {
-        // VirtualSubsystem.runInThreadSimulation();
-        // }
-
         m_robotContainer = new RobotContainer();
     }
 
@@ -100,7 +94,6 @@ public class Robot extends LoggedRobot {
      */
     @Override
     public void robotPeriodic() {
-        Threads.setCurrentThreadPriority(true, 99);
         VirtualSubsystem.runPeriodically();
         CommandScheduler.getInstance().run();
         // Runs the Scheduler. This is responsible for polling buttons, adding
@@ -127,7 +120,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledPeriodic() {
-        if (m_robotContainer.m_driverController.b().getAsBoolean()) {
+        if (m_robotContainer.m_driverController.getHID().getBButtonPressed()) {
             m_robotContainer.m_robotDrive.zeroHeading();
             m_robotContainer.m_robotDrive.resetPose(new Pose2d());
         }

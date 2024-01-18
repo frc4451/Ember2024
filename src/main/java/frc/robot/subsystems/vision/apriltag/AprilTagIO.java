@@ -10,12 +10,13 @@ public interface AprilTagIO {
     @AutoLog
     public static class AprilTagIOInputs {
         public PhotonPipelineResult frame = new PhotonPipelineResult();
+        public boolean isDuplicateFrame = false;
     }
 
     public default void updateInputs(AprilTagIOInputs inputs) {
     }
 
-    public default Optional<EstimatedRobotPose> estimateRobotPose(PhotonPipelineResult frame) {
+    public default Optional<EstimatedRobotPose> getEstimatedRobotPose() {
         return Optional.empty();
     }
 }

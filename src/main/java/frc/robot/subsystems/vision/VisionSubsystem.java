@@ -140,7 +140,7 @@ public class VisionSubsystem extends VirtualSubsystem {
             cam.io.updateInputs(cam.inputs);
 
             // If we have a duplicate frame, don't bother updating anything
-            if (cam.dupeTracker.isDuplicateFrame(cam.inputs.frame)) {
+            if (cam.inputs.isDuplicateFrame) {
                 continue;
             }
 
@@ -155,7 +155,7 @@ public class VisionSubsystem extends VirtualSubsystem {
                             .toArray());
 
             // Add estimated position and deviation to be used by SwerveDrivePoseEstimator
-            Optional<EstimatedRobotPose> estimatedPose = cam.io.estimateRobotPose(cam.inputs.frame);
+            Optional<EstimatedRobotPose> estimatedPose = cam.io.getEstimatedRobotPose();
 
             estimatedPose.ifPresentOrElse(
                     (pose) -> {
