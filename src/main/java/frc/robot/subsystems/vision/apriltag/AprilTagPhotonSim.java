@@ -1,14 +1,13 @@
 package frc.robot.subsystems.vision.apriltag;
 
-import java.util.Optional;
-
-import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.targeting.PhotonPipelineResult;
+
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import frc.robot.VisionConstants;
 import frc.robot.VisionConstants.VisionSource;
 
@@ -43,10 +42,6 @@ public class AprilTagPhotonSim implements AprilTagIO {
         estimator.setMultiTagFallbackStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
 
         VisionConstants.VISION_SYSTEM_SIM.ifPresent((visionSim) -> {
-            // Add all the AprilTags inside the tag layout as visible targets to this
-            // simulated field.
-            visionSim.addAprilTags(VisionConstants.FIELD_LAYOUT);
-
             SimCameraProperties simCameraProperties = new SimCameraProperties();
 
             // All of our AprilTag cameras use 16:9 FHD resolution
@@ -71,7 +66,7 @@ public class AprilTagPhotonSim implements AprilTagIO {
 
     private PhotonPipelineResult frame = new PhotonPipelineResult();
     private boolean isDuplicateFrame = false;
-    private Optional<EstimatedRobotPose> estimatedRobotPose = Optional.empty();
+    private EstimatedPose estimatedPose = new EstimatedPose();
 
     private void periodic() {
         PhotonPipelineResult frame = camera.getLatestResult();
@@ -84,33 +79,29 @@ public class AprilTagPhotonSim implements AprilTagIO {
 
         AprilTagFiltering.removeTooFarTargets(frame);
         this.frame = frame;
-        estimatedRobotPose = AprilTagAlgorithms.estimateRobotPose(frame, estimator);
+        estimatedPose = new EstimatedPose(AprilTagAlgorithms.estimateRobotPose(frame, estimator));
+
+        updateFieldPoseEstimate();
     }
 
     @Override
     public void updateInputs(AprilTagIOInputs inputs) {
         inputs.frame = frame;
         inputs.isDuplicateFrame = isDuplicateFrame;
+        inputs.estimatedPose = estimatedPose;
     }
 
-    @Override
-    public Optional<EstimatedRobotPose> getEstimatedRobotPose() {
+    public void updateFieldPoseEstimate() {
         VisionConstants.VISION_SYSTEM_SIM.ifPresent((visionSystemSim) -> {
-            estimatedRobotPose.ifPresentOrElse(
-                    (est) -> {
-                        visionSystemSim
-                                .getDebugField()
-                                .getObject("VisionEstimation")
-                                .setPose(est.estimatedPose.toPose2d());
-                    },
-                    () -> {
-                        visionSystemSim
-                                .getDebugField()
-                                .getObject("VisionEstimation")
-                                .setPoses();
-                    });
-        });
+            FieldObject2d visionEstimation = visionSystemSim
+                    .getDebugField()
+                    .getObject("VisionEstimation");
 
-        return estimatedRobotPose;
+            if (estimatedPose.isPresent) {
+                visionEstimation.setPoses(estimatedPose.pose.toPose2d());
+            } else {
+                visionEstimation.setPoses();
+            }
+        });
     }
 }

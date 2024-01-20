@@ -2,6 +2,7 @@ plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2024.1.1"
     id "com.peterabeles.gversion" version "1.10"
+    id "com.google.protobuf" version "0.9.4"
 }
 
 java {
@@ -81,6 +82,9 @@ dependencies {
 
     // Nullability Annotations
     implementation "org.jetbrains:annotations:24.0.1"
+
+    // Quickbuf Runtime (Protobuf)
+    implementation group: "us.hebi.quickbuf", name: "quickbuf-runtime", version: wpi.versions.quickbufVersion.get();
 }
 
 test {
@@ -144,4 +148,32 @@ gversion {
   dateFormat = "yyyy-MM-dd HH:mm:ss z"
   timeZone = "America/New_York"
   indent = "    "
+}
+
+// protobuf
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.25.1"
+    }
+    plugins {
+        quickbuf {
+            artifact = "us.hebi.quickbuf:protoc-gen-quickbuf:1.3.3"
+        }
+    }
+
+    generateProtoTasks {
+        all().configureEach {
+            builtins {
+                remove cpp {}
+                remove java {} // quickbuf does this instead
+            }
+            plugins {
+                quickbuf {
+                    // option "java8_optional=true"
+                    option "indent=4"
+                    option "gen_descriptors=true"
+                }
+            }
+        }
+    }
 }
