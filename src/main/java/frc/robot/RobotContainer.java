@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.RollerSubsystem;
+import frc.robot.subsystems.Misc.MiscSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.pivot.PivotSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -32,6 +33,8 @@ public class RobotContainer {
     // public final PivotSubsystem m_pivot = new PivotSubsystem();
 
     public final ShooterSubsystem m_shooter = new ShooterSubsystem();
+
+    // public final MiscSubsystem m_misc = new MiscSubsystem();
 
     final CommandCustomController m_driverController = new CommandCustomController(OIConstants.kDriverControllerPort);
 
@@ -80,17 +83,21 @@ public class RobotContainer {
         // m_robotDrive));
 
         m_driverController.b()
-                .onTrue(m_shooter.setVelocityCommand(35))
+                .onTrue(m_shooter.setVelocityCommand(25.0))
                 .onFalse(m_shooter.stopCommand());
         m_driverController.y()
-                .onTrue(m_shooter.setVelocityCommand(40))
+                .onTrue(m_shooter.setVelocityCommand(10.0))
                 .onFalse(m_shooter.stopCommand());
         m_driverController.x()
-                .onTrue(m_shooter.setVelocityCommand(45))
+                .onTrue(m_shooter.setVelocityCommand(45.0))
                 .onFalse(m_shooter.stopCommand());
         m_driverController.a()
-                .onTrue(m_shooter.setVelocityCommand(50))
+                .onTrue(m_shooter.setVelocityCommand(50.0))
                 .onFalse(m_shooter.stopCommand());
+
+        // m_driverController.rightBumper()
+        // .onTrue(m_misc.setVelocityCommand(20.0))
+        // .onFalse(m_misc.stopCommand());
 
     }
 
