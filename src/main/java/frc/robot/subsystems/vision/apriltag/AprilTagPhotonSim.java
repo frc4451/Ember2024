@@ -43,10 +43,6 @@ public class AprilTagPhotonSim implements AprilTagIO {
         estimator.setMultiTagFallbackStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
 
         VisionConstants.VISION_SYSTEM_SIM.ifPresent((visionSim) -> {
-            // Add all the AprilTags inside the tag layout as visible targets to this
-            // simulated field.
-            visionSim.addAprilTags(VisionConstants.FIELD_LAYOUT);
-
             SimCameraProperties simCameraProperties = new SimCameraProperties();
 
             // All of our AprilTag cameras use 16:9 FHD resolution

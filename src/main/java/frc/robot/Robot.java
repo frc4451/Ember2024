@@ -161,6 +161,11 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void simulationInit() {
+        // Add all the AprilTags inside the tag layout as visible targets to this
+        // simulated field.
+        VisionConstants.VISION_SYSTEM_SIM
+                .ifPresent(visionSystemSim -> visionSystemSim.addAprilTags(VisionConstants.FIELD_LAYOUT));
+
         m_robotContainer.m_vision.robotPoseSupplier = m_robotContainer.m_robotDrive::getPose;
     }
 

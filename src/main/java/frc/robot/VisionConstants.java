@@ -23,10 +23,10 @@ import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.AdvantageKitConstants.Mode;
 
 public final class VisionConstants {
-    public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-
     public static record VisionSource(String name, Transform3d robotToCamera) {
     }
+
+    public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
     public static final Optional<VisionSystemSim> VISION_SYSTEM_SIM = AdvantageKitConstants.getMode() == Mode.SIM
             ? Optional.of(new VisionSystemSim("VisionSim"))
