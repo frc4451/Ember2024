@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.targeting.PhotonPipelineResult;
@@ -20,12 +20,13 @@ import edu.wpi.first.math.numbers.N3;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.VisionConstants;
 import frc.robot.VisionConstants.VisionSource;
+import frc.robot.subsystems.vision.apriltag.AprilTagAlgorithms;
 import frc.robot.subsystems.vision.apriltag.AprilTagIO;
 import frc.robot.subsystems.vision.apriltag.AprilTagIOInputsAutoLogged;
-import frc.robot.subsystems.vision.apriltag.AprilTagAlgorithms;
 import frc.robot.subsystems.vision.apriltag.AprilTagPhoton;
 import frc.robot.subsystems.vision.apriltag.AprilTagPhotonSim;
 import frc.robot.subsystems.vision.apriltag.DuplicateTracker;
+import frc.robot.subsystems.vision.apriltag.EstimatedPose;
 import frc.robot.subsystems.vision.object_detection.ObjectDetectionFiltering;
 import frc.robot.subsystems.vision.object_detection.ObjectDetectionIO;
 import frc.robot.subsystems.vision.object_detection.ObjectDetectionIOInputsAutoLogged;
@@ -155,20 +156,17 @@ public class VisionSubsystem extends VirtualSubsystem {
                             .toArray());
 
             // Add estimated position and deviation to be used by SwerveDrivePoseEstimator
-            Optional<EstimatedRobotPose> estimatedPose = cam.io.getEstimatedRobotPose();
+            EstimatedPose estimatedPose = cam.inputs.estimatedPose;
 
-            estimatedPose.ifPresentOrElse(
-                    (pose) -> {
-                        Logger.recordOutput(cameraLogRoot + "EstimatedPose", pose.estimatedPose);
-                        Logger.recordOutput(cameraLogRoot + "EstimatedPoseTimestamp", pose.timestampSeconds);
+            Logger.recordOutput(cameraLogRoot + "EstimatedPose", estimatedPose.pose);
+            Logger.recordOutput(cameraLogRoot + "EstimatedPoseTimestamp", estimatedPose.timestamp);
 
-                        // Find Vision Measurement and add it for our Queue if it exists
-                        AprilTagAlgorithms.findVisionMeasurement(pose).ifPresent(visionMeasurements::add);
-                    },
-                    () -> {
-                        Logger.recordOutput(cameraLogRoot + "EstimatedPose", new Pose2d());
-                        Logger.recordOutput(cameraLogRoot + "EstimatedPoseTimestamp", -1.0);
-                    });
+            if (estimatedPose.isPresent) {
+                // Find Vision Measurement and add it for our Queue if it exists
+                AprilTagAlgorithms
+                        .findVisionMeasurement(estimatedPose.asEstimatedRobotPose())
+                        .ifPresent(visionMeasurements::add);
+            }
         }
     }
 

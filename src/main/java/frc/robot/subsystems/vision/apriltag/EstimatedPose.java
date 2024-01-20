@@ -50,5 +50,9 @@ public class EstimatedPose implements ProtobufSerializable {
         this.targets = targets;
     }
 
+    public EstimatedRobotPose asEstimatedRobotPose() {
+        return new EstimatedRobotPose(pose, timestamp, targets, null);
+    }
+
     public static final EstimatedPoseProto proto = new EstimatedPoseProto();
 }

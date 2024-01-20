@@ -1,8 +1,5 @@
 package frc.robot.subsystems.vision.apriltag;
 
-import java.util.Optional;
-
-import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.targeting.PhotonPipelineResult;
@@ -44,30 +41,26 @@ public class AprilTagPhoton implements AprilTagIO {
 
     private PhotonPipelineResult frame = new PhotonPipelineResult();
     private boolean isDuplicateFrame = false;
-    private Optional<EstimatedRobotPose> estimatedRobotPose = Optional.empty();
+    private EstimatedPose estimatedPose = new EstimatedPose();
 
     private void periodic() {
-        PhotonPipelineResult frame = camera.getLatestResult();
+        PhotonPipelineResult latestFrame = camera.getLatestResult();
 
-        isDuplicateFrame = duplicateTracker.isDuplicateFrame(frame);
+        isDuplicateFrame = duplicateTracker.isDuplicateFrame(latestFrame);
 
         if (isDuplicateFrame) {
             return;
         }
 
-        AprilTagFiltering.removeTooFarTargets(frame);
-        this.frame = frame;
-        estimatedRobotPose = AprilTagAlgorithms.estimateRobotPose(frame, estimator);
+        AprilTagFiltering.removeTooFarTargets(latestFrame);
+        frame = latestFrame;
+        estimatedPose = new EstimatedPose(AprilTagAlgorithms.estimateRobotPose(latestFrame, estimator));
     }
 
     @Override
     public void updateInputs(AprilTagIOInputs inputs) {
         inputs.frame = frame;
         inputs.isDuplicateFrame = isDuplicateFrame;
-    }
-
-    @Override
-    public Optional<EstimatedRobotPose> getEstimatedRobotPose() {
-        return estimatedRobotPose;
+        inputs.estimatedPose = estimatedPose;
     }
 }
