@@ -12,6 +12,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.RollerSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.pivot.PivotSubsystem;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.utils.CommandCustomController;
 
 /*
@@ -29,6 +30,8 @@ public class RobotContainer {
     public final RollerSubsystem m_rollers = new RollerSubsystem();
 
     public final PivotSubsystem m_pivot = new PivotSubsystem();
+
+    public final ShooterSubsystem m_shooter = new ShooterSubsystem();
 
     final CommandCustomController m_driverController = new CommandCustomController(OIConstants.kDriverControllerPort);
 
@@ -75,5 +78,17 @@ public class RobotContainer {
                 .whileTrue(new RunCommand(
                         () -> m_robotDrive.setCross(),
                         m_robotDrive));
+
+        m_driverController.y()
+                .onTrue(m_shooter.setVelocityCommand(15))
+                .onFalse(m_shooter.stopCommand());
+        m_driverController.x()
+                .onTrue(m_shooter.setVelocityCommand(10))
+                .onFalse(m_shooter.stopCommand());
+        m_driverController.b()
+                .onTrue(m_shooter.setVelocityCommand(5))
+                .onFalse(m_shooter.stopCommand());
+
     }
+
 }
