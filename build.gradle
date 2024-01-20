@@ -116,8 +116,6 @@ tasks.withType(JavaCompile) {
     options.compilerArgs.add '-XDstringConcat=inline'
 }
 
-// sourceSets.main.java.srcDir "${projectDir}/build/generated/source/proto/main/java"
-
 // AdvantageKit WPILib Shims as per: https://github.com/Mechanical-Advantage/AdvantageKit/blob/main/docs/INSTALLATION.md#existing-projects
 repositories {
     maven {
@@ -150,10 +148,6 @@ gversion {
   dateFormat = "yyyy-MM-dd HH:mm:ss z"
   timeZone = "America/New_York"
   indent = "    "
-}
-
-tasks.withType(Copy).all {
-    duplicatesStrategy = DuplicatesStrategy.WARN
 }
 
 // protobuf
