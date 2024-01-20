@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.RollerSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.pivot.PivotLocation;
 import frc.robot.subsystems.pivot.PivotSubsystem;
 import frc.utils.CommandCustomController;
 
@@ -57,7 +58,7 @@ public class RobotContainer {
                                 -m_driverController.getRightX(),
                                 true, true),
                         m_robotDrive));
-
+        m_pivot.setDefaultCommand(m_pivot.pivotPIDCommand());
         // m_pivot.setDefaultCommand(new RunCommand(() -> {
         // m_pivot.runAtPercent(m_operatorController.getRightY());
         // }, m_pivot));
@@ -79,5 +80,11 @@ public class RobotContainer {
                 .whileTrue(new RunCommand(
                         () -> m_robotDrive.setCross(),
                         m_robotDrive));
+
+        m_driverController.povUp().onTrue(m_pivot.setSetpointCommand(PivotLocation.k0.angle));
+        m_driverController.povRight().onTrue(m_pivot.setSetpointCommand(PivotLocation.k160.angle));
+        m_driverController.povDown().onTrue(m_pivot.setSetpointCommand(PivotLocation.k167.angle));
+        m_driverController.povLeft().onTrue(m_pivot.setSetpointCommand(PivotLocation.k90.angle));
+
     }
 }

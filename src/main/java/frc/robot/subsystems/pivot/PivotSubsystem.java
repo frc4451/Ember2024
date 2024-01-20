@@ -1,6 +1,5 @@
 package frc.robot.subsystems.pivot;
 
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
@@ -9,13 +8,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
 import frc.robot.Constants.AdvantageKitConstants;
-import frc.robot.Constants.IntakeConstants;
 
 public class PivotSubsystem extends SubsystemBase {
     private final PivotIO io;
@@ -23,6 +19,11 @@ public class PivotSubsystem extends SubsystemBase {
 
     private Rotation2d angle = new Rotation2d();
     private Rotation2d setpoint = new Rotation2d();
+
+    private final PIDController pidController = new PIDController(
+            Constants.IntakeConstants.kPivotP,
+            Constants.IntakeConstants.kPivotI,
+            Constants.IntakeConstants.kPivotD);
 
     public PivotSubsystem() {
         switch (AdvantageKitConstants.getMode()) {
@@ -43,18 +44,21 @@ public class PivotSubsystem extends SubsystemBase {
         setSetpoint(PivotLocation.INITIAL.angle);
     }
 
-
     @Override
     public void periodic() {
+        this.io.updateInputs(this.inputs);
+
         // Make sure the motor actually stops when the robot disabled
         if (DriverStation.isDisabled()) {
             this.io.stop();
         }
 
-        this.io.updateInputs(this.inputs);
         Logger.processInputs("Intake/Pivot", this.inputs);
 
         this.angle = new Rotation2d(this.inputs.relativeAngleRad);
+
+        Logger.recordOutput("Pivot/Angle", getAngle().getDegrees());
+        Logger.recordOutput("Pivot/SetpointAngle", getSetpoint().getDegrees());
     }
 
     public void setAngle(Rotation2d angle) {
@@ -65,61 +69,27 @@ public class PivotSubsystem extends SubsystemBase {
         return this.angle;
     }
 
-    @AutoLogOutput(key="Pivot/AngleDegrees")
-    public double getAngleDegrees() {
-        return this.angle.getDegrees();
-    }
-
     public Rotation2d getSetpoint() {
         return this.setpoint;
     }
 
     public void setSetpoint(Rotation2d angle) {
+        this.pidController.setSetpoint(angle.getDegrees());
         this.setpoint = angle;
     }
 
     public Command setSetpointCommand(Rotation2d angle) {
-        return new RunCommand(() -> this.setSetpoint(angle));
+        return new InstantCommand(() -> this.setSetpoint(angle));
     }
 
-    public void runAtPercent(double percent) {
-        double angleDegrees = this.getAngle().getDegrees();
-        if ((angleDegrees < IntakeConstants.kPivotMinDegrees && percent < 0.0)
-                || (angleDegrees > IntakeConstants.kPivotMaxDegrees && percent > 0.0)) {
-            this.io.stop();
-        } else {
-            this.io.setVoltage(12.0 * percent / 2.0);
-        }
-    }
-
-    public void pivot() {
-        double velocity = 0.6 * this.getSetpoint().minus(this.getAngle()).getDegrees();
-        this.io.setVoltage(velocity);
-    }
-
-
-    // TODO: use this
-    public PIDCommand PivotPIDCommand() {
-        return new PIDCommand(
-            new PIDController(
-                Constants.IntakeConstants.kPivotP,
-                Constants.IntakeConstants.kPivotI,
-                Constants.IntakeConstants.kPivotD            
-            ),
-            this::getAngleDegrees,
-            this.setpoint.getDegrees(),
-            output -> useOutput(output),
-            this
-        );
+    public Command pivotPIDCommand() {
+        return new RunCommand(() -> {
+            double output = pidController.calculate(this.getAngle().getDegrees());
+            useOutput(output);
+        }, this);
     }
 
     public void useOutput(double output) {
         this.io.setVoltage(MathUtil.clamp(output, -12, 12));
-    }
-    
-    
-
-    public Command pivotCommand() {
-        return new InstantCommand(this::pivot, this);
     }
 }
