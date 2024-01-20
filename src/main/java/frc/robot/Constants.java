@@ -161,12 +161,12 @@ public final class Constants {
 
         public static final double kPivotReduction = 240.0;
 
-        public static final int kPivotCanId = 4;
+        public static final int kPivotCanId = -1;
         public static final double kPivotVelocityRadiansPerSecond = Units.degreesToRadians(15.0);
     }
 
     public static final class ShooterConstants {
-        public static final int kTopShooterCanID = -1;
+        public static final int kTopShooterCanID = 4;
         public static final int kBottomShooterCanID = -1;
 
     }

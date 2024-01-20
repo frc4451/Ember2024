@@ -101,16 +101,24 @@ public class Robot extends LoggedRobot {
         // robot's periodic
         // block in order for anything in the Command-based framework to work.
         // m_robotContainer.field.setRobotPose(m_robotContainer.m_robotDrive.getPose());
-        m_robotContainer.field.setRobotPose(m_robotContainer.m_robotDrive.getPose());
+        // m_robotContainer.field.setRobotPose(m_robotContainer.m_robotDrive.getPose());
 
-        SmartDashboard.putNumber("X", m_robotContainer.m_robotDrive.getPose().getX());
-        SmartDashboard.putNumber("Y", m_robotContainer.m_robotDrive.getPose().getY());
-        SmartDashboard.putNumber("Pose Rotation", m_robotContainer.m_robotDrive.getPose().getRotation().getDegrees());
-        SmartDashboard.putNumber("Gyro Heading", m_robotContainer.m_robotDrive.getHeading().getDegrees());
-        SmartDashboard.putBoolean("Roller Beambreak Activated", m_robotContainer.m_rollers.isBeamBreakActivated());
-        SmartDashboard.putNumber("Arm Pivot Deg", m_robotContainer.m_pivot.getAngle().getDegrees());
-        SmartDashboard.putNumber("Arm Pivot Rad", m_robotContainer.m_pivot.getAngle().getRadians());
-        SmartDashboard.putNumber("Arm Pivot Setpoint Deg", m_robotContainer.m_pivot.getSetpoint().getDegrees());
+        // SmartDashboard.putNumber("X",
+        // m_robotContainer.m_robotDrive.getPose().getX());
+        // SmartDashboard.putNumber("Y",
+        // m_robotContainer.m_robotDrive.getPose().getY());
+        // SmartDashboard.putNumber("Pose Rotation",
+        // m_robotContainer.m_robotDrive.getPose().getRotation().getDegrees());
+        // SmartDashboard.putNumber("Gyro Heading",
+        // m_robotContainer.m_robotDrive.getHeading().getDegrees());
+        // SmartDashboard.putBoolean("Roller Beambreak Activated",
+        // m_robotContainer.m_rollers.isBeamBreakActivated());
+        // SmartDashboard.putNumber("Arm Pivot Deg",
+        // m_robotContainer.m_pivot.getAngle().getDegrees());
+        // SmartDashboard.putNumber("Arm Pivot Rad",
+        // m_robotContainer.m_pivot.getAngle().getRadians());
+        // SmartDashboard.putNumber("Arm Pivot Setpoint Deg",
+        // m_robotContainer.m_pivot.getSetpoint().getDegrees());
         SmartDashboard.putData("Field", m_robotContainer.field);
     }
 
@@ -121,11 +129,11 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledPeriodic() {
-        if (m_robotContainer.m_driverController.b().getAsBoolean()) {
-            m_robotContainer.m_robotDrive.zeroHeading();
-            m_robotContainer.m_robotDrive.resetPose(new Pose2d());
-            m_robotContainer.m_pivot.setAngle(PivotLocation.INITIAL.angle);
-        }
+        // if (m_robotContainer.m_driverController.b().getAsBoolean()) {
+        // m_robotContainer.m_robotDrive.zeroHeading();
+        // m_robotContainer.m_robotDrive.resetPose(new Pose2d());
+        // m_robotContainer.m_pivot.setAngle(PivotLocation.INITIAL.angle);
+        // }
     }
 
     /**
@@ -148,33 +156,36 @@ public class Robot extends LoggedRobot {
     /** This function is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
-        if (m_robotContainer.m_operatorController.leftTrigger().getAsBoolean()) {
-            m_robotContainer.m_rollers.runRollers(RollerMode.SUCK);
-        } else if (m_robotContainer.m_operatorController.rightTrigger().getAsBoolean()) {
-            m_robotContainer.m_rollers.runRollers(RollerMode.SHOOT_LOW);
-        } else if (m_robotContainer.m_operatorController.leftBumper().getAsBoolean()) {
-            m_robotContainer.m_rollers.runRollers(RollerMode.SHOOT_MID);
-        } else if (m_robotContainer.m_operatorController.rightBumper().getAsBoolean()) {
-            m_robotContainer.m_rollers.runRollers(RollerMode.SHOOT_HIGH);
-        } else {
-            m_robotContainer.m_rollers.runRollers(RollerMode.STOP);
-        }
+        // if (m_robotContainer.m_operatorController.leftTrigger().getAsBoolean()) {
+        // m_robotContainer.m_rollers.runRollers(RollerMode.SUCK);
+        // } else if
+        // (m_robotContainer.m_operatorController.rightTrigger().getAsBoolean()) {
+        // m_robotContainer.m_rollers.runRollers(RollerMode.SHOOT_LOW);
+        // } else if (m_robotContainer.m_operatorController.leftBumper().getAsBoolean())
+        // {
+        // m_robotContainer.m_rollers.runRollers(RollerMode.SHOOT_MID);
+        // } else if
+        // (m_robotContainer.m_operatorController.rightBumper().getAsBoolean()) {
+        // m_robotContainer.m_rollers.runRollers(RollerMode.SHOOT_HIGH);
+        // } else {
+        // m_robotContainer.m_rollers.runRollers(RollerMode.STOP);
+        // }
 
-        if (m_robotContainer.m_operatorController.povDown().getAsBoolean()) {
-            m_robotContainer.m_pivot.setSetpoint(PivotLocation.k167.angle);
-            m_robotContainer.m_pivot.pivot();
-        } else if (m_robotContainer.m_operatorController.povUp().getAsBoolean()) {
-            m_robotContainer.m_pivot.setSetpoint(PivotLocation.k0.angle);
-            m_robotContainer.m_pivot.pivot();
-        } else if (m_robotContainer.m_operatorController.povLeft().getAsBoolean()) {
-            m_robotContainer.m_pivot.setSetpoint(PivotLocation.k90.angle);
-            m_robotContainer.m_pivot.pivot();
-        } else if (m_robotContainer.m_operatorController.povRight().getAsBoolean()) {
-            m_robotContainer.m_pivot.setSetpoint(PivotLocation.k160.angle);
-            m_robotContainer.m_pivot.pivot();
-        } else {
-            m_robotContainer.m_pivot.runAtPercent(m_robotContainer.m_operatorController.getRightY());
-        }
+        // if (m_robotContainer.m_operatorController.povDown().getAsBoolean()) {
+        // m_robotContainer.m_pivot.setSetpoint(PivotLocation.k167.angle);
+        // m_robotContainer.m_pivot.pivot();
+        // } else if (m_robotContainer.m_operatorController.povUp().getAsBoolean()) {
+        // m_robotContainer.m_pivot.setSetpoint(PivotLocation.k0.angle);
+        // m_robotContainer.m_pivot.pivot();
+        // } else if (m_robotContainer.m_operatorController.povLeft().getAsBoolean()) {
+        // m_robotContainer.m_pivot.setSetpoint(PivotLocation.k90.angle);
+        // m_robotContainer.m_pivot.pivot();
+        // } else if (m_robotContainer.m_operatorController.povRight().getAsBoolean()) {
+        // m_robotContainer.m_pivot.setSetpoint(PivotLocation.k160.angle);
+        // m_robotContainer.m_pivot.pivot();
+        // } else {
+        // m_robotContainer.m_pivot.runAtPercent(m_robotContainer.m_operatorController.getRightY());
+        // }
     }
 
     @Override

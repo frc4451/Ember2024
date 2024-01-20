@@ -25,11 +25,11 @@ public class RobotContainer {
     public final Field2d field = new Field2d();
 
     // The robot's subsystems
-    public final DriveSubsystem m_robotDrive = new DriveSubsystem();
+    // public final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
-    public final RollerSubsystem m_rollers = new RollerSubsystem();
+    // public final RollerSubsystem m_rollers = new RollerSubsystem();
 
-    public final PivotSubsystem m_pivot = new PivotSubsystem();
+    // public final PivotSubsystem m_pivot = new PivotSubsystem();
 
     public final ShooterSubsystem m_shooter = new ShooterSubsystem();
 
@@ -46,16 +46,16 @@ public class RobotContainer {
         configureButtonBindings();
 
         // Configure default commands
-        m_robotDrive.setDefaultCommand(
-                // The left stick controls translation of the robot.
-                // Turning is controlled by the X axis of the right stick.
-                new RunCommand(
-                        () -> m_robotDrive.drive(
-                                -m_driverController.getLeftY(),
-                                -m_driverController.getLeftX(),
-                                -m_driverController.getRightX(),
-                                true, true),
-                        m_robotDrive));
+        // m_robotDrive.setDefaultCommand(
+        // // The left stick controls translation of the robot.
+        // // Turning is controlled by the X axis of the right stick.
+        // new RunCommand(
+        // () -> m_robotDrive.drive(
+        // -m_driverController.getLeftY(),
+        // -m_driverController.getLeftX(),
+        // -m_driverController.getRightX(),
+        // true, true),
+        // m_robotDrive));
 
         // m_pivot.setDefaultCommand(new RunCommand(() -> {
         // m_pivot.runAtPercent(m_operatorController.getRightY());
@@ -74,19 +74,22 @@ public class RobotContainer {
      * {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-        m_driverController.rightBumper()
-                .whileTrue(new RunCommand(
-                        () -> m_robotDrive.setCross(),
-                        m_robotDrive));
+        // m_driverController.rightBumper()
+        // .whileTrue(new RunCommand(
+        // () -> m_robotDrive.setCross(),
+        // m_robotDrive));
 
+        m_driverController.b()
+                .onTrue(m_shooter.setVelocityCommand(35))
+                .onFalse(m_shooter.stopCommand());
         m_driverController.y()
-                .onTrue(m_shooter.setVelocityCommand(15))
+                .onTrue(m_shooter.setVelocityCommand(40))
                 .onFalse(m_shooter.stopCommand());
         m_driverController.x()
-                .onTrue(m_shooter.setVelocityCommand(10))
+                .onTrue(m_shooter.setVelocityCommand(45))
                 .onFalse(m_shooter.stopCommand());
-        m_driverController.b()
-                .onTrue(m_shooter.setVelocityCommand(5))
+        m_driverController.a()
+                .onTrue(m_shooter.setVelocityCommand(50))
                 .onFalse(m_shooter.stopCommand());
 
     }
