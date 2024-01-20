@@ -187,12 +187,12 @@ public class VisionSubsystem extends VirtualSubsystem {
         // If there isn't a valid non-fiducial target, we display NaN.
 
         if (nonFiducialTargets.isEmpty()) {
-            Logger.recordOutput(cameraLogRoot + "YawFromRobotCenterRad", Double.NaN);
+            Logger.recordOutput(cameraLogRoot + "YawFromRobotCenterDeg", Double.NaN);
             return Optional.empty();
         } else {
             PhotonTrackedTarget object = nonFiducialTargets.get(0);
 
-            Logger.recordOutput(cameraLogRoot + "YawFromRobotCenterRad", object.getYaw());
+            Logger.recordOutput(cameraLogRoot + "YawFromRobotCenterDeg", object.getYaw());
 
             return Optional.of(object);
         }

@@ -44,10 +44,19 @@ public final class Constants {
     public static final class PathPlannerConstants {
         public static final Alliance DEFAULT_ALLIANCE = Alliance.Blue;
 
+        public static final double kMaxAngularAcceleration = 4 * Math.PI; // This was made up
+        public static final double kMaxAccelerationMetersPerSecondSquared = 3.00; // This was made up
+
         public static final PathConstraints DEFAULT_PATH_CONSTRAINTS = new PathConstraints(
                 DriveConstants.kMaxSpeedMetersPerSecond,
+                PathPlannerConstants.kMaxAccelerationMetersPerSecondSquared,
                 DriveConstants.kMaxAngularSpeed,
-                3 * Math.PI,
+                5 * Math.PI);
+
+        public static final PathConstraints TEST_PATH_CONSTRAINTS = new PathConstraints(
+                1.0,
+                PathPlannerConstants.kMaxAccelerationMetersPerSecondSquared,
+                DriveConstants.kMaxAngularSpeed,
                 5 * Math.PI);
     }
 
