@@ -323,4 +323,8 @@ public class DriveSubsystem extends SubsystemBase {
     public double getTurnRate() {
         return m_gyroInputs.yawVelocityRadPerSec;
     }
+
+    public void rotateInPlace(double percentOutput) {
+        drive(0, 0, percentOutput, true, true);
+    }
 }

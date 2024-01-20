@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import org.photonvision.targeting.PhotonTrackedTarget;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -72,5 +76,17 @@ public class RobotContainer {
                 .whileTrue(new RunCommand(
                         () -> m_robotDrive.setCross(),
                         m_robotDrive));
+
+        m_driverController.y()
+                .and(m_vision.cameraSeesObject())
+                .whileTrue(new RunCommand(() -> {
+                    PhotonTrackedTarget target = m_vision.findClosestObject().get();
+                    double percentOut = MathUtil.applyDeadband(Units.degreesToRadians(target.getYaw()), 0.01);
+                    if (percentOut != 0.0) {
+                        m_robotDrive.rotateInPlace(percentOut);
+                    }
+                }, m_robotDrive));
+
     }
+
 }

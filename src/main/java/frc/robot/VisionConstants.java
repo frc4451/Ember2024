@@ -57,16 +57,15 @@ public final class VisionConstants {
                                     0, Units.degreesToRadians(-20),
                                     Units.degreesToRadians(180 - 30)))));
 
-    public static final List<VisionSource> OBJECT_DETECTION_SOURCES = List.of(
-    // This isn't going to be installed on the robot when we start, but this is the
-    // definition when we need it
-    // new VisionSource("ObjectDetectionCamera", new Transform3d(
-    // new Translation3d(
-    // Units.inchesToMeters(0),
-    // Units.inchesToMeters(-12),
-    // Units.inchesToMeters(8.5)),
-    // new Rotation3d(0, Units.degreesToRadians(-5), 0)))
-    );
+    public static final VisionSource OBJECT_DETECTION_SOURCE =
+            // This isn't going to be installed on the robot when we start, but this is the
+            // definition when we need it
+            new VisionSource("Arducam_OV9782_USB_Camera", new Transform3d(
+                    new Translation3d(
+                            Units.inchesToMeters(0),
+                            Units.inchesToMeters(-12),
+                            Units.inchesToMeters(8.5)),
+                    new Rotation3d(0, Units.degreesToRadians(-5), 0)));
 
     // Review the Field layout for positions
     // https://firstfrc.blob.core.windows.net/frc2024/FieldAssets/2024LayoutMarkingDiagram.pdf

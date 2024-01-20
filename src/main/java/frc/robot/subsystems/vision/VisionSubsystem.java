@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Supplier;
@@ -17,6 +18,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.VisionConstants;
 import frc.robot.VisionConstants.VisionSource;
@@ -53,7 +55,8 @@ public class VisionSubsystem extends VirtualSubsystem {
     }
 
     private final List<AprilTagCamera> aprilTagCameras = new ArrayList<>();
-    private final List<ObjectDetectionCamera> objectDetectionCameras = new ArrayList<>();
+    // There's only one Camera that will be detecting objects
+    private ObjectDetectionCamera objectDetectionCamera;
 
     private ConcurrentLinkedQueue<VisionMeasurement> visionMeasurements = new ConcurrentLinkedQueue<>();
 
@@ -88,30 +91,24 @@ public class VisionSubsystem extends VirtualSubsystem {
                             new DuplicateTracker()));
         }
 
-        // Initialize cameras used exclusively for Object Detection (Notes)
-        for (VisionConstants.VisionSource source : VisionConstants.OBJECT_DETECTION_SOURCES) {
-            ObjectDetectionIO io;
+        // Initialize the camera used exclusively for Object Detection (Notes)
+        ObjectDetectionIO io;
 
-            switch (AdvantageKitConstants.getMode()) {
-                case REAL:
-                    io = new ObjectDetectionPhoton(source);
-                    break;
-                case SIM:
-                    io = new ObjectDetectionPhotonSim(source);
-                    break;
-                default:
-                    io = new ObjectDetectionIO() {
+        switch (AdvantageKitConstants.getMode()) {
+            case REAL:
+                io = new ObjectDetectionPhoton(VisionConstants.OBJECT_DETECTION_SOURCE);
+                break;
+            case SIM:
+                io = new ObjectDetectionPhotonSim(VisionConstants.OBJECT_DETECTION_SOURCE);
+                break;
+            default:
+                io = new ObjectDetectionIO() {
 
-                    };
-                    break;
-            }
-            objectDetectionCameras.add(
-                    new ObjectDetectionCamera(
-                            io,
-                            new ObjectDetectionIOInputsAutoLogged(),
-                            source,
-                            new DuplicateTracker()));
+                };
+                break;
         }
+        objectDetectionCamera = new ObjectDetectionCamera(io, new ObjectDetectionIOInputsAutoLogged(),
+                VisionConstants.OBJECT_DETECTION_SOURCE, new DuplicateTracker());
 
     }
 
@@ -122,7 +119,7 @@ public class VisionSubsystem extends VirtualSubsystem {
         findVisionMeasurements();
 
         // Check for updates to Measurements away from Notes
-        findClosestObjectYaw();
+        findClosestObject();
     }
 
     public void simulationPeriodic() {
@@ -174,32 +171,35 @@ public class VisionSubsystem extends VirtualSubsystem {
      * Alternative strategy for Notes, we need to find _where_ the note is
      * and how we need to rotate the robot to be in-line with the note.
      */
-    public void findClosestObjectYaw() {
-        for (ObjectDetectionCamera cam : objectDetectionCameras) {
-            cam.io.updateInputs(cam.inputs);
+    public Optional<PhotonTrackedTarget> findClosestObject() {
+        String cameraLogRoot = "ObjectDetection/" + objectDetectionCamera.source.name() + "/";
 
-            // If we have a duplicate frame, don't bother updating anything
-            if (cam.dupeTracker.isDuplicateFrame(cam.inputs.frame)) {
-                continue;
-            }
+        objectDetectionCamera.io.updateInputs(objectDetectionCamera.inputs);
+        Logger.processInputs(cameraLogRoot, objectDetectionCamera.inputs);
 
-            String cameraLogRoot = "ObjectDetection/" + cam.source.name() + "/";
-            Logger.processInputs(cameraLogRoot, cam.inputs);
+        List<PhotonTrackedTarget> nonFiducialTargets = ObjectDetectionFiltering
+                .getNonFiducialTargets(objectDetectionCamera.inputs.frame);
 
-            List<PhotonTrackedTarget> nonFiducialTargets = ObjectDetectionFiltering
-                    .getNonFiducialTargets(cam.inputs.frame);
+        Logger.recordOutput(cameraLogRoot + "HasNotes", !nonFiducialTargets.isEmpty());
 
-            Logger.recordOutput(cameraLogRoot + "HasNotes", !nonFiducialTargets.isEmpty());
+        // PhotonVision orders targets by "best", which in their `getBestTarget` method
+        // just gets the first target, assuming there is a target. We just get that.
+        // If there isn't a valid non-fiducial target, we display NaN.
 
-            // PhotonVision orders targets by "best", which in their `getBestTarget` method
-            // just gets the first target, assuming there is a target. We just get that.
-            // If there isn't a valid non-fiducial target, we display NaN.
-            double yawFromRobotCenter = nonFiducialTargets.isEmpty()
-                    ? Double.NaN
-                    : nonFiducialTargets.get(0).getYaw();
+        if (nonFiducialTargets.isEmpty()) {
+            Logger.recordOutput(cameraLogRoot + "YawFromRobotCenterRad", Double.NaN);
+            return Optional.empty();
+        } else {
+            PhotonTrackedTarget object = nonFiducialTargets.get(0);
 
-            Logger.recordOutput(cameraLogRoot + "YawFromRobotCenter", yawFromRobotCenter);
+            Logger.recordOutput(cameraLogRoot + "YawFromRobotCenterRad", object.getYaw());
+
+            return Optional.of(object);
         }
+    }
+
+    public Trigger cameraSeesObject() {
+        return new Trigger(() -> findClosestObject().isPresent());
     }
 
     /**
