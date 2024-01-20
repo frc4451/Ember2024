@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class CommandCustomController extends CommandXboxController {
-    private final double joystickDeadband = 0.1;
+    private final double joystickDeadband = 0.2;
     private final double triggerPressedThreshold = 0.1;
 
     /**

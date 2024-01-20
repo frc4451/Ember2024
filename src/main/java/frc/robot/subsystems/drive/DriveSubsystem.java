@@ -8,6 +8,11 @@ import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
+
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -17,6 +22,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.DriveConstants;
@@ -60,6 +67,22 @@ public class DriveSubsystem extends SubsystemBase {
     /** Creates a new DriveSubsystem. */
     public DriveSubsystem(Supplier<VisionMeasurement> visionSupplier) {
         m_visionSupplier = visionSupplier;
+
+        // Configure AutoBuilder for PathPlanner
+        AutoBuilder.configureHolonomic(
+                this::getPose,
+                this::resetPose,
+                () -> DriveConstants.kDriveKinematics.toChassisSpeeds(getModuleStates()),
+                this::runVelocity,
+                new HolonomicPathFollowerConfig(
+                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                        new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                        DriveConstants.kMaxSpeedMetersPerSecond,
+                        DriveConstants.kWheelBase / 2,
+                        new ReplanningConfig()),
+                () -> DriverStation.getAlliance().isPresent()
+                        && DriverStation.getAlliance().get() == Alliance.Red,
+                this);
 
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
@@ -276,6 +299,23 @@ public class DriveSubsystem extends SubsystemBase {
         for (int i = 0; i < swerveModuleStates.length; i++) {
             m_modules[i].setDesiredState(swerveModuleStates[i]);
         }
+    }
+
+    /**
+     * Runs the drive at the desired velocity.
+     *
+     * @param speeds Speeds in meters/sec
+     */
+    public void runVelocity(ChassisSpeeds speeds) {
+        // Calculate module setpoints
+        ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
+        SwerveModuleState[] setpointStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(discreteSpeeds);
+
+        // Send setpoints to modules
+        setModuleStates(setpointStates);
+
+        // Log setpoint states
+        Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
     }
 
     /**

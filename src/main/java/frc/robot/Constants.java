@@ -5,12 +5,14 @@
 package frc.robot;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.pathplanner.lib.path.PathConstraints;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -37,6 +39,16 @@ public final class Constants {
         public static Mode getMode() {
             return RobotBase.isReal() ? Mode.REAL : kfakeMode;
         }
+    }
+
+    public static final class PathPlannerConstants {
+        public static final Alliance DEFAULT_ALLIANCE = Alliance.Blue;
+
+        public static final PathConstraints DEFAULT_PATH_CONSTRAINTS = new PathConstraints(
+                DriveConstants.kMaxSpeedMetersPerSecond,
+                DriveConstants.kMaxAngularSpeed,
+                3 * Math.PI,
+                5 * Math.PI);
     }
 
     public static final class DriveConstants {
