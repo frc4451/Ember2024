@@ -414,9 +414,9 @@ public class DriveSubsystem extends SubsystemBase {
 
         // Negate it to move closer to the target
         double calculateDistanceToTargetMeters = PhotonUtils.calculateDistanceToTargetMeters(
-                robotToCamera.getY(),
+                robotToCamera.getZ(),
                 Units.inchesToMeters(2),
-                robotToCamera.getRotation().getY(),
+                -robotToCamera.getRotation().getY(),
                 Units.degreesToRadians(target.getPitch()));
 
         Translation2d translationCameraFromTarget = PhotonUtils.estimateCameraToTargetTranslation(
