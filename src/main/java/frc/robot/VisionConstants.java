@@ -65,7 +65,7 @@ public final class VisionConstants {
                             Units.inchesToMeters(0),
                             Units.inchesToMeters(-12),
                             Units.inchesToMeters(8.5)),
-                    new Rotation3d(0, Units.degreesToRadians(-5), 0)));
+                    new Rotation3d(0, Units.degreesToRadians(10), 0)));
 
     // Review the Field layout for positions
     // https://firstfrc.blob.core.windows.net/frc2024/FieldAssets/2024LayoutMarkingDiagram.pdf

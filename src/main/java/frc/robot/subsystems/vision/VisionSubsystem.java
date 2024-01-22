@@ -198,6 +198,9 @@ public class VisionSubsystem extends VirtualSubsystem {
         }
     }
 
+    /**
+     * Determines whether a "Note" is within the camera's sight
+     */
     public Trigger cameraSeesObject() {
         return new Trigger(() -> findClosestObject().isPresent());
     }

@@ -27,12 +27,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PathPlannerConstants;
 import frc.robot.commands.PathfindToNoteCommand;
+import frc.robot.commands.RepeatCommandUntilCondition;
 import frc.robot.pathplanner.PathPlannerUtils;
 import frc.robot.pathplanner.paths.PathPlannerPaths;
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -51,7 +53,9 @@ public class RobotContainer {
     public final VisionSubsystem m_vision = new VisionSubsystem();
 
     // The robot's subsystems
-    public final DriveSubsystem m_robotDrive = new DriveSubsystem(m_vision::pollLatestVisionMeasurement);
+    public final DriveSubsystem m_robotDrive = new DriveSubsystem(
+            m_vision::pollLatestVisionMeasurement,
+            m_vision::findClosestObject);
 
     // public final RollerSubsystem m_rollers = new RollerSubsystem();
 
@@ -159,6 +163,14 @@ public class RobotContainer {
                 .whileTrue(
                         Commands.defer(() -> PathfindToNoteCommand.getPathfindToNoteCommand(m_vision, m_robotDrive),
                                 Set.of(m_robotDrive)));
+        m_driverController.x().whileTrue(
+                Commands.deferredProxy(() -> PathfindToNoteCommand.pathFindToCommand(m_vision.findClosestObject(),
+                        m_robotDrive.getPose())));
 
+        m_driverController
+                .rightBumper()
+                .and(m_vision.cameraSeesObject())
+                .whileTrue(
+                    Commands.deferredProxy(m_robotDrive::findClosestPathToNote));
     }
 }

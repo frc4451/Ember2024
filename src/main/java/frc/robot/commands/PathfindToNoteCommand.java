@@ -1,9 +1,15 @@
 package frc.robot.commands;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
+
+import javax.swing.text.html.Option;
 
 import org.littletonrobotics.junction.Logger;
+import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonTrackedTarget;
+import org.photonvision.targeting.TargetCorner;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
@@ -12,16 +18,58 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.VisionConstants;
 import frc.robot.Constants.PathPlannerConstants;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 
 public class PathfindToNoteCommand extends Command {
+    public static Command pathFindToCommand(Optional<PhotonTrackedTarget> closestObject, Pose2d currentPose) {
+        String loggingKey = "AutoBuilder/";
+
+        if (closestObject.isEmpty()) {
+            Logger.recordOutput(loggingKey + "Destination", new Pose2d());
+            return Commands.none();
+        }
+
+        PhotonTrackedTarget target = closestObject.get();
+
+        // We want to eventually be directly inline with the Note
+        Rotation2d targetYaw = Rotation2d.fromDegrees(target.getYaw());
+
+        // Position of Camera from Center of Robot
+        Transform3d robotToCamera = VisionConstants.OBJECT_DETECTION_SOURCE.robotToCamera();
+
+        Logger.recordOutput(loggingKey + "target", target);
+
+        // Negate it to move closer to the target
+        double calculateDistanceToTargetMeters = -PhotonUtils.calculateDistanceToTargetMeters(
+                robotToCamera.getY(),
+                Units.inchesToMeters(2),
+                robotToCamera.getRotation().getY(),
+                Units.degreesToRadians(target.getPitch()));
+
+        Translation2d maybeDistance = PhotonUtils.estimateCameraToTargetTranslation(
+                calculateDistanceToTargetMeters,
+                targetYaw);
+
+        Pose2d endPose = currentPose.transformBy(new Transform2d(maybeDistance, targetYaw));
+
+        Logger.recordOutput(loggingKey + "calculateDistanceToTargetMeters", calculateDistanceToTargetMeters);
+        Logger.recordOutput(loggingKey + "maybeDistance", maybeDistance);
+        Logger.recordOutput(loggingKey + "targetYaw", targetYaw);
+
+        Logger.recordOutput(loggingKey + "Destination", endPose);
+
+        return AutoBuilder.pathfindToPose(endPose, PathPlannerConstants.TEST_PATH_CONSTRAINTS);
+    }
+
     public static Command getPathfindToNoteCommand(VisionSubsystem vision, DriveSubsystem drive) {
         Optional<PhotonTrackedTarget> maybeClosestObject = vision.findClosestObject();
         if (maybeClosestObject.isPresent()) {
