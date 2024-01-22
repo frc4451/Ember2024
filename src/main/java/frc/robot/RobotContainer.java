@@ -168,9 +168,13 @@ public class RobotContainer {
                         m_robotDrive.getPose())));
 
         m_driverController
-                .rightBumper()
+                .leftBumper()
                 .and(m_vision.cameraSeesObject())
                 .whileTrue(
                         Commands.deferredProxy(m_robotDrive::findClosestPathToNote));
+        // .whileTrue(
+        // Commands.deferredProxy(m_robotDrive::findClosestPathToNote)
+        // // .repeatedly()
+        // .until(m_vision.cameraSeesObject().negate()));
     }
 }

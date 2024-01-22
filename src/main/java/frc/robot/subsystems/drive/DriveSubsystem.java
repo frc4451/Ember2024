@@ -404,6 +404,8 @@ public class DriveSubsystem extends SubsystemBase {
 
         PhotonTrackedTarget target = closestObject.get();
 
+        Logger.recordOutput(loggingKey + "getBestCameraToTarget", target.getBestCameraToTarget());
+
         // We want to eventually be directly inline with the Note
         Rotation2d targetYaw = Rotation2d.fromDegrees(target.getYaw());
 
