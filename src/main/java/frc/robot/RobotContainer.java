@@ -10,6 +10,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.Measure;
 
@@ -34,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PathPlannerConstants;
 import frc.robot.commands.PathfindToNoteCommand;
+import frc.robot.commands.PathfindToTarget;
 import frc.robot.commands.RepeatCommandUntilCondition;
 import frc.robot.pathplanner.PathPlannerUtils;
 import frc.robot.pathplanner.paths.PathPlannerPaths;
@@ -163,6 +165,7 @@ public class RobotContainer {
                 .whileTrue(
                         Commands.defer(() -> PathfindToNoteCommand.getPathfindToNoteCommand(m_vision, m_robotDrive),
                                 Set.of(m_robotDrive)));
+
         m_driverController.x().whileTrue(
                 Commands.deferredProxy(() -> PathfindToNoteCommand.pathFindToCommand(m_vision.findClosestObject(),
                         m_robotDrive.getPose())));
@@ -171,10 +174,20 @@ public class RobotContainer {
                 .leftBumper()
                 .and(m_vision.cameraSeesObject())
                 .whileTrue(
-                        Commands.deferredProxy(m_robotDrive::findClosestPathToNote));
-        // .whileTrue(
-        // Commands.deferredProxy(m_robotDrive::findClosestPathToNote)
-        // // .repeatedly()
-        // .until(m_vision.cameraSeesObject().negate()));
+                        Commands.defer(m_robotDrive::findClosestPathToNote, Set.of(m_robotDrive)).repeatedly()
+                // .until(() -> !m_robotDrive.m_objectTrackerSupplier.get().isPresent())
+                );
+
+        m_driverController
+                .rightBumper()
+                .and(m_vision.cameraSeesObject())
+                .whileTrue(
+                        Commands.defer(
+                                () -> new PathfindToTarget(m_robotDrive::getPose, m_robotDrive.m_objectTrackerSupplier,
+                                        m_robotDrive),
+                                Set.of(m_robotDrive))
+                // .until(() -> !m_robotDrive.m_objectTrackerSupplier.get().isPresent())
+                );
+
     }
 }

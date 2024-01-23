@@ -1,20 +1,14 @@
 package frc.robot.commands;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
-
-import javax.swing.text.html.Option;
-
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonTrackedTarget;
-import org.photonvision.targeting.TargetCorner;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -22,6 +16,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.VisionConstants;
@@ -46,28 +42,13 @@ public class PathfindToNoteCommand extends Command {
         // Position of Camera from Center of Robot
         Transform3d robotToCamera = VisionConstants.OBJECT_DETECTION_SOURCE.robotToCamera();
 
-        Logger.recordOutput(loggingKey + "target", target);
+        Transform3d cameraToTarget = target.getBestCameraToTarget();
 
-        // Negate it to move closer to the target
-        double calculateDistanceToTargetMeters = -PhotonUtils.calculateDistanceToTargetMeters(
-                robotToCamera.getY(),
-                Units.inchesToMeters(2),
-                robotToCamera.getRotation().getY(),
-                Units.degreesToRadians(target.getPitch()));
+        Pose3d endPose = new Pose3d().transformBy(robotToCamera).transformBy(cameraToTarget);
 
-        Translation2d maybeDistance = PhotonUtils.estimateCameraToTargetTranslation(
-                calculateDistanceToTargetMeters,
-                targetYaw);
+        Logger.recordOutput("OUTPUT", endPose);
 
-        Pose2d endPose = currentPose.transformBy(new Transform2d(maybeDistance, targetYaw));
-
-        Logger.recordOutput(loggingKey + "calculateDistanceToTargetMeters", calculateDistanceToTargetMeters);
-        Logger.recordOutput(loggingKey + "maybeDistance", maybeDistance);
-        Logger.recordOutput(loggingKey + "targetYaw", targetYaw);
-
-        Logger.recordOutput(loggingKey + "Destination", endPose);
-
-        return AutoBuilder.pathfindToPose(endPose, PathPlannerConstants.TEST_PATH_CONSTRAINTS);
+        return AutoBuilder.pathfindToPose(endPose.toPose2d(), PathPlannerConstants.TEST_PATH_CONSTRAINTS);
     }
 
     public static Command getPathfindToNoteCommand(VisionSubsystem vision, DriveSubsystem drive) {
@@ -84,9 +65,8 @@ public class PathfindToNoteCommand extends Command {
 
             Logger.recordOutput("Debugg", true);
 
-            return new SequentialCommandGroup(
-                    rotateInPlace(vision, drive),
-                    AutoBuilder.pathfindToPose(endPose, PathPlannerConstants.TEST_PATH_CONSTRAINTS));
+            // return new rotateInPlace(vision, drive);
+            return Commands.none();
         } else {
             Logger.recordOutput("Debugg", false);
             return Commands.none();
@@ -94,10 +74,12 @@ public class PathfindToNoteCommand extends Command {
     }
 
     public static Command rotateInPlace(VisionSubsystem vision, DriveSubsystem drive) {
-        return new RunCommand(() -> {
+        return new RepeatCommand(new InstantCommand(() -> {
             PhotonTrackedTarget target = vision.findClosestObject().get();
-            drive.rotateInPlace(target.getYaw() / 180.0);
-        })
-                .until(() -> MathUtil.applyDeadband(vision.findClosestObject().get().getYaw(), 0.5) == 0);
+            Rotation2d targetYaw = Rotation2d.fromDegrees(target.getYaw());
+            drive.drive(targetYaw.getCos(), 0, targetYaw.getRadians() / Math.PI, false, true);
+        }));
+        // .until(() ->
+        // MathUtil.applyDeadband(vision.findClosestObject().get().getYaw(), 0.5) == 0);
     }
 }

@@ -77,7 +77,7 @@ public class DriveSubsystem extends SubsystemBase {
             new Pose2d());
 
     private final Supplier<VisionMeasurement> m_visionSupplier;
-    private final Supplier<Optional<PhotonTrackedTarget>> m_objectTrackerSupplier;
+    public final Supplier<Optional<PhotonTrackedTarget>> m_objectTrackerSupplier;
 
     /** Creates a new DriveSubsystem. */
     public DriveSubsystem(Supplier<VisionMeasurement> visionSupplier,
@@ -419,23 +419,25 @@ public class DriveSubsystem extends SubsystemBase {
                 -robotToCamera.getRotation().getY(),
                 Units.degreesToRadians(target.getPitch()));
 
-        Translation2d translationCameraFromTarget = PhotonUtils.estimateCameraToTargetTranslation(
+        Translation2d translationTargetToCamera = PhotonUtils.estimateCameraToTargetTranslation(
                 calculateDistanceToTargetMeters,
                 targetYaw);
 
         Pose2d endPose = this
                 .getPose()
-                .transformBy(new Transform2d(translationCameraFromTarget, targetYaw));
+                .transformBy(new Transform2d(
+                        translationTargetToCamera,
+                        targetYaw.rotateBy(robotToCamera.getRotation().toRotation2d())));
 
         Logger.recordOutput(loggingKey + "calculateDistanceToTargetMeters", calculateDistanceToTargetMeters);
-        Logger.recordOutput(loggingKey + "translationCameraFromTarget", translationCameraFromTarget);
+        Logger.recordOutput(loggingKey + "translationCameraFromTarget", translationTargetToCamera);
 
         Logger.recordOutput(loggingKey + "Destination", endPose);
 
         return AutoBuilder
                 .pathfindToPose(
                         endPose,
-                        PathPlannerConstants.TEST_PATH_CONSTRAINTS,
+                        PathPlannerConstants.DEFAULT_PATH_CONSTRAINTS,
                         DriveConstants.kMaxSpeedMetersPerSecond);
     }
 }
