@@ -4,39 +4,22 @@
 
 package frc.robot;
 
-import org.photonvision.targeting.PhotonTrackedTarget;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.Measure;
-
-import java.util.Optional;
 import java.util.Set;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.CommandUtil;
-
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
-import frc.robot.Constants.PathPlannerConstants;
 import frc.robot.commands.PathfindToNoteCommand;
 import frc.robot.commands.PathfindToTarget;
-import frc.robot.commands.RepeatCommandUntilCondition;
 import frc.robot.pathplanner.PathPlannerUtils;
 import frc.robot.pathplanner.paths.PathPlannerPaths;
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -180,14 +163,11 @@ public class RobotContainer {
 
         m_driverController
                 .rightBumper()
-                .and(m_vision.cameraSeesObject())
                 .whileTrue(
                         Commands.defer(
                                 () -> new PathfindToTarget(m_robotDrive::getPose, m_robotDrive.m_objectTrackerSupplier,
                                         m_robotDrive),
-                                Set.of(m_robotDrive))
-                // .until(() -> !m_robotDrive.m_objectTrackerSupplier.get().isPresent())
-                );
+                                Set.of(m_robotDrive)));
 
     }
 }

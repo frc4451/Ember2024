@@ -3,19 +3,20 @@ package frc.robot.commands;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import javax.xml.crypto.dsig.Transform;
-
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonTrackedTarget;
+
+import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.VisionConstants;
 import frc.robot.subsystems.drive.DriveSubsystem;
 
@@ -24,11 +25,20 @@ public class PathfindToTarget extends Command {
     private final PIDController thetaController = new PIDController(1, 0, 0);
 
     private final Supplier<Pose2d> poseSupplier;
+
     private final Supplier<Optional<PhotonTrackedTarget>> targetSupplier;
 
     private final DriveSubsystem drive;
 
     private boolean shouldFinish = false;
+
+    private Pose2d endPose;
+
+    private Command pathfindToPoseCommand;
+
+    private static final Translation2d NOTE_SIZE = new Translation2d(
+            Units.inchesToMeters(14),
+            Units.inchesToMeters(14));
 
     public PathfindToTarget(
             Supplier<Pose2d> poseSupplier,
@@ -40,27 +50,58 @@ public class PathfindToTarget extends Command {
     }
 
     @Override
+    public void initialize() {
+        drive.drive(0, 0, 0, false, true);
+    }
+
+    @Override
     public void execute() {
-        if (!targetSupplier.get().isPresent()) {
-            drive.drive(0, 0, 0, false, true);
+        if (pathfindToPoseCommand != null) {
+            shouldFinish = pathfindToPoseCommand.isFinished();
+            if (shouldFinish) {
+                pathfindToPoseCommand.end(false);
+            } else {
+                pathfindToPoseCommand.execute();
+            }
+            return;
+        } else if (!targetSupplier.get().isPresent() && endPose != null) {
+            drive.drive(0, 0, 0, false, false);
+            pathfindToPoseCommand = AutoBuilder.pathfindToPose(
+                    endPose,
+                    Constants.PathPlannerConstants.DEFAULT_PATH_CONSTRAINTS);
+            pathfindToPoseCommand.initialize();
+            return;
+        } else if (!targetSupplier.get().isPresent() && endPose == null) {
             shouldFinish = true;
             return;
         }
 
-        PhotonTrackedTarget target = targetSupplier.get().get();
-
         Transform3d robotToCamera = VisionConstants.OBJECT_DETECTION_SOURCE.robotToCamera();
 
-        double calculateDistanceToTargetMeters = PhotonUtils.calculateDistanceToTargetMeters(
+        PhotonTrackedTarget target = targetSupplier.get().get();
+
+        Rotation2d targetYaw = Rotation2d.fromDegrees(target.getYaw());
+
+        // The distance in a straight line from the camera to the target
+        double distanceToTargetMeters = PhotonUtils.calculateDistanceToTargetMeters(
                 robotToCamera.getZ(),
                 Units.inchesToMeters(2),
                 -robotToCamera.getRotation().getY(),
                 Units.degreesToRadians(target.getPitch()));
 
-        double x = xController.calculate(0, calculateDistanceToTargetMeters);
+        // The translation to the target from the camera split into x and y
+        Translation2d translationCameraToTarget = PhotonUtils.estimateCameraToTargetTranslation(
+                distanceToTargetMeters,
+                targetYaw)
+                .plus(robotToCamera.getTranslation().toTranslation2d())
+                .plus(NOTE_SIZE.div(2));
+
+        endPose = poseSupplier.get().plus(new Transform2d(translationCameraToTarget, targetYaw));
+
+        double x = xController.calculate(0, distanceToTargetMeters);
         double theta = thetaController.calculate(
-                0,
-                Units.degreesToRadians(target.getYaw()) + robotToCamera.getRotation().getZ());
+                poseSupplier.get().getRotation().getRadians(),
+                endPose.getRotation().getRadians());
 
         drive.drive(x, 0, theta, false, true);
     }
