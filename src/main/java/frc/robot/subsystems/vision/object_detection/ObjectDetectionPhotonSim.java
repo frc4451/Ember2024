@@ -38,8 +38,8 @@ public class ObjectDetectionPhotonSim implements ObjectDetectionIO {
             // but we eventually want to try making a more efficient
             // vertices object
             TargetModel notePlaceholder = new TargetModel(
-                    Units.inchesToMeters(10),
-                    Units.inchesToMeters(10),
+                    Units.inchesToMeters(14),
+                    Units.inchesToMeters(14),
                     Units.inchesToMeters(2));
 
             // TargetModel noteVertices = new TargetModel(

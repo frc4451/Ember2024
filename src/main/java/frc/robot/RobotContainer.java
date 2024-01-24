@@ -15,10 +15,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
-import frc.robot.commands.PathfindToNoteCommand;
 import frc.robot.commands.PathfindToTarget;
 import frc.robot.pathplanner.PathPlannerUtils;
 import frc.robot.pathplanner.paths.PathPlannerPaths;
@@ -38,9 +38,7 @@ public class RobotContainer {
     public final VisionSubsystem m_vision = new VisionSubsystem();
 
     // The robot's subsystems
-    public final DriveSubsystem m_robotDrive = new DriveSubsystem(
-            m_vision::pollLatestVisionMeasurement,
-            m_vision::findClosestObject);
+    public final DriveSubsystem m_robotDrive = new DriveSubsystem(m_vision::pollLatestVisionMeasurement);
 
     // public final RollerSubsystem m_rollers = new RollerSubsystem();
 
@@ -138,36 +136,12 @@ public class RobotContainer {
         SmartDashboard.putData("Run Chosen Path", Commands.deferredProxy(
                 () -> m_pathChooser.get()));
 
-        // m_driverController.y()
-        // .whileTrue(
-        // Commands.defer(
-        // () -> PathfindToNoteCommand.getPathfindToNoteCommand(m_vision, m_robotDrive),
-        // Set.of(m_robotDrive)));
-
-        m_driverController.y()
-                .whileTrue(
-                        Commands.defer(() -> PathfindToNoteCommand.getPathfindToNoteCommand(m_vision, m_robotDrive),
-                                Set.of(m_robotDrive)));
-
-        m_driverController.x().whileTrue(
-                Commands.deferredProxy(() -> PathfindToNoteCommand.pathFindToCommand(m_vision.findClosestObject(),
-                        m_robotDrive.getPose())));
-
-        m_driverController
-                .leftBumper()
-                .and(m_vision.cameraSeesObject())
-                .whileTrue(
-                        Commands.defer(m_robotDrive::findClosestPathToNote, Set.of(m_robotDrive)).repeatedly()
-                // .until(() -> !m_robotDrive.m_objectTrackerSupplier.get().isPresent())
-                );
-
         m_driverController
                 .rightBumper()
                 .whileTrue(
                         Commands.defer(
-                                () -> new PathfindToTarget(m_robotDrive::getPose, m_robotDrive.m_objectTrackerSupplier,
+                                () -> new PathfindToTarget(m_robotDrive::getPose, m_vision::findClosestObject,
                                         m_robotDrive),
                                 Set.of(m_robotDrive)));
-
     }
 }

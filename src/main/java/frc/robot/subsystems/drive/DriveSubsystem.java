@@ -8,11 +8,9 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
-import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathPlannerTrajectory;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -21,26 +19,16 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.PIDCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.PathPlannerConstants;
-import frc.robot.VisionConstants;
 import frc.robot.subsystems.vision.VisionSubsystem.VisionMeasurement;
 import frc.utils.SwerveUtils;
 
@@ -77,13 +65,10 @@ public class DriveSubsystem extends SubsystemBase {
             new Pose2d());
 
     private final Supplier<VisionMeasurement> m_visionSupplier;
-    public final Supplier<Optional<PhotonTrackedTarget>> m_objectTrackerSupplier;
 
     /** Creates a new DriveSubsystem. */
-    public DriveSubsystem(Supplier<VisionMeasurement> visionSupplier,
-            Supplier<Optional<PhotonTrackedTarget>> objectTrackerSupplier) {
+    public DriveSubsystem(Supplier<VisionMeasurement> visionSupplier) {
         m_visionSupplier = visionSupplier;
-        m_objectTrackerSupplier = objectTrackerSupplier;
 
         // Configure AutoBuilder for PathPlanner
         AutoBuilder.configureHolonomic(
@@ -306,11 +291,15 @@ public class DriveSubsystem extends SubsystemBase {
         double ySpeedDelivered = ySpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
         double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
 
-        var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
-                fieldRelative
-                        ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
-                                getPose().getRotation())
-                        : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
+        ChassisSpeeds speeds = fieldRelative
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
+                        getPose().getRotation())
+                : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered);
+
+        // speeds = ChassisSpeeds.discretize(speeds, 0.02);
+
+        SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
+
         SwerveDriveKinematics.desaturateWheelSpeeds(
                 swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
         for (int i = 0; i < swerveModuleStates.length; i++) {
@@ -383,61 +372,5 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void rotateInPlace(double percentOutput) {
         drive(0, 0, percentOutput, true, true);
-    }
-
-    /**
-     * Command for generating the shortest path needed to a "Note"
-     *
-     * @param closestObject - result of `VisionSubsystem.findClosestObject`
-     * @return AutoBuilder command from PathPlanner
-     */
-    public Command findClosestPathToNote() {
-        // Remove AdvantageKit logging markers here when finalized.
-        String loggingKey = "AutoBuilder/";
-
-        Optional<PhotonTrackedTarget> closestObject = this.m_objectTrackerSupplier.get();
-
-        if (closestObject.isEmpty()) {
-            Logger.recordOutput(loggingKey + "Destination", new Pose2d());
-            return Commands.none();
-        }
-
-        PhotonTrackedTarget target = closestObject.get();
-
-        Logger.recordOutput(loggingKey + "getBestCameraToTarget", target.getBestCameraToTarget());
-
-        // We want to eventually be directly inline with the Note
-        Rotation2d targetYaw = Rotation2d.fromDegrees(target.getYaw());
-
-        // Position of Camera from Center of Robot
-        Transform3d robotToCamera = VisionConstants.OBJECT_DETECTION_SOURCE.robotToCamera();
-
-        // Negate it to move closer to the target
-        double calculateDistanceToTargetMeters = PhotonUtils.calculateDistanceToTargetMeters(
-                robotToCamera.getZ(),
-                Units.inchesToMeters(2),
-                -robotToCamera.getRotation().getY(),
-                Units.degreesToRadians(target.getPitch()));
-
-        Translation2d translationTargetToCamera = PhotonUtils.estimateCameraToTargetTranslation(
-                calculateDistanceToTargetMeters,
-                targetYaw);
-
-        Pose2d endPose = this
-                .getPose()
-                .transformBy(new Transform2d(
-                        translationTargetToCamera,
-                        targetYaw.rotateBy(robotToCamera.getRotation().toRotation2d())));
-
-        Logger.recordOutput(loggingKey + "calculateDistanceToTargetMeters", calculateDistanceToTargetMeters);
-        Logger.recordOutput(loggingKey + "translationCameraFromTarget", translationTargetToCamera);
-
-        Logger.recordOutput(loggingKey + "Destination", endPose);
-
-        return AutoBuilder
-                .pathfindToPose(
-                        endPose,
-                        PathPlannerConstants.DEFAULT_PATH_CONSTRAINTS,
-                        DriveConstants.kMaxSpeedMetersPerSecond);
     }
 }

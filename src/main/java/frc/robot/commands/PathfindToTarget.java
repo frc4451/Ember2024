@@ -56,6 +56,7 @@ public class PathfindToTarget extends Command {
 
     @Override
     public void execute() {
+        Optional<PhotonTrackedTarget> maybeTarget = targetSupplier.get();
         if (pathfindToPoseCommand != null) {
             shouldFinish = pathfindToPoseCommand.isFinished();
             if (shouldFinish) {
@@ -64,23 +65,22 @@ public class PathfindToTarget extends Command {
                 pathfindToPoseCommand.execute();
             }
             return;
-        } else if (!targetSupplier.get().isPresent() && endPose != null) {
-            drive.drive(0, 0, 0, false, false);
-            pathfindToPoseCommand = AutoBuilder.pathfindToPose(
-                    endPose,
-                    Constants.PathPlannerConstants.DEFAULT_PATH_CONSTRAINTS);
-            pathfindToPoseCommand.initialize();
-            return;
-        } else if (!targetSupplier.get().isPresent() && endPose == null) {
-            shouldFinish = true;
+        } else if (!maybeTarget.isPresent()) {
+            if (endPose != null) {
+                drive.drive(0, 0, 0, false, false);
+                pathfindToPoseCommand = AutoBuilder.pathfindToPose(
+                        endPose,
+                        Constants.PathPlannerConstants.DEFAULT_PATH_CONSTRAINTS);
+                pathfindToPoseCommand.initialize();
+            } else {
+                shouldFinish = true;
+            }
             return;
         }
 
         Transform3d robotToCamera = VisionConstants.OBJECT_DETECTION_SOURCE.robotToCamera();
 
-        PhotonTrackedTarget target = targetSupplier.get().get();
-
-        Rotation2d targetYaw = Rotation2d.fromDegrees(target.getYaw());
+        PhotonTrackedTarget target = maybeTarget.get();
 
         // The distance in a straight line from the camera to the target
         double distanceToTargetMeters = PhotonUtils.calculateDistanceToTargetMeters(
@@ -92,18 +92,19 @@ public class PathfindToTarget extends Command {
         // The translation to the target from the camera split into x and y
         Translation2d translationCameraToTarget = PhotonUtils.estimateCameraToTargetTranslation(
                 distanceToTargetMeters,
-                targetYaw)
+                Rotation2d.fromDegrees(target.getYaw()))
                 .plus(robotToCamera.getTranslation().toTranslation2d())
                 .plus(NOTE_SIZE.div(2));
 
-        endPose = poseSupplier.get().plus(new Transform2d(translationCameraToTarget, targetYaw));
+        endPose = poseSupplier.get()
+                .transformBy(new Transform2d(translationCameraToTarget, translationCameraToTarget.getAngle()));
 
         double x = xController.calculate(0, distanceToTargetMeters);
         double theta = thetaController.calculate(
                 poseSupplier.get().getRotation().getRadians(),
                 endPose.getRotation().getRadians());
 
-        drive.drive(x, 0, theta, false, true);
+        drive.drive(x, 0, theta, false, false);
     }
 
     @Override
