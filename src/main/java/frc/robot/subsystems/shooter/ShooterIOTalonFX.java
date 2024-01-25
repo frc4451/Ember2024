@@ -12,22 +12,22 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterIOTalonFX implements ShooterIO {
-    private final TalonFX top = new TalonFX(ShooterConstants.kTopShooterCanID);
-    private final TalonFX bottom = new TalonFX(ShooterConstants.kBottomShooterCanID);
+    private final TalonFX left = new TalonFX(ShooterConstants.kLeftShooterCanID);
+    private final TalonFX right = new TalonFX(ShooterConstants.kRightShooterCanID);
 
-    private final StatusSignal<Double> topAmperage = top.getSupplyCurrent();
-    private final StatusSignal<Double> topVoltage = top.getMotorVoltage();
-    private final StatusSignal<Double> topTempCelsius = top.getDeviceTemp();
-    private final StatusSignal<Double> topVelocity = top.getVelocity();
-    private final StatusSignal<Double> bottomVoltage = bottom.getMotorVoltage();
-    private final StatusSignal<Double> bottomAmperage = bottom.getSupplyCurrent();
-    private final StatusSignal<Double> bottomTempCelsius = bottom.getDeviceTemp();
-    private final StatusSignal<Double> bottomVelocity = bottom.getVelocity();
+    private final StatusSignal<Double> leftAmperage = left.getSupplyCurrent();
+    private final StatusSignal<Double> leftVoltage = left.getMotorVoltage();
+    private final StatusSignal<Double> leftTempCelsius = left.getDeviceTemp();
+    private final StatusSignal<Double> leftVelocity = left.getVelocity();
+    private final StatusSignal<Double> rightVoltage = right.getMotorVoltage();
+    private final StatusSignal<Double> rightAmperage = right.getSupplyCurrent();
+    private final StatusSignal<Double> rightTempCelsius = right.getDeviceTemp();
+    private final StatusSignal<Double> rightVelocity = right.getVelocity();
 
     private final VelocityVoltage velocity = new VelocityVoltage(0);
 
     public ShooterIOTalonFX() {
-        top.getConfigurator().apply(
+        left.getConfigurator().apply(
                 new TalonFXConfiguration()
                         .withMotorOutput(new MotorOutputConfigs()
                                 .withInverted(InvertedValue.Clockwise_Positive))
@@ -36,7 +36,7 @@ public class ShooterIOTalonFX implements ShooterIO {
                                 .withKP(0.12)
                                 .withKI(0.0)
                                 .withKD(0.0)));
-        bottom.getConfigurator().apply(
+        right.getConfigurator().apply(
                 new TalonFXConfiguration()
                         .withMotorOutput(new MotorOutputConfigs()
                                 .withInverted(InvertedValue.Clockwise_Positive))
@@ -52,43 +52,43 @@ public class ShooterIOTalonFX implements ShooterIO {
     @Override
     public void updateInputs(ShooterIOInputs inputs) {
         StatusSignal.refreshAll(
-                topVoltage,
-                topAmperage,
-                topTempCelsius,
-                topVelocity,
-                bottomVoltage,
-                bottomAmperage,
-                bottomTempCelsius,
-                bottomVelocity
+                leftVoltage,
+                leftAmperage,
+                leftTempCelsius,
+                leftVelocity,
+                rightVoltage,
+                rightAmperage,
+                rightTempCelsius,
+                rightVelocity
 
         );
         inputs.appliedVoltage = new double[] {
-                topVoltage.getValueAsDouble(),
-                bottomVoltage.getValueAsDouble()
+                leftVoltage.getValueAsDouble(),
+                rightVoltage.getValueAsDouble()
         };
         inputs.currentAmperage = new double[] {
-                topAmperage.getValueAsDouble(),
-                bottomAmperage.getValueAsDouble()
+                leftAmperage.getValueAsDouble(),
+                rightAmperage.getValueAsDouble()
         };
         inputs.temperatureCelsius = new double[] {
-                topTempCelsius.getValueAsDouble(),
-                bottomTempCelsius.getValueAsDouble()
+                leftTempCelsius.getValueAsDouble(),
+                rightTempCelsius.getValueAsDouble()
         };
         inputs.velocityRotPerSecond = new double[] {
-                topVelocity.getValueAsDouble(),
-                bottomVelocity.getValueAsDouble()
+                leftVelocity.getValueAsDouble(),
+                rightVelocity.getValueAsDouble()
         };
     }
 
     @Override
-    public void setVelocity(double velocityRotPerSecond) {
-        top.setControl(velocity.withVelocity(velocityRotPerSecond));
-        bottom.setControl(velocity.withVelocity(velocityRotPerSecond));
+    public void setVelocity(double velocityRotPerSecondLeft, double velocityRotPerSecondRight) {
+        left.setControl(velocity.withVelocity(velocityRotPerSecondLeft));
+        right.setControl(velocity.withVelocity(velocityRotPerSecondRight));
     }
 
     @Override
     public void setFree() {
-        top.setControl(new CoastOut());
-        bottom.setControl(new CoastOut());
+        left.setControl(new CoastOut());
+        right.setControl(new CoastOut());
     }
 }

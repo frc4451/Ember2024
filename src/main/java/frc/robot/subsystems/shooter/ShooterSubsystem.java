@@ -44,16 +44,16 @@ public class ShooterSubsystem extends SubsystemBase {
         }
     }
 
-    public void setVelocity(double velocityRotPerSecond) {
-        io.setVelocity(velocityRotPerSecond);
+    public void setVelocity(double velocityRotPerSecondLeft, double velocityRotPerSecondRight) {
+        io.setVelocity(velocityRotPerSecondLeft, velocityRotPerSecondRight);
     }
 
     public double[] getVelocity() {
         return inputs.velocityRotPerSecond;
     }
 
-    public Command setVelocityCommand(double velocityRotPerSecond) {
-        return new InstantCommand(() -> setVelocity(velocityRotPerSecond), this);
+    public Command setVelocityCommand(double velocityRotPerSecondLeft, double velocityRotPerSecondRight) {
+        return new InstantCommand(() -> setVelocity(velocityRotPerSecondLeft, velocityRotPerSecondRight), this);
     }
 
     public void stop() {

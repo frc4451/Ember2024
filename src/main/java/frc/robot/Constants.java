@@ -166,8 +166,8 @@ public final class Constants {
     }
 
     public static final class ShooterConstants {
-        public static final int kTopShooterCanID = 4;
-        public static final int kBottomShooterCanID = 3;
+        public static final int kLeftShooterCanID = 4;
+        public static final int kRightShooterCanID = 3;
 
     }
 }
