@@ -76,15 +76,15 @@ public class RobotContainer {
      * {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-        m_driverController.rightBumper()
+        m_operatorController.rightBumper()
                 .whileTrue(new RunCommand(
                         () -> m_robotDrive.setCross(),
                         m_robotDrive));
 
-        m_driverController.povUp().onTrue(m_pivot.setSetpointCommand(PivotLocation.k0.angle));
-        m_driverController.povRight().onTrue(m_pivot.setSetpointCommand(PivotLocation.k160.angle));
-        m_driverController.povDown().onTrue(m_pivot.setSetpointCommand(PivotLocation.k167.angle));
-        m_driverController.povLeft().onTrue(m_pivot.setSetpointCommand(PivotLocation.k90.angle));
+        m_operatorController.povUp().onTrue(m_pivot.setSetpointCommand(PivotLocation.k0.angle));
+        m_operatorController.povRight().onTrue(m_pivot.setSetpointCommand(PivotLocation.k160.angle));
+        m_operatorController.povDown().onTrue(m_pivot.setSetpointCommand(PivotLocation.k167.angle));
+        m_operatorController.povLeft().onTrue(m_pivot.setSetpointCommand(PivotLocation.k90.angle));
 
     }
 }
