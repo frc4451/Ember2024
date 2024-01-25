@@ -18,8 +18,10 @@ public interface ShooterIO {
     public default void setVelocity(double velocityRotPerSecond) {
     }
 
+    public default void setFree() {
+    }
+
     public default void stop() {
         setVelocity(0);
     }
-
 }

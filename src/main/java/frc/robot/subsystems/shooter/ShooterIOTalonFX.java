@@ -1,17 +1,19 @@
 package frc.robot.subsystems.shooter;
 
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterIOTalonFX implements ShooterIO {
-    private final TalonFX top = new TalonFX(ShooterConstants.kTopShooterCanID); // leader
-    private final TalonFX bottom = new TalonFX(ShooterConstants.kBottomShooterCanID); // follower
+    private final TalonFX top = new TalonFX(ShooterConstants.kTopShooterCanID);
+    private final TalonFX bottom = new TalonFX(ShooterConstants.kBottomShooterCanID);
 
     private final StatusSignal<Double> topAmperage = top.getSupplyCurrent();
     private final StatusSignal<Double> topVoltage = top.getMotorVoltage();
@@ -27,20 +29,22 @@ public class ShooterIOTalonFX implements ShooterIO {
     public ShooterIOTalonFX() {
         top.getConfigurator().apply(
                 new TalonFXConfiguration()
+                        .withMotorOutput(new MotorOutputConfigs()
+                                .withInverted(InvertedValue.Clockwise_Positive))
                         .withSlot0(new Slot0Configs()
-                                .withKV(0.11)
-                                .withKP(0.0)
+                                .withKV(0.12)
+                                .withKP(0.12)
                                 .withKI(0.0)
                                 .withKD(0.0)));
         bottom.getConfigurator().apply(
                 new TalonFXConfiguration()
+                        .withMotorOutput(new MotorOutputConfigs()
+                                .withInverted(InvertedValue.Clockwise_Positive))
                         .withSlot0(new Slot0Configs()
-                                .withKV(0.115)
-                                .withKP(0.0)
+                                .withKV(0.12)
+                                .withKP(0.12)
                                 .withKI(0.0)
                                 .withKD(0.0)));
-        top.setInverted(true);
-        bottom.setInverted(true);
         // bottom.setControl(new Follower(top.getDeviceID(), false));
         velocity.Slot = 0;
     }
@@ -80,5 +84,11 @@ public class ShooterIOTalonFX implements ShooterIO {
     public void setVelocity(double velocityRotPerSecond) {
         top.setControl(velocity.withVelocity(velocityRotPerSecond));
         bottom.setControl(velocity.withVelocity(velocityRotPerSecond));
+    }
+
+    @Override
+    public void setFree() {
+        top.setControl(new CoastOut());
+        bottom.setControl(new CoastOut());
     }
 }
