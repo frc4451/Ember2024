@@ -90,21 +90,29 @@ public class PathfindToTarget extends Command {
                 Units.degreesToRadians(target.getPitch()));
 
         // The translation to the target from the camera split into x and y
-        Translation2d translationCameraToTarget = PhotonUtils.estimateCameraToTargetTranslation(
+        Translation2d cameraToTarget = PhotonUtils.estimateCameraToTargetTranslation(
                 distanceToTargetMeters,
                 Rotation2d.fromDegrees(target.getYaw()))
-                .plus(robotToCamera.getTranslation().toTranslation2d())
-                .plus(NOTE_SIZE.div(2));
+        // .plus(NOTE_SIZE.times(distanceToTargetMeters))
+        ;
 
-        endPose = poseSupplier.get()
-                .transformBy(new Transform2d(translationCameraToTarget, translationCameraToTarget.getAngle()));
+        Pose2d pose = poseSupplier.get();
+
+        Transform2d robotToTarget = new Transform2d(
+                robotToCamera.getTranslation().toTranslation2d(),
+                robotToCamera.getRotation().toRotation2d())
+                .plus(
+                        new Transform2d(cameraToTarget, cameraToTarget.getAngle()));
+
+        endPose = pose
+                .transformBy(robotToTarget);
 
         double x = xController.calculate(0, distanceToTargetMeters);
         double theta = thetaController.calculate(
-                poseSupplier.get().getRotation().getRadians(),
-                endPose.getRotation().getRadians());
+                0,
+                Units.degreesToRadians(target.getYaw()));
 
-        drive.drive(x, 0, theta, false, false);
+        drive.drive(-x, 0, theta, false, false);
     }
 
     @Override

@@ -13,34 +13,6 @@ import java.util.List;
 public abstract class VirtualSubsystem {
     private static final List<VirtualSubsystem> virtualSubsystems = new ArrayList<>();
 
-    private static final Thread periodicThread = new Thread(() -> {
-        while (!Thread.currentThread().isInterrupted()) {
-            for (VirtualSubsystem subsystem : virtualSubsystems) {
-                subsystem.periodic();
-            }
-
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
-    });
-
-    private static final Thread simulationPeriodicThread = new Thread(
-            () -> {
-                while (!Thread.currentThread().isInterrupted()) {
-                    for (VirtualSubsystem subsystem : virtualSubsystems) {
-                        subsystem.simulationPeriodic();
-                    }
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                    }
-                }
-            });
-
     /**
      * Every subsystem that extends VirtualSubsystem gets added to the list of
      * Subsystems that are
@@ -48,16 +20,6 @@ public abstract class VirtualSubsystem {
      */
     public VirtualSubsystem() {
         virtualSubsystems.add(this);
-    }
-
-    public static void startPeriodicThread() {
-        periodicThread.setPriority(9);
-        periodicThread.start();
-    }
-
-    public static void startSimulationPeriodicThread() {
-        periodicThread.setPriority(10);
-        simulationPeriodicThread.start();
     }
 
     public static void listVirtualSubsystems() {
