@@ -60,6 +60,8 @@ public class VisionSubsystem extends VirtualSubsystem {
 
     private ConcurrentLinkedQueue<VisionMeasurement> visionMeasurements = new ConcurrentLinkedQueue<>();
 
+    private Optional<PhotonTrackedTarget> closetObject = Optional.empty();
+
     public Supplier<Pose2d> robotPoseSupplier = () -> new Pose2d();
 
     public VisionSubsystem() {
@@ -116,10 +118,10 @@ public class VisionSubsystem extends VirtualSubsystem {
     @Override
     public void periodic() {
         // Check for updates to Measurements from April Tags
-        findVisionMeasurements();
+        updateVisionMeasurements();
 
         // Check for updates to Measurements away from Notes
-        findClosestObject();
+        updateClosestObject();
     }
 
     public void simulationPeriodic() {
@@ -132,19 +134,18 @@ public class VisionSubsystem extends VirtualSubsystem {
      * Using all available camera estimators, we poll each and try to build
      * our VisionMeasurements to help correct our position and odometry.
      */
-    private void findVisionMeasurements() {
+    private void updateVisionMeasurements() {
         // For each camera we need to do the following:
         for (AprilTagCamera cam : aprilTagCameras) {
+            String cameraLogRoot = "AprilTagCamera/" + cam.source.name() + "/";
+
             cam.io.updateInputs(cam.inputs);
+            Logger.processInputs(cameraLogRoot, cam.inputs);
 
             // If we have a duplicate frame, don't bother updating anything
             if (cam.inputs.isDuplicateFrame) {
                 continue;
             }
-
-            String cameraLogRoot = "AprilTagCamera/" + cam.source.name() + "/";
-
-            Logger.processInputs(cameraLogRoot, cam.inputs);
 
             Logger.recordOutput(cameraLogRoot + "Targets",
                     cam.inputs.frame.getTargets().stream()
@@ -171,38 +172,48 @@ public class VisionSubsystem extends VirtualSubsystem {
      * Alternative strategy for Notes, we need to find _where_ the note is
      * and how we need to rotate the robot to be in-line with the note.
      */
-    public Optional<PhotonTrackedTarget> findClosestObject() {
+    public void updateClosestObject() {
         String cameraLogRoot = "ObjectDetection/" + objectDetectionCamera.source.name() + "/";
 
         objectDetectionCamera.io.updateInputs(objectDetectionCamera.inputs);
         Logger.processInputs(cameraLogRoot, objectDetectionCamera.inputs);
 
+        if (objectDetectionCamera.inputs.isDuplicateFrame) {
+            return;
+        }
+
         List<PhotonTrackedTarget> nonFiducialTargets = ObjectDetectionFiltering
                 .getNonFiducialTargets(objectDetectionCamera.inputs.frame);
-
-        Logger.recordOutput(cameraLogRoot + "HasNotes", !nonFiducialTargets.isEmpty());
 
         // PhotonVision orders targets by "best", which in their `getBestTarget` method
         // just gets the first target, assuming there is a target. We just get that.
         // If there isn't a valid non-fiducial target, we display NaN.
 
         if (nonFiducialTargets.isEmpty()) {
-            Logger.recordOutput(cameraLogRoot + "YawFromRobotCenterDeg", Double.NaN);
-            return Optional.empty();
+            if (objectDetectionCamera.inputs.hasExceededTargetlessThreshold) {
+                Logger.recordOutput(cameraLogRoot + "HasNotes", false);
+                Logger.recordOutput(cameraLogRoot + "YawFromRobotCenterDeg", Double.NaN);
+                closetObject = Optional.empty();
+            }
         } else {
             PhotonTrackedTarget object = nonFiducialTargets.get(0);
 
+            Logger.recordOutput(cameraLogRoot + "HasNotes", true);
             Logger.recordOutput(cameraLogRoot + "YawFromRobotCenterDeg", object.getYaw());
 
-            return Optional.of(object);
+            closetObject = Optional.of(object);
         }
+    }
+
+    public Optional<PhotonTrackedTarget> getClosestObject() {
+        return closetObject;
     }
 
     /**
      * Determines whether a "Note" is within the camera's sight
      */
     public Trigger cameraSeesObject() {
-        return new Trigger(() -> findClosestObject().isPresent());
+        return new Trigger(() -> getClosestObject().isPresent());
     }
 
     /**

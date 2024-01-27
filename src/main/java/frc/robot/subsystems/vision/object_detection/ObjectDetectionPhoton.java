@@ -4,9 +4,13 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 import frc.robot.VisionConstants.VisionSource;
+import frc.robot.subsystems.vision.apriltag.DuplicateTracker;
+import frc.utils.TimeSinceConditionTracker;
 
 public class ObjectDetectionPhoton implements ObjectDetectionIO {
     private final PhotonCamera camera;
+    private final DuplicateTracker duplicateTracker = new DuplicateTracker();
+    private final TimeSinceConditionTracker timeSinceTargetsLostTracker;
 
     private final Thread periodicThread = new Thread(() -> {
         while (!Thread.currentThread().isInterrupted()) {
@@ -23,18 +27,37 @@ public class ObjectDetectionPhoton implements ObjectDetectionIO {
     public ObjectDetectionPhoton(VisionSource source) {
         camera = new PhotonCamera(source.name());
 
+        timeSinceTargetsLostTracker = new TimeSinceConditionTracker(
+                () -> !frame.hasTargets(),
+                0.3);
+
         periodicThread.setPriority(Thread.MAX_PRIORITY);
         periodicThread.start();
     }
 
     private PhotonPipelineResult frame = new PhotonPipelineResult();
+    private boolean isDuplicateFrame = false;
+    private boolean hasExceededTargetsLostThreshold = false;
 
     private void periodic() {
+        PhotonPipelineResult latestFrame = camera.getLatestResult();
+
+        isDuplicateFrame = duplicateTracker.isDuplicateFrame(latestFrame);
+
+        if (isDuplicateFrame) {
+            return;
+        }
+
         frame = camera.getLatestResult();
+        timeSinceTargetsLostTracker.update(frame.getTimestampSeconds());
+        hasExceededTargetsLostThreshold = timeSinceTargetsLostTracker.hasExceededThreshold();
     }
 
     @Override
     public void updateInputs(ObjectDetectionIOInputs inputs) {
         inputs.frame = frame;
+        inputs.isDuplicateFrame = isDuplicateFrame;
+        inputs.hasExceededTargetlessThreshold = hasExceededTargetsLostThreshold;
+
     }
 }
