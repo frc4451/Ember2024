@@ -13,10 +13,11 @@ public class PivotIOFalcon implements PivotIO {
     private final double positionConversionFactor = 2.0 * Math.PI / IntakeConstants.kPivotReduction;
 
     public PivotIOFalcon() {
-        this.pivot.getConfigurator().apply(new TalonFXConfiguration());
+        this.pivot.getConfigurator().apply(
+                new TalonFXConfiguration()
+                        .withClosedLoopRamps(new ClosedLoopRampsConfigs()
+                                .withDutyCycleClosedLoopRampPeriod(1.0)));
         this.pivot.setNeutralMode(NeutralModeValue.Brake);
-        this.pivot.getConfigurator().apply(new TalonFXConfiguration()
-                .withClosedLoopRamps(new ClosedLoopRampsConfigs().withDutyCycleClosedLoopRampPeriod(1.0)));
     }
 
     @Override
