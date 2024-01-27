@@ -1,10 +1,13 @@
 package frc.robot.subsystems.intake;
 
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.units.Velocity;
@@ -21,10 +24,19 @@ public class IntakeIOTalonFX implements IntakeIO {
     private final VelocityVoltage velocity = new VelocityVoltage(0);
 
     public IntakeIOTalonFX() {
-        this.top.getConfigurator().apply(new TalonFXConfiguration());
+        this.top.getConfigurator()
+                .apply(new TalonFXConfiguration()
+                        .withMotorOutput(new MotorOutputConfigs().withInverted(InvertedValue.CounterClockwise_Positive))
+                        .withSlot0(new Slot0Configs().withKV(0.1).withKP(0.1).withKI(0).withKD(0)));
         this.top.setNeutralMode(NeutralModeValue.Brake);
-        this.bottom.getConfigurator().apply(new TalonFXConfiguration());
+        this.top.setInverted(true);
+        this.bottom.getConfigurator()
+                .apply(new TalonFXConfiguration()
+                        .withMotorOutput(new MotorOutputConfigs().withInverted(InvertedValue.CounterClockwise_Positive))
+                        .withSlot0(new Slot0Configs().withKV(0.1).withKP(0.1).withKI(0).withKD(0)));
         this.bottom.setNeutralMode(NeutralModeValue.Brake);
+        this.top.setInverted(false);
+        velocity.Slot = 0;
     }
 
     public void updateInputs(IntakeIOInputs inputs) {

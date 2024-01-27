@@ -23,6 +23,7 @@ import frc.robot.commands.PathfindToTarget;
 import frc.robot.pathplanner.PathPlannerUtils;
 import frc.robot.pathplanner.paths.PathPlannerPaths;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.utils.CommandCustomController;
 
@@ -33,115 +34,118 @@ import frc.utils.CommandCustomController;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    public final Field2d field = new Field2d();
+        public final Field2d field = new Field2d();
 
-    public final VisionSubsystem m_vision = new VisionSubsystem();
+        public final VisionSubsystem m_vision = new VisionSubsystem();
+        public final IntakeSubsystem m_Intake = new IntakeSubsystem();
+        // The robot's subsystems
+        public final DriveSubsystem m_robotDrive = new DriveSubsystem(m_vision::pollLatestVisionMeasurement);
 
-    // The robot's subsystems
-    public final DriveSubsystem m_robotDrive = new DriveSubsystem(m_vision::pollLatestVisionMeasurement);
+        // public final RollerSubsystem m_rollers = new RollerSubsystem();
 
-    // public final RollerSubsystem m_rollers = new RollerSubsystem();
+        // public final PivotSubsystem m_pivot = new PivotSubsystem();
 
-    // public final PivotSubsystem m_pivot = new PivotSubsystem();
+        final CommandCustomController m_driverController = new CommandCustomController(
+                        OIConstants.kDriverControllerPort);
 
-    final CommandCustomController m_driverController = new CommandCustomController(
-            OIConstants.kDriverControllerPort);
+        final CommandCustomController m_operatorController = new CommandCustomController(
+                        OIConstants.kOperatorControllerPort);
 
-    final CommandCustomController m_operatorController = new CommandCustomController(
-            OIConstants.kOperatorControllerPort);
+        // private final SendableChooser<Command> autoChooser;
+        public final LoggedDashboardChooser<Command> m_autoChooser;
 
-    // private final SendableChooser<Command> autoChooser;
-    public final LoggedDashboardChooser<Command> m_autoChooser;
+        public LoggedDashboardChooser<Command> m_pathChooser;
 
-    public LoggedDashboardChooser<Command> m_pathChooser;
+        /**
+         * The container for the robot. Contains subsystems, OI devices, and commands.
+         */
+        public RobotContainer() {
+                // Configure PathPlanner logging with AdvantageKit
+                PathPlannerUtils.configureLogging();
 
-    /**
-     * The container for the robot. Contains subsystems, OI devices, and commands.
-     */
-    public RobotContainer() {
-        // Configure PathPlanner logging with AdvantageKit
-        PathPlannerUtils.configureLogging();
+                // Configure the button bindings
+                configureNamedCommands();
+                configurePathChooser();
+                configureButtonBindings();
 
-        // Configure the button bindings
-        configureNamedCommands();
-        configurePathChooser();
-        configureButtonBindings();
+                // Configure default commands
+                // m_robotDrive.
+                m_robotDrive.setDefaultCommand(
+                                // The left stick controls translation of the robot.
+                                // Turning is controlled by the X axis of the right stick.
+                                new RunCommand(
+                                                () -> m_robotDrive.drive(
+                                                                -m_driverController.getLeftY(),
+                                                                -m_driverController.getLeftX(),
+                                                                -m_driverController.getRightX(),
+                                                                true, true),
+                                                m_robotDrive));
 
-        // Configure default commands
-        // m_robotDrive.
-        m_robotDrive.setDefaultCommand(
-                // The left stick controls translation of the robot.
-                // Turning is controlled by the X axis of the right stick.
-                new RunCommand(
-                        () -> m_robotDrive.drive(
-                                -m_driverController.getLeftY(),
-                                -m_driverController.getLeftX(),
-                                -m_driverController.getRightX(),
-                                true, true),
-                        m_robotDrive));
+                // m_pivot.setDefaultCommand(new RunCommand(() -> {
+                // m_pivot.runAtPercent(m_operatorController.getRightY());
+                // }, m_pivot));
 
-        // m_pivot.setDefaultCommand(new RunCommand(() -> {
-        // m_pivot.runAtPercent(m_operatorController.getRightY());
-        // }, m_pivot));
+                // m_pivot.setDefaultCommand(m_pivot.getPivotCommand());
 
-        // m_pivot.setDefaultCommand(m_pivot.getPivotCommand());
-
-        // Build an auto chooser. You can make a default auto by passing in their name
-        m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
-    }
-
-    /**
-     * Register the commands with PathPlanner
-     */
-    private void configureNamedCommands() {
-
-    }
-
-    /**
-     * Creates a state machine of paths and adds them all to it
-     */
-    private void configurePathChooser() {
-        m_pathChooser = new LoggedDashboardChooser<>("Path Chooser", new SendableChooser<>());
-
-        if (PathPlannerPaths.values().length != 0) {
-            PathPlannerPaths defaultPath = PathPlannerPaths.values()[0];
-            m_pathChooser.addDefaultOption(defaultPath.label, defaultPath.getCommand());
-
-            for (PathPlannerPaths path : PathPlannerPaths.values()) {
-                m_pathChooser.addOption(path.label, path.getCommand());
-            }
+                // Build an auto chooser. You can make a default auto by passing in their name
+                m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
         }
-    }
 
-    /**
-     * Use this method to define your button->command mappings. Buttons can be
-     * created by
-     * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
-     * subclasses ({@link
-     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling
-     * passing it to a
-     * {@link JoystickButton}.
-     */
-    private void configureButtonBindings() {
-        m_driverController.rightBumper()
-                .whileTrue(new RunCommand(
-                        () -> m_robotDrive.setCross(),
-                        m_robotDrive));
+        /**
+         * Register the commands with PathPlanner
+         */
+        private void configureNamedCommands() {
 
-        m_driverController.povUp()
-                .whileTrue(
-                        Commands.deferredProxy(
+        }
+
+        /**
+         * Creates a state machine of paths and adds them all to it
+         */
+        private void configurePathChooser() {
+                m_pathChooser = new LoggedDashboardChooser<>("Path Chooser", new SendableChooser<>());
+
+                if (PathPlannerPaths.values().length != 0) {
+                        PathPlannerPaths defaultPath = PathPlannerPaths.values()[0];
+                        m_pathChooser.addDefaultOption(defaultPath.label, defaultPath.getCommand());
+
+                        for (PathPlannerPaths path : PathPlannerPaths.values()) {
+                                m_pathChooser.addOption(path.label, path.getCommand());
+                        }
+                }
+        }
+
+        /**
+         * Use this method to define your button->command mappings. Buttons can be
+         * created by
+         * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
+         * subclasses ({@link
+         * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling
+         * passing it to a
+         * {@link JoystickButton}.
+         */
+        private void configureButtonBindings() {
+                m_driverController.rightBumper()
+                                .whileTrue(new RunCommand(
+                                                () -> m_robotDrive.setCross(),
+                                                m_robotDrive));
+
+                m_driverController.povUp()
+                                .whileTrue(
+                                                Commands.deferredProxy(
+                                                                () -> m_pathChooser.get()));
+
+                SmartDashboard.putData("Run Chosen Path", Commands.deferredProxy(
                                 () -> m_pathChooser.get()));
 
-        SmartDashboard.putData("Run Chosen Path", Commands.deferredProxy(
-                () -> m_pathChooser.get()));
-
-        m_driverController
-                .rightBumper()
-                .whileTrue(
-                        Commands.defer(
-                                () -> new PathfindToTarget(m_robotDrive::getPose, m_vision::findClosestObject,
-                                        m_robotDrive),
-                                Set.of(m_robotDrive)));
-    }
+                m_driverController
+                                .rightBumper()
+                                .whileTrue(
+                                                Commands.defer(
+                                                                () -> new PathfindToTarget(m_robotDrive::getPose,
+                                                                                m_vision::findClosestObject,
+                                                                                m_robotDrive),
+                                                                Set.of(m_robotDrive)));
+                m_driverController.rightTrigger().whileTrue(m_Intake.runPercentCommand(0.6, 0.6));
+                m_driverController.rightTrigger().whileFalse(m_Intake.runPercentCommand(0.0, 0.0));
+        }
 }
