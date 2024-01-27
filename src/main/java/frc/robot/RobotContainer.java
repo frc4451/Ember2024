@@ -6,13 +6,8 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
-import frc.robot.subsystems.RollerSubsystem;
-import frc.robot.subsystems.Misc.MiscSubsystem;
-import frc.robot.subsystems.drive.DriveSubsystem;
-import frc.robot.subsystems.pivot.PivotSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.utils.CommandCustomController;
 
@@ -88,11 +83,15 @@ public class RobotContainer {
         m_driverController.y()
                 .onTrue(m_shooter.setVelocityCommand(10.0, 10.0))
                 .onFalse(m_shooter.stopCommand());
+
+        // 60 rps shot, 10 feet out, 40 degrees shooter angle ()
         m_driverController.x()
-                .onTrue(m_shooter.setVelocityCommand(45.0, 45.0))
+                .onTrue(m_shooter.setVelocityCommand(65.0, 65.0))
                 .onFalse(m_shooter.stopCommand());
+
+        //
         m_driverController.a()
-                .onTrue(m_shooter.setVelocityCommand(50.0, 50.0))
+                .onTrue(m_shooter.setVelocityCommand(70.0, 50.0))
                 .onFalse(m_shooter.stopCommand());
 
         // m_driverController.rightBumper()

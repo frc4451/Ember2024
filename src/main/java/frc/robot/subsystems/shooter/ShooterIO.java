@@ -8,7 +8,6 @@ public interface ShooterIO {
         public double[] appliedVoltage = { 0.0, 0.0 };
         public double[] currentAmperage = { 0.0, 0.0 };
         public double[] temperatureCelsius = { 0.0, 0.0 };
-
         public double[] velocityRotPerSecond = { 0.0, 0.0 };
     }
 

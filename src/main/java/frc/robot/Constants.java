@@ -67,15 +67,15 @@ public final class Constants {
         public static final double kBackRightChassisAngularOffset = Math.PI / 2;
 
         // SPARK MAX CAN IDs
-        public static final int kFrontLeftDrivingCanId = 11;
-        public static final int kRearLeftDrivingCanId = 13;
-        public static final int kFrontRightDrivingCanId = 15;
-        public static final int kRearRightDrivingCanId = 17;
+        public static final int kFrontLeftDrivingCanId = -1;
+        public static final int kRearLeftDrivingCanId = -1;
+        public static final int kFrontRightDrivingCanId = -1;
+        public static final int kRearRightDrivingCanId = -1;
 
-        public static final int kFrontLeftTurningCanId = 10;
-        public static final int kRearLeftTurningCanId = 12;
-        public static final int kFrontRightTurningCanId = 14;
-        public static final int kRearRightTurningCanId = 16;
+        public static final int kFrontLeftTurningCanId = -1;
+        public static final int kRearLeftTurningCanId = -1;
+        public static final int kFrontRightTurningCanId = -1;
+        public static final int kRearRightTurningCanId = -1;
 
         public static final boolean kGyroReversed = false;
         public static final int kGyroCanId = 1;
@@ -152,8 +152,8 @@ public final class Constants {
                 .withSupplyCurrentThreshold(35.0)
                 .withSupplyTimeThreshold(0.5);
 
-        public static final int kTopRollerCanId = 2;
-        public static final int kBottomRollerCanId = 3;
+        public static final int kTopRollerCanId = -1;
+        public static final int kBottomRollerCanId = -1;
         public static final int kBeamBreakChannel = 0;
 
         public static final double kPivotMinDegrees = 10.0;

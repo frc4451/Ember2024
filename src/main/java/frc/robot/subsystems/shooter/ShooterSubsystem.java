@@ -23,7 +23,7 @@ public class ShooterSubsystem extends SubsystemBase {
                 io = new ShooterIOTalonFX();
                 break;
             case SIM:
-                io = new ShooterIO() {
+                io = new ShooterIOSim() {
                 };
                 break;
             case REPLAY:

@@ -30,7 +30,7 @@ public class ShooterIOTalonFX implements ShooterIO {
         left.getConfigurator().apply(
                 new TalonFXConfiguration()
                         .withMotorOutput(new MotorOutputConfigs()
-                                .withInverted(InvertedValue.Clockwise_Positive))
+                                .withInverted(InvertedValue.CounterClockwise_Positive))
                         .withSlot0(new Slot0Configs()
                                 .withKV(0.12)
                                 .withKP(0.12)
