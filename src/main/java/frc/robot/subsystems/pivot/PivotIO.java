@@ -20,6 +20,9 @@ public interface PivotIO {
     public default void setVoltage(double voltage) {
     }
 
+    public default void setPercentOutput(double decimalPercent) {
+    }
+
     public default void stop() {
         setVoltage(0.0);
     }

@@ -74,22 +74,26 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public void setSetpoint(Rotation2d angle) {
-        this.pidController.setSetpoint(angle.getDegrees());
         this.setpoint = angle;
+        this.pidController.setSetpoint(angle.getDegrees());
     }
 
     public Command setSetpointCommand(Rotation2d angle) {
-        return new InstantCommand(() -> this.setSetpoint(angle));
+        return new InstantCommand(() -> this.setSetpoint(angle), this);
     }
 
     public Command pivotPIDCommand() {
         return new RunCommand(() -> {
-            double output = pidController.calculate(this.getAngle().getDegrees());
+            double output = this.pidController.calculate(this.getAngle().getDegrees());
             useOutput(output);
         }, this);
     }
 
     public void useOutput(double output) {
         this.io.setVoltage(MathUtil.clamp(output, -12, 12));
+    }
+
+    public void runPercent(double decimalPercent) {
+        this.io.setPercentOutput(decimalPercent);
     }
 }

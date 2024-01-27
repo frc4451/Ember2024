@@ -38,6 +38,11 @@ public class PivotIOSparkMax implements PivotIO {
     }
 
     @Override
+    public void setPercentOutput(double decimalPercent) {
+        this.pivot.set(decimalPercent);
+    }
+
+    @Override
     public void setAngle(Rotation2d angle) {
         this.encoder.setPosition(angle.getRadians());
     }

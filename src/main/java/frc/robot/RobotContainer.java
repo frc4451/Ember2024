@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
@@ -35,7 +36,8 @@ public class RobotContainer {
 
     public final PivotSubsystem m_pivot = new PivotSubsystem();
 
-    final CommandCustomController m_driverController = new CommandCustomController(OIConstants.kDriverControllerPort);
+    final CommandCustomController m_driverController = new CommandCustomController(
+            OIConstants.kDriverControllerPort);
 
     final CommandCustomController m_operatorController = new CommandCustomController(
             OIConstants.kOperatorControllerPort);
@@ -76,15 +78,18 @@ public class RobotContainer {
      * {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-        m_operatorController.rightBumper()
+        m_driverController.rightBumper()
                 .whileTrue(new RunCommand(
                         () -> m_robotDrive.setCross(),
                         m_robotDrive));
 
+        m_operatorController.rightY()
+                .whileTrue(new RunCommand(() -> m_pivot.runPercent(m_operatorController.getRightY()), m_pivot))
+                .onFalse(new InstantCommand(() -> m_pivot.setSetpoint(m_pivot.getAngle()), m_pivot));
         m_operatorController.povUp().onTrue(m_pivot.setSetpointCommand(PivotLocation.k0.angle));
         m_operatorController.povRight().onTrue(m_pivot.setSetpointCommand(PivotLocation.k160.angle));
         m_operatorController.povDown().onTrue(m_pivot.setSetpointCommand(PivotLocation.k167.angle));
         m_operatorController.povLeft().onTrue(m_pivot.setSetpointCommand(PivotLocation.k90.angle));
-
     }
+
 }

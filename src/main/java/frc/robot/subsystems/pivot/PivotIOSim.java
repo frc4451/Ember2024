@@ -41,6 +41,11 @@ public class PivotIOSim implements PivotIO {
         armSim.setInputVoltage(voltage);
     }
 
+    @Override
+    public void setPercentOutput(double decimalPercent) {
+        armSim.setInputVoltage(MathUtil.clamp(decimalPercent, -1.0, 1.0) * 12.0);
+    }
+
     // Can't figure out how to do this
     // @Override
     // public void setAngle(Rotation2d angle) {}
