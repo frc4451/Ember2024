@@ -84,8 +84,8 @@ public class RobotContainer {
                         m_robotDrive));
 
         m_operatorController.rightY()
-                .whileTrue(new RunCommand(() -> m_pivot.runPercent(m_operatorController.getRightY()), m_pivot))
-                .onFalse(new InstantCommand(() -> m_pivot.setSetpoint(m_pivot.getAngle()), m_pivot));
+                .whileTrue(m_pivot.runPercentCommand(() -> -m_operatorController.getRightY()))
+                .onFalse(m_pivot.setSetpointCurrentCommand());
         m_operatorController.povUp().onTrue(m_pivot.setSetpointCommand(PivotLocation.k0.angle));
         m_operatorController.povRight().onTrue(m_pivot.setSetpointCommand(PivotLocation.k160.angle));
         m_operatorController.povDown().onTrue(m_pivot.setSetpointCommand(PivotLocation.k167.angle));

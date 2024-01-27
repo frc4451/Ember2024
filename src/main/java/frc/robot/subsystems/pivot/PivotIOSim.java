@@ -1,6 +1,7 @@
 package frc.robot.subsystems.pivot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants.IntakeConstants;
@@ -43,10 +44,11 @@ public class PivotIOSim implements PivotIO {
 
     @Override
     public void setPercentOutput(double decimalPercent) {
-        armSim.setInputVoltage(MathUtil.clamp(decimalPercent, -1.0, 1.0) * 12.0);
+        setVoltage(12.0 * decimalPercent);
     }
 
-    // Can't figure out how to do this
-    // @Override
-    // public void setAngle(Rotation2d angle) {}
+    @Override
+    public void setAngle(Rotation2d angle) {
+        armSim.setState(angle.getRadians(), armSim.getVelocityRadPerSec());
+    }
 }

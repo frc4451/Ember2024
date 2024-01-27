@@ -1,5 +1,7 @@
 package frc.robot.subsystems.pivot;
 
+import java.util.function.DoubleSupplier;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
@@ -73,13 +75,17 @@ public class PivotSubsystem extends SubsystemBase {
         return this.setpoint;
     }
 
-    public void setSetpoint(Rotation2d angle) {
+    private void setSetpoint(Rotation2d angle) {
         this.setpoint = angle;
         this.pidController.setSetpoint(angle.getDegrees());
     }
 
     public Command setSetpointCommand(Rotation2d angle) {
         return new InstantCommand(() -> this.setSetpoint(angle), this);
+    }
+
+    public Command setSetpointCurrentCommand() {
+        return new InstantCommand(() -> this.setSetpoint(this.angle), this);
     }
 
     public Command pivotPIDCommand() {
@@ -93,7 +99,7 @@ public class PivotSubsystem extends SubsystemBase {
         this.io.setVoltage(MathUtil.clamp(output, -12, 12));
     }
 
-    public void runPercent(double decimalPercent) {
-        this.io.setPercentOutput(decimalPercent);
+    public Command runPercentCommand(DoubleSupplier decimalPercent) {
+        return new RunCommand(() -> this.io.setPercentOutput(decimalPercent.getAsDouble()), this);
     }
 }
