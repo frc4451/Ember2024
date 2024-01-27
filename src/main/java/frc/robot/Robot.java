@@ -147,36 +147,7 @@ public class Robot extends LoggedRobot {
     /** This function is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
-        // if (m_robotContainer.m_operatorController.leftTrigger().getAsBoolean()) {
-        // m_robotContainer.m_rollers.runRollers(RollerMode.SUCK);
-        // } else if
-        // (m_robotContainer.m_operatorController.rightTrigger().getAsBoolean()) {
-        // m_robotContainer.m_rollers.runRollers(RollerMode.SHOOT_LOW);
-        // } else if (m_robotContainer.m_operatorController.leftBumper().getAsBoolean())
-        // {
-        // m_robotContainer.m_rollers.runRollers(RollerMode.SHOOT_MID);
-        // } else if
-        // (m_robotContainer.m_operatorController.rightBumper().getAsBoolean()) {
-        // m_robotContainer.m_rollers.runRollers(RollerMode.SHOOT_HIGH);
-        // } else {
-        // m_robotContainer.m_rollers.runRollers(RollerMode.STOP);
-        // }
 
-        // if (m_robotContainer.m_operatorController.povDown().getAsBoolean()) {
-        // m_robotContainer.m_pivot.setSetpoint(PivotLocation.k167.angle);
-        // m_robotContainer.m_pivot.pivot();
-        // } else if (m_robotContainer.m_operatorController.povUp().getAsBoolean()) {
-        // m_robotContainer.m_pivot.setSetpoint(PivotLocation.k0.angle);
-        // m_robotContainer.m_pivot.pivot();
-        // } else if (m_robotContainer.m_operatorController.povLeft().getAsBoolean()) {
-        // m_robotContainer.m_pivot.setSetpoint(PivotLocation.k90.angle);
-        // m_robotContainer.m_pivot.pivot();
-        // } else if (m_robotContainer.m_operatorController.povRight().getAsBoolean()) {
-        // m_robotContainer.m_pivot.setSetpoint(PivotLocation.k160.angle);
-        // m_robotContainer.m_pivot.pivot();
-        // } else {
-        // m_robotContainer.m_pivot.runAtPercent(m_robotContainer.m_operatorController.getRightY());
-        // }
     }
 
     @Override
