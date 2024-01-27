@@ -28,8 +28,6 @@ public final class Constants {
 
     public static int pdp = 0;
 
-    
-
     public static final class AdvantageKitConstants {
         public static enum Mode {
             REAL,
@@ -164,12 +162,12 @@ public final class Constants {
         public static final double kPivotMinDegrees = 10.0;
         public static final double kPivotMaxDegrees = 167.25;
 
-        public static final double kPivotReduction = 240.0;
+        public static final double kPivotReduction = 80.0;
 
         public static final int kPivotCanId = 4;
         public static final double kPivotVelocityRadiansPerSecond = Units.degreesToRadians(15.0);
 
-        public static final double kPivotP = 0.6;
+        public static final double kPivotP = 0.05;
         public static final double kPivotI = 0.0;
         public static final double kPivotD = 0.0;
     }
