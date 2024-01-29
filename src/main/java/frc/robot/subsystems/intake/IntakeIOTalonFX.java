@@ -58,8 +58,8 @@ public class IntakeIOTalonFX implements IntakeIO {
     }
 
     @Override
-    public void setFree() {
-        top.setControl(new CoastOut());
-        bottom.setControl(new CoastOut());
+    public void setVoltage(double topVoltage, double bottomVoltage) {
+        top.setVoltage(topVoltage);
+        bottom.setVoltage(bottomVoltage);
     }
 }

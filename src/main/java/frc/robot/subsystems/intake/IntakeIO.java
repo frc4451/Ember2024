@@ -7,22 +7,15 @@ public interface IntakeIO {
     public static class IntakeIOInputs {
         public double[] appliedVoltage = { 0.0, 0.0 };
         public double[] velocityRotPerSecond = { 0.0, 0.0 };
+        public double[] currentAmperage = { 0.0, 0.0 };
     }
 
     public default void updateInputs(IntakeIOInputs inputs) {
     }
 
-    public default void setVelocity(double velocityRotPerSecondtop, double velocityRotPerSecondbottom) {
+    public default void setVelocity(double velocityRotPerSecondTop, double velocityRotPerSecondBottom) {
     }
 
-    public default void setVoltage(double voltage) {
-    }
-
-    public default void stop() {
-        setVoltage(0.0);
-    }
-
-    public default void setFree() {
-
+    public default void setVoltage(double topVoltage, double bottomVoltage) {
     }
 }
