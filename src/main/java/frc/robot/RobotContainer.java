@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.PathfindToTarget;
-import frc.robot.commands.RotateToAprilTag;
+import frc.robot.commands.RotateShooterToAprilTag;
 import frc.robot.pathplanner.PathPlannerUtils;
 import frc.robot.pathplanner.paths.PathPlannerPaths;
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -144,6 +144,6 @@ public class RobotContainer {
                                         m_vision::getClosestObject,
                                         m_robotDrive),
                                 Set.of(m_robotDrive)));
-        m_driverController.leftBumper().whileTrue(new RotateToAprilTag(m_robotDrive, 7));
+        m_driverController.leftBumper().whileTrue(new RotateShooterToAprilTag(m_robotDrive, 7));
     }
 }

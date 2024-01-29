@@ -14,13 +14,13 @@ import frc.robot.subsystems.drive.DriveSubsystem;
  * Command for centering the robot relative to an April Tag that the user
  * specifies. The ID must be a valid Fiducial ID.
  */
-public class RotateToAprilTag extends Command {
+public class RotateShooterToAprilTag extends Command {
     private final PIDController thetaController = new PIDController(1, 0, 0);
 
     private final DriveSubsystem drive;
     private final int targetFiducialId;
 
-    public RotateToAprilTag(
+    public RotateShooterToAprilTag(
             DriveSubsystem drive,
             int targetFiducialId) {
         this.drive = drive;
