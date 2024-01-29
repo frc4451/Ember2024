@@ -7,6 +7,8 @@ public interface ObjectDetectionIO {
     @AutoLog
     public static class ObjectDetectionIOInputs {
         public PhotonPipelineResult frame = new PhotonPipelineResult();
+        public boolean isDuplicateFrame = false;
+        public boolean hasExceededTargetlessThreshold = false;
     }
 
     public default void updateInputs(ObjectDetectionIOInputs inputs) {
