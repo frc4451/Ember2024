@@ -18,6 +18,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.VisionConstants;
@@ -38,6 +39,12 @@ import frc.utils.VirtualSubsystem;
 
 public class VisionSubsystem extends VirtualSubsystem {
     public static record VisionMeasurement(EstimatedRobotPose estimation, Matrix<N3, N1> confidence) {
+    }
+
+    public static record TargetWithSource(PhotonTrackedTarget target, VisionSource source) {
+        public double getYawRobotRelativeRad() {
+            return Units.degreesToRadians(target.getYaw()) + source.robotToCamera().getRotation().getZ();
+        }
     }
 
     public static record AprilTagCamera(
@@ -61,6 +68,8 @@ public class VisionSubsystem extends VirtualSubsystem {
     private ConcurrentLinkedQueue<VisionMeasurement> visionMeasurements = new ConcurrentLinkedQueue<>();
 
     private Optional<PhotonTrackedTarget> closetObject = Optional.empty();
+
+    private Set<TargetWithSource> visibleAprilTags = new HashSet<>();
 
     public Supplier<Pose2d> robotPoseSupplier = () -> new Pose2d();
 
@@ -135,6 +144,8 @@ public class VisionSubsystem extends VirtualSubsystem {
      * our VisionMeasurements to help correct our position and odometry.
      */
     private void updateVisionMeasurements() {
+        Set<TargetWithSource> currentVisibleAprilTags = new HashSet<>();
+
         // For each camera we need to do the following:
         for (AprilTagCamera cam : aprilTagCameras) {
             String cameraLogRoot = "AprilTagCamera/" + cam.source.name() + "/";
@@ -146,6 +157,13 @@ public class VisionSubsystem extends VirtualSubsystem {
             if (cam.inputs.isDuplicateFrame) {
                 continue;
             }
+
+            currentVisibleAprilTags.addAll(
+                    cam.inputs.frame
+                            .getTargets()
+                            .stream()
+                            .map((target) -> new TargetWithSource(target, cam.source))
+                            .toList());
 
             Logger.recordOutput(cameraLogRoot + "Targets",
                     cam.inputs.frame.getTargets().stream()
@@ -166,6 +184,12 @@ public class VisionSubsystem extends VirtualSubsystem {
                         .ifPresent(visionMeasurements::add);
             }
         }
+
+        if (!currentVisibleAprilTags.isEmpty()) {
+            currentVisibleAprilTags.removeIf(targetWithSource -> targetWithSource.target.getFiducialId() == -1);
+        }
+
+        visibleAprilTags = currentVisibleAprilTags;
     }
 
     /**
@@ -221,6 +245,10 @@ public class VisionSubsystem extends VirtualSubsystem {
      */
     public VisionMeasurement pollLatestVisionMeasurement() {
         return visionMeasurements.poll();
+    }
+
+    public Set<TargetWithSource> getVisibleAprilTags() {
+        return visibleAprilTags;
     }
 
     /**

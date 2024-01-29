@@ -87,7 +87,7 @@ public class RobotContainer {
         // m_pivot.setDefaultCommand(m_pivot.getPivotCommand());
 
         // Build an auto chooser. You can make a default auto by passing in their name
-        m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
+        m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser("New Auto"));
     }
 
     /**
@@ -144,6 +144,9 @@ public class RobotContainer {
                                         m_vision::getClosestObject,
                                         m_robotDrive),
                                 Set.of(m_robotDrive)));
-        m_driverController.leftBumper().whileTrue(new RotateShooterToAprilTag(m_robotDrive, 7));
+        m_driverController.leftBumper().whileTrue(new RotateShooterToAprilTag(
+                m_robotDrive,
+                m_vision::getVisibleAprilTags,
+                4));
     }
 }
