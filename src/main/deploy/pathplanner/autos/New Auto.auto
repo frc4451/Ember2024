@@ -16,6 +16,18 @@
           "data": {
             "pathName": "Test Path"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FindNote"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "poop m2"
+          }
         }
       ]
     }
