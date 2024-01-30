@@ -16,6 +16,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
@@ -43,7 +44,9 @@ public class VisionSubsystem extends VirtualSubsystem {
 
     public static record TargetWithSource(PhotonTrackedTarget target, VisionSource source) {
         public double getYawRobotRelativeRad() {
-            return Units.degreesToRadians(target.getYaw()) + source.robotToCamera().getRotation().getZ();
+            return Rotation2d.fromDegrees(target.getYaw())
+                    .rotateBy(source.robotToCamera().getRotation().toRotation2d())
+                    .getRadians();
         }
     }
 
@@ -118,8 +121,11 @@ public class VisionSubsystem extends VirtualSubsystem {
                 };
                 break;
         }
-        objectDetectionCamera = new ObjectDetectionCamera(io, new ObjectDetectionIOInputsAutoLogged(),
-                VisionConstants.OBJECT_DETECTION_SOURCE, new DuplicateTracker());
+        objectDetectionCamera = new ObjectDetectionCamera(
+                io,
+                new ObjectDetectionIOInputsAutoLogged(),
+                VisionConstants.OBJECT_DETECTION_SOURCE,
+                new DuplicateTracker());
 
     }
 
@@ -165,10 +171,15 @@ public class VisionSubsystem extends VirtualSubsystem {
                             .map((target) -> new TargetWithSource(target, cam.source))
                             .toList());
 
-            Logger.recordOutput(cameraLogRoot + "Targets",
+            Logger.recordOutput(cameraLogRoot + "Targets/IDs",
                     cam.inputs.frame.getTargets().stream()
                             .mapToInt(PhotonTrackedTarget::getFiducialId)
-                            .distinct()
+                            .toArray());
+
+            Logger.recordOutput(cameraLogRoot + "Targets/YawRad",
+                    cam.inputs.frame.getTargets().stream()
+                            .mapToDouble(PhotonTrackedTarget::getYaw)
+                            .map((yawDeg) -> Units.degreesToRadians(yawDeg))
                             .toArray());
 
             // Add estimated position and deviation to be used by SwerveDrivePoseEstimator

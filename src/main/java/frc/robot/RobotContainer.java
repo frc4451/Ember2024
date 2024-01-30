@@ -144,9 +144,11 @@ public class RobotContainer {
                                         m_vision::getClosestObject,
                                         m_robotDrive),
                                 Set.of(m_robotDrive)));
-        m_driverController.leftBumper().whileTrue(new RotateShooterToAprilTag(
-                m_robotDrive,
-                m_vision::getVisibleAprilTags,
-                4));
+        m_driverController.leftBumper().whileTrue(
+                Commands.defer(() -> new RotateShooterToAprilTag(
+                        m_robotDrive,
+                        m_vision::getVisibleAprilTags,
+                        4),
+                        Set.of(m_robotDrive)));
     }
 }
