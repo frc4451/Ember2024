@@ -87,7 +87,7 @@ public class RobotContainer {
                 .onFalse(m_pivot.setSetpointCurrentCommand());
         m_operatorController.povUp().onTrue(m_pivot.setSetpointCommand(PivotLocation.k0.angle));
         m_operatorController.povRight().onTrue(m_pivot.setSetpointCommand(PivotLocation.k160.angle));
-        m_operatorController.povDown().onTrue(m_pivot.setSetpointCommand(PivotLocation.k167.angle));
+        m_operatorController.povDown().onTrue(m_pivot.setSetpointCommand(PivotLocation.k45.angle));
         m_operatorController.povLeft().onTrue(m_pivot.setSetpointCommand(PivotLocation.k90.angle));
     }
 

@@ -167,7 +167,7 @@ public final class Constants {
         public static final int kPivotCanId = 4;
         public static final double kPivotVelocityRadiansPerSecond = Units.degreesToRadians(15.0);
 
-        public static final double kPivotP = 0.05;
+        public static final double kPivotP = 0.3;
         public static final double kPivotI = 0.0;
         public static final double kPivotD = 0.0;
     }
