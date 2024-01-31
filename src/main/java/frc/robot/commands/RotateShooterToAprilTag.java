@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
+import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTag;
@@ -13,6 +14,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -78,7 +80,10 @@ public class RotateShooterToAprilTag extends Command {
                                     robotToCamera.getRotation().toRotation2d().plus(cameraToTarget.getAngle()));
                             yawErrorRad = robotToTarget.getRotation().getRadians();
                         },
-                        () -> yawErrorRad += gyroDeltaTracker.get());
+                        () -> PhotonUtils.getYawToPose(drive.getPose(),
+                                targetTag.pose.toPose2d()));
+        // () -> yawErrorRad += gyroDeltaTracker.get());
+
         // double targetYawRad = targets.stream()
         // .filter(targetWithSource -> targetWithSource.target().getFiducialId() ==
         // targetFiducialId)
