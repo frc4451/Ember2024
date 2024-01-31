@@ -15,12 +15,14 @@ public class PivotIOSparkMax implements PivotIO {
     private final RelativeEncoder encoder = pivot.getEncoder();
 
     public PivotIOSparkMax() {
-        this.encoder.setPositionConversionFactor(2.0 * Math.PI / IntakeConstants.kPivotReduction);
-
         this.pivot.restoreFactoryDefaults();
-        this.pivot.setIdleMode(IdleMode.kBrake);
+        this.pivot.setIdleMode(IdleMode.kCoast);
         this.pivot.setClosedLoopRampRate(1.0);
+        this.pivot.setInverted(true);
         this.pivot.burnFlash();
+
+        this.encoder.setPositionConversionFactor(2.0 * Math.PI / IntakeConstants.kPivotReduction);
+        this.encoder.setPosition(0);
     }
 
     @Override

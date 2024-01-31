@@ -49,13 +49,13 @@ public class PivotSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         this.io.updateInputs(this.inputs);
+        Logger.processInputs("Pivot", this.inputs);
 
         // Make sure the motor actually stops when the robot disabled
         if (DriverStation.isDisabled()) {
+            this.setSetpoint(PivotLocation.INITIAL.angle);
             this.io.stop();
         }
-
-        Logger.processInputs("Intake/Pivot", this.inputs);
 
         this.angle = new Rotation2d(this.inputs.relativeAngleRad);
 

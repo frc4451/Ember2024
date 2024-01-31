@@ -159,10 +159,10 @@ public final class Constants {
         public static final int kBottomRollerCanId = 3;
         public static final int kBeamBreakChannel = 0;
 
-        public static final double kPivotMinDegrees = 10.0;
-        public static final double kPivotMaxDegrees = 167.25;
+        // public static final double kPivotMinDegrees = 10.0;
+        // public static final double kPivotMaxDegrees = 167.25;
 
-        public static final double kPivotReduction = 80.0;
+        public static final double kPivotReduction = 240.0;
 
         public static final int kPivotCanId = 4;
         public static final double kPivotVelocityRadiansPerSecond = Units.degreesToRadians(15.0);
