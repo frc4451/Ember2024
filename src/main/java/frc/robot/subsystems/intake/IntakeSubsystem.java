@@ -9,10 +9,10 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AdvantageKitConstants;
-import frc.robot.shared_components.beam_break.BeamBreakAdafruit;
-import frc.robot.shared_components.beam_break.BeamBreakIO;
-import frc.robot.shared_components.beam_break.BeamBreakIOInputsAutoLogged;
-import frc.robot.shared_components.beam_break.BeamBreakSim;
+import frc.robot.reusable_io.beam_break.BeamBreakDigitalInput;
+import frc.robot.reusable_io.beam_break.BeamBreakIO;
+import frc.robot.reusable_io.beam_break.BeamBreakIOInputsAutoLogged;
+import frc.robot.reusable_io.beam_break.BeamBreakSim;
 
 public class IntakeSubsystem extends SubsystemBase {
     private final IntakeIO topIO;
@@ -28,7 +28,7 @@ public class IntakeSubsystem extends SubsystemBase {
             case REAL:
                 topIO = new IntakeIOTalonFX(1, true);
                 bottomIO = new IntakeIOTalonFX(2, false);
-                beamBreakIO = new BeamBreakAdafruit(0);
+                beamBreakIO = new BeamBreakDigitalInput(0);
                 break;
             case SIM:
                 topIO = new IntakeIOSim();
@@ -49,7 +49,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-
         this.topIO.updateInputs(this.topInputs);
         this.bottomIO.updateInputs(this.bottomInputs);
         this.beamBreakIO.updateInputs(this.beamBreakInputs);
@@ -78,6 +77,6 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public Trigger beamBreakIsNotCovered() {
-        return new Trigger(() -> this.beamBreakInputs.value);
+        return new Trigger(() -> this.beamBreakInputs.isActivated);
     }
 }
