@@ -1,16 +1,16 @@
-package frc.robot.reusable_io.beam_break;
+package frc.robot.reusable_io.beambreak;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 
-public class BeamBreakDigitalInput implements BeamBreakIO {
+public class BeambreakDigitalInput implements BeambreakIO {
     private final DigitalInput beamBreak;
 
-    public BeamBreakDigitalInput(int dioChannel) {
+    public BeambreakDigitalInput(int dioChannel) {
         this.beamBreak = new DigitalInput(dioChannel);
     }
 
     @Override
-    public void updateInputs(BeamBreakIOInputs inputs) {
+    public void updateInputs(BeambreakIOInputs inputs) {
         inputs.isConnected = true;
         inputs.isActivated = !beamBreak.get();
     }

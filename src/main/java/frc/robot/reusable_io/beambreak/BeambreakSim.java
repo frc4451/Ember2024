@@ -1,16 +1,16 @@
-package frc.robot.reusable_io.beam_break;
+package frc.robot.reusable_io.beambreak;
 
 import edu.wpi.first.wpilibj.simulation.DIOSim;
 
-public class BeamBreakSim implements BeamBreakIO {
+public class BeambreakSim implements BeambreakIO {
     public final DIOSim beamBreakSim;
 
-    public BeamBreakSim(int dioChannel) {
+    public BeambreakSim(int dioChannel) {
         beamBreakSim = new DIOSim(dioChannel);
     }
 
     @Override
-    public void updateInputs(BeamBreakIOInputs inputs) {
+    public void updateInputs(BeambreakIOInputs inputs) {
         inputs.isConnected = beamBreakSim.getInitialized();
         inputs.isActivated = !beamBreakSim.getValue();
     }
