@@ -23,7 +23,7 @@ import frc.utils.DeltaTimeTracker;
  */
 public class RotateShooterToAprilTag extends Command {
     private static double yawMeasurementOffset = Math.PI; // To aim from the back
-    private final PIDController thetaController = new PIDController(5, 0, 0.1);
+    private final PIDController thetaController = new PIDController(6, 0, 0.1);
 
     private final DriveSubsystem drive;
     private final int targetFiducialId;
