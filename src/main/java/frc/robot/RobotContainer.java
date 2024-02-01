@@ -78,7 +78,7 @@ public class RobotContainer {
         // m_robotDrive));
 
         m_driverController.b()
-                .onTrue(m_shooter.setVelocityCommand(25.0, 25.0))
+                .onTrue(m_shooter.setVelocityCommand(60.0, 60.0))
                 .onFalse(m_shooter.stopCommand());
         m_driverController.y()
                 .onTrue(m_shooter.setVelocityCommand(10.0, 10.0))
@@ -91,7 +91,7 @@ public class RobotContainer {
 
         //
         m_driverController.a()
-                .onTrue(m_shooter.setVelocityCommand(70.0, 50.0))
+                .onTrue(m_shooter.setVelocityCommand(85.0, 70.0))
                 .onFalse(m_shooter.stopCommand());
 
         // m_driverController.rightBumper()
