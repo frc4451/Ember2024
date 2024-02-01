@@ -47,7 +47,7 @@ public class PathfindToTarget extends Command {
 
     @Override
     public void initialize() {
-        drive.drive(0, 0, 0, false, true);
+        drive.runVelocity(new ChassisSpeeds());
     }
 
     @Override
