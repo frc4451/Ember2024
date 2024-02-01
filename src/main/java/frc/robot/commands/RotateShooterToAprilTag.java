@@ -47,10 +47,12 @@ public class RotateShooterToAprilTag extends Command {
         this.targetTag = VisionConstants.FIELD_LAYOUT.getTags().get(targetFiducialId - 1);
 
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
+        thetaController.setTolerance(Units.degreesToRadians(0.5));
     }
 
     @Override
     public void initialize() {
+        drive.runVelocity(new ChassisSpeeds());
         gyroDeltaTracker.update(drive.getPose().getRotation().getRadians());
     }
 
@@ -107,6 +109,8 @@ public class RotateShooterToAprilTag extends Command {
         Logger.recordOutput(logRoot + "OffsetYawDeg", Units.radiansToDegrees(offsetYawRad));
         Logger.recordOutput(logRoot + "RotationSpeed", rotationSpeedRad);
 
-        drive.runVelocity(new ChassisSpeeds(0, 0, rotationSpeedRad));
+        if (!thetaController.atSetpoint()) {
+            drive.runVelocity(new ChassisSpeeds(0, 0, rotationSpeedRad));
+        }
     }
 }
