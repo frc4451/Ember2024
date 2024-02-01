@@ -148,7 +148,7 @@ public class RobotContainer {
                 Commands.defer(() -> new RotateShooterToAprilTag(
                         m_robotDrive,
                         m_vision::getVisibleAprilTags,
-                        4),
+                        3),
                         Set.of(m_robotDrive)));
     }
 }

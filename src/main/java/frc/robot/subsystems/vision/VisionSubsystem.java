@@ -1,17 +1,14 @@
 package frc.robot.subsystems.vision;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
-import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.Matrix;
@@ -19,7 +16,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.VisionConstants;
@@ -117,7 +113,6 @@ public class VisionSubsystem extends VirtualSubsystem {
                 break;
             default:
                 io = new ObjectDetectionIO() {
-
                 };
                 break;
         }
@@ -164,29 +159,34 @@ public class VisionSubsystem extends VirtualSubsystem {
                 continue;
             }
 
+            List<PhotonTrackedTarget> targets = cam.inputs.frame.getTargets();
+
             currentVisibleAprilTags.addAll(
-                    cam.inputs.frame
-                            .getTargets()
-                            .stream()
+                    targets.stream()
                             .map((target) -> new TargetWithSource(target, cam.source))
                             .toList());
 
-            Logger.recordOutput(cameraLogRoot + "Targets/IDs",
-                    cam.inputs.frame.getTargets().stream()
-                            .mapToInt(PhotonTrackedTarget::getFiducialId)
-                            .toArray());
+            // Logger.recordOutput(cameraLogRoot + "ListOfVisibleTargets",
+            // targets.toArray().toString());
 
-            Logger.recordOutput(cameraLogRoot + "Targets/YawRad",
-                    cam.inputs.frame.getTargets().stream()
-                            .mapToDouble(PhotonTrackedTarget::getYaw)
-                            .map((yawDeg) -> Units.degreesToRadians(yawDeg))
-                            .toArray());
+            // Logger.recordOutput(cameraLogRoot + "Targets/IDs",
+            // targets.stream()
+            // .mapToInt(PhotonTrackedTarget::getFiducialId)
+            // .toArray());
+
+            // Logger.recordOutput(cameraLogRoot + "Targets/YawRad",
+            // targets.stream()
+            // .mapToDouble(PhotonTrackedTarget::getYaw)
+            // .map((yawDeg) -> Units.degreesToRadians(yawDeg))
+            // .toArray());
+
+            // Logger.recordOutput(cameraLogRoot + "Targets/YawDeg",
+            // targets.stream()
+            // .mapToDouble(PhotonTrackedTarget::getYaw)
+            // .toArray());
 
             // Add estimated position and deviation to be used by SwerveDrivePoseEstimator
             EstimatedPose estimatedPose = cam.inputs.estimatedPose;
-
-            Logger.recordOutput(cameraLogRoot + "EstimatedPose", estimatedPose.pose);
-            Logger.recordOutput(cameraLogRoot + "EstimatedPoseTimestamp", estimatedPose.timestamp);
 
             if (estimatedPose.isPresent) {
                 // Find Vision Measurement and add it for our Queue if it exists
@@ -260,40 +260,5 @@ public class VisionSubsystem extends VirtualSubsystem {
 
     public Set<TargetWithSource> getVisibleAprilTags() {
         return visibleAprilTags;
-    }
-
-    /**
-     * Gets a list of the Fiducial IDs for April Tags we detect
-     *
-     * @return Pipe concatenated list of IDs
-     */
-    public String getVisibleTargets() {
-        List<Integer> targetIds = new ArrayList<>();
-
-        for (AprilTagCamera cam : aprilTagCameras) {
-            PhotonPipelineResult frame = cam.inputs.frame;
-            for (PhotonTrackedTarget target : frame.targets) {
-                targetIds.add(target.getFiducialId());
-            }
-        }
-
-        Set<Integer> uniqueIds = new HashSet<>(targetIds);
-        List<Integer> organizedIds = new ArrayList<>(uniqueIds);
-
-        Collections.sort(organizedIds);
-
-        String visibleTargets = organizedIds.stream()
-                .map(Object::toString)
-                .reduce((s1, s2) -> s1 + " | " + s2)
-                .orElse("");
-
-        return visibleTargets;
-    }
-
-    /**
-     * Eventually return whether or not we see "notes"
-     */
-    public boolean doWeSeeNotes() {
-        return false;
     }
 }

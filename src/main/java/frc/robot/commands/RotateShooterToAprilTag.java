@@ -4,14 +4,13 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
-import org.photonvision.PhotonUtils;
-
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.VisionConstants;
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -40,6 +39,7 @@ public class RotateShooterToAprilTag extends Command {
             Supplier<Set<TargetWithSource>> visibleAprilTagsSupplier,
             int targetFiducialId) {
         addRequirements(drive);
+        setName("RotateShooterToAprilTag");
 
         this.drive = drive;
         this.targetFiducialId = targetFiducialId;
@@ -68,7 +68,6 @@ public class RotateShooterToAprilTag extends Command {
         Set<TargetWithSource> targets = this.visibleAprilTagsSupplier.get();
         targets.stream()
                 .filter(targetWithSource -> targetWithSource.target().getFiducialId() == targetFiducialId)
-                // .findFirst()
                 .reduce((targetWithSourceA,
                         targetWithSourceB) -> targetWithSourceA.target().getPoseAmbiguity() <= targetWithSourceB
                                 .target().getPoseAmbiguity() ? targetWithSourceA : targetWithSourceB)
@@ -89,19 +88,25 @@ public class RotateShooterToAprilTag extends Command {
                             if (hasSeenTag) {
                                 yawErrorRad += gyroDeltaTracker.get();
                             } else {
-                                yawErrorRad = PhotonUtils.getYawToPose(
-                                        drive.getPose(),
-                                        targetTag.pose.toPose2d()).getRadians();
+                                // yawErrorRad = PhotonUtils.getYawToPose(
+                                // drive.getPose(),
+                                // targetTag.pose.toPose2d()).getRadians();
                             }
                         });
 
-        double rotationSpeed = thetaController.calculate(yawMeasurementOffset, yawErrorRad);
+        double rotationSpeedRad = thetaController.calculate(yawMeasurementOffset, yawErrorRad);
 
-        // @NOTE Use this for debugging, remove later
-        Logger.recordOutput("RotateToAprilTag/TargetYaw", yawErrorRad);
-        Logger.recordOutput("RotateToAprilTag/HaveSeenTarget", hasSeenTag);
-        Logger.recordOutput("RotateToAprilTag/RotationSpeed", rotationSpeed);
+        double offsetYawRad = yawErrorRad + yawMeasurementOffset;
 
-        drive.runVelocity(new ChassisSpeeds(0, 0, rotationSpeed));
+        String logRoot = "Commands/" + getName() + "/";
+
+        Logger.recordOutput(logRoot + "HasSeenTarget", hasSeenTag);
+        Logger.recordOutput(logRoot + "TargetYawRad", yawErrorRad);
+        Logger.recordOutput(logRoot + "TargetYawDeg", Units.radiansToDegrees(yawErrorRad));
+        Logger.recordOutput(logRoot + "OffsetYawRad", offsetYawRad);
+        Logger.recordOutput(logRoot + "OffsetYawDeg", Units.radiansToDegrees(offsetYawRad));
+        Logger.recordOutput(logRoot + "RotationSpeed", rotationSpeedRad);
+
+        drive.runVelocity(new ChassisSpeeds(0, 0, rotationSpeedRad));
     }
 }

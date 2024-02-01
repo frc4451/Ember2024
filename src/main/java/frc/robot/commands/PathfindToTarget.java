@@ -36,6 +36,9 @@ public class PathfindToTarget extends Command {
     public PathfindToTarget(
             Supplier<Optional<PhotonTrackedTarget>> targetSupplier,
             DriveSubsystem drive) {
+        addRequirements(drive);
+        setName("PathfindToTarget");
+
         this.targetSupplier = targetSupplier;
         this.drive = drive;
 
