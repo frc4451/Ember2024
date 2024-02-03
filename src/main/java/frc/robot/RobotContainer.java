@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.PathfindToTarget;
 import frc.robot.commands.RotateShooterToAprilTag;
+import frc.robot.commands.TeleopDrive;
 import frc.robot.pathplanner.PathPlannerUtils;
 import frc.robot.pathplanner.paths.PathPlannerPaths;
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -72,13 +73,13 @@ public class RobotContainer {
         m_robotDrive.setDefaultCommand(
                 // The left stick controls translation of the robot.
                 // Turning is controlled by the X axis of the right stick.
-                new RunCommand(
-                        () -> m_robotDrive.drive(
-                                -m_driverController.getLeftY(),
-                                -m_driverController.getLeftX(),
-                                -m_driverController.getRightX(),
-                                true, true),
-                        m_robotDrive));
+                new TeleopDrive(
+                        m_robotDrive,
+                        () -> -m_driverController.getLeftY(),
+                        () -> -m_driverController.getLeftX(),
+                        () -> -m_driverController.getRightX(),
+                        true,
+                        true));
 
         // m_pivot.setDefaultCommand(new RunCommand(() -> {
         // m_pivot.runAtPercent(m_operatorController.getRightY());
