@@ -24,10 +24,11 @@ import frc.utils.DeltaTimeTracker;
 public class RotateShooterToAprilTag extends Command {
     private static double yawMeasurementOffset = Math.PI; // To aim from the back
     private final PIDController thetaController = new PIDController(6, 0, 0.1);
+    private final String logRoot;
 
     private final DriveSubsystem drive;
     private final int targetFiducialId;
-    private final AprilTag targetTag;
+    // private final AprilTag targetTag;
     private final Supplier<Set<TargetWithSource>> visibleAprilTagsSupplier;
 
     private final DeltaTimeTracker gyroDeltaTracker = new DeltaTimeTracker();
@@ -41,10 +42,13 @@ public class RotateShooterToAprilTag extends Command {
         addRequirements(drive);
         setName("RotateShooterToAprilTag");
 
+        logRoot = "Commands/" + getName() + "/";
+
         this.drive = drive;
         this.targetFiducialId = targetFiducialId;
         this.visibleAprilTagsSupplier = visibleAprilTagsSupplier;
-        this.targetTag = VisionConstants.FIELD_LAYOUT.getTags().get(targetFiducialId - 1);
+        // this.targetTag = VisionConstants.FIELD_LAYOUT.getTags().get(targetFiducialId
+        // - 1);
 
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
         thetaController.setTolerance(Units.degreesToRadians(0.5));
@@ -54,17 +58,12 @@ public class RotateShooterToAprilTag extends Command {
     public void initialize() {
         drive.runVelocity(new ChassisSpeeds());
         gyroDeltaTracker.update(drive.getPose().getRotation().getRadians());
+
+        Logger.recordOutput(logRoot + "IsRunning", true);
     }
 
     @Override
     public void execute() {
-        // double targetYaw = PhotonUtils.getYawToPose(
-        // drive.getPose(),
-        // this.targetTag.pose.toPose2d())
-        // // Shoot out the back?
-        // .rotateBy(Rotation2d.fromRadians(Math.PI))
-        // .getRadians();
-
         gyroDeltaTracker.update(drive.getPose().getRotation().getRadians());
 
         Set<TargetWithSource> targets = this.visibleAprilTagsSupplier.get();
@@ -72,12 +71,12 @@ public class RotateShooterToAprilTag extends Command {
                 .filter(targetWithSource -> targetWithSource.target().getFiducialId() == targetFiducialId)
                 .reduce((targetWithSourceA,
                         targetWithSourceB) -> targetWithSourceA.target().getPoseAmbiguity() <= targetWithSourceB
-                                .target().getPoseAmbiguity() ? targetWithSourceA : targetWithSourceB)
+                                .target().getPoseAmbiguity()
+                                        ? targetWithSourceA
+                                        : targetWithSourceB)
                 .ifPresentOrElse(
                         targetWithSource -> {
                             hasSeenTag = true;
-                            // yawErrorRad = Units
-                            // .degreesToRadians(targetWithSource.getYawRobotRelativeRad()
                             Translation2d cameraToTarget = targetWithSource.target().getBestCameraToTarget()
                                     .getTranslation().toTranslation2d();
                             Transform3d robotToCamera = targetWithSource.source().robotToCamera();
@@ -100,8 +99,7 @@ public class RotateShooterToAprilTag extends Command {
 
         double offsetYawRad = yawErrorRad + yawMeasurementOffset;
 
-        String logRoot = "Commands/" + getName() + "/";
-
+        Logger.recordOutput(logRoot + "TargetID", targetFiducialId);
         Logger.recordOutput(logRoot + "HasSeenTarget", hasSeenTag);
         Logger.recordOutput(logRoot + "TargetYawRad", yawErrorRad);
         Logger.recordOutput(logRoot + "TargetYawDeg", Units.radiansToDegrees(yawErrorRad));
@@ -112,5 +110,10 @@ public class RotateShooterToAprilTag extends Command {
         if (!thetaController.atSetpoint()) {
             drive.runVelocity(new ChassisSpeeds(0, 0, rotationSpeedRad));
         }
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        Logger.recordOutput(logRoot + "IsRunning", false);
     }
 }
