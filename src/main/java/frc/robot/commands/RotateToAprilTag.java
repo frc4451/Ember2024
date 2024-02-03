@@ -32,7 +32,6 @@ public class RotateToAprilTag extends Command {
     private final DoubleSupplier xSupplier;
     private final DoubleSupplier ySupplier;
 
-    private final DeltaTimeTracker gyroDeltaTracker = new DeltaTimeTracker();
     private double yawErrorRad = yawMeasurementOffset;
     private Pose3d targetPose = new Pose3d();
     private boolean hasSeenTag = false;
@@ -62,15 +61,12 @@ public class RotateToAprilTag extends Command {
     @Override
     public void initialize() {
         drive.runVelocity(new ChassisSpeeds());
-        gyroDeltaTracker.update(drive.getPose().getRotation().getRadians());
 
         Logger.recordOutput(logRoot + "IsRunning", true);
     }
 
     @Override
     public void execute() {
-        gyroDeltaTracker.update(drive.getPose().getRotation().getRadians());
-
         Pose3d robotPose = new Pose3d(drive.getPose());
 
         Set<TargetWithSource> targets = this.visibleAprilTagsSupplier.get();
