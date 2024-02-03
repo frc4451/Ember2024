@@ -283,25 +283,27 @@ public class DriveSubsystem extends SubsystemBase {
             m_currentRotation = rot;
         }
 
+        // Convert to field relative speeds & send command (Copied from AdvantageKit
+        // example projects)
+        boolean isFlipped = DriverStation.getAlliance().isPresent()
+                && DriverStation.getAlliance().get() == Alliance.Red;
+
         // Convert the commanded speeds into the correct units for the drivetrain
         double xSpeedDelivered = xSpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
         double ySpeedDelivered = ySpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
         double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
 
         ChassisSpeeds speeds = fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
-                        getPose().getRotation())
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                        xSpeedDelivered,
+                        ySpeedDelivered,
+                        rotDelivered,
+                        isFlipped
+                                ? getPose().getRotation().plus(new Rotation2d(Math.PI))
+                                : getPose().getRotation())
                 : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered);
 
-        // speeds = ChassisSpeeds.discretize(speeds, 0.02);
-
-        SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
-
-        SwerveDriveKinematics.desaturateWheelSpeeds(
-                swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
-        for (int i = 0; i < swerveModuleStates.length; i++) {
-            m_modules[i].setDesiredState(swerveModuleStates[i]);
-        }
+        runVelocity(speeds);
     }
 
     /**
