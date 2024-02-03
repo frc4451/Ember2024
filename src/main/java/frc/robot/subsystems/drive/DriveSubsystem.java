@@ -227,6 +227,16 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     /**
+     * Runs the drive at the desired velocity.
+     */
+    public void runVelocity(
+            double vxMetersPerSecond,
+            double vyMetersPerSecond,
+            double omegaRadiansPerSecond) {
+        runVelocity(new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond));
+    }
+
+    /**
      * Sets the wheels into an X formation to prevent movement.
      */
     public void setCross() {
