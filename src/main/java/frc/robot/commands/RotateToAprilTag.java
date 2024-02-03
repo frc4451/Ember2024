@@ -1,18 +1,20 @@
 package frc.robot.commands;
 
 import java.util.Set;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
-import edu.wpi.first.apriltag.AprilTag;
+import org.photonvision.PhotonUtils;
+
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.VisionConstants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
 import frc.utils.DeltaTimeTracker;
@@ -21,7 +23,7 @@ import frc.utils.DeltaTimeTracker;
  * Command for centering the robot relative to an April Tag that the user
  * specifies. The ID must be a valid Fiducial ID.
  */
-public class RotateShooterToAprilTag extends Command {
+public class RotateToAprilTag extends Command {
     private static double yawMeasurementOffset = Math.PI; // To aim from the back
     private final PIDController thetaController = new PIDController(6, 0, 0.1);
     private final String logRoot;
@@ -30,25 +32,34 @@ public class RotateShooterToAprilTag extends Command {
     private final int targetFiducialId;
     // private final AprilTag targetTag;
     private final Supplier<Set<TargetWithSource>> visibleAprilTagsSupplier;
+    private final DoubleSupplier xSupplier;
+    private final DoubleSupplier ySupplier;
 
     private final DeltaTimeTracker gyroDeltaTracker = new DeltaTimeTracker();
     private double yawErrorRad = yawMeasurementOffset;
+    private Pose3d targetPose = new Pose3d();
     private boolean hasSeenTag = false;
 
-    public RotateShooterToAprilTag(
-            DriveSubsystem drive,
+    public RotateToAprilTag(
+            DoubleSupplier xSupplier,
+            DoubleSupplier ySupplier,
             Supplier<Set<TargetWithSource>> visibleAprilTagsSupplier,
-            int targetFiducialId) {
+            int targetFiducialId,
+            DriveSubsystem drive) {
         addRequirements(drive);
-        setName("RotateShooterToAprilTag");
+        setName("RotateToAprilTag");
 
         logRoot = "Commands/" + getName() + "/";
 
-        this.drive = drive;
+        this.xSupplier = xSupplier;
+        this.ySupplier = ySupplier;
         this.targetFiducialId = targetFiducialId;
         this.visibleAprilTagsSupplier = visibleAprilTagsSupplier;
+        this.drive = drive;
         // this.targetTag = VisionConstants.FIELD_LAYOUT.getTags().get(targetFiducialId
         // - 1);
+
+        targetPose = VisionConstants.FIELD_LAYOUT.getTagPose(targetFiducialId).get();
 
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
         thetaController.setTolerance(Units.degreesToRadians(0.5));
@@ -66,6 +77,8 @@ public class RotateShooterToAprilTag extends Command {
     public void execute() {
         gyroDeltaTracker.update(drive.getPose().getRotation().getRadians());
 
+        Pose3d robotPose = new Pose3d(drive.getPose());
+
         Set<TargetWithSource> targets = this.visibleAprilTagsSupplier.get();
         targets.stream()
                 .filter(targetWithSource -> targetWithSource.target().getFiducialId() == targetFiducialId)
@@ -74,32 +87,25 @@ public class RotateShooterToAprilTag extends Command {
                                 .target().getPoseAmbiguity()
                                         ? targetWithSourceA
                                         : targetWithSourceB)
-                .ifPresentOrElse(
+                .ifPresent(
                         targetWithSource -> {
                             hasSeenTag = true;
-                            Translation2d cameraToTarget = targetWithSource.target().getBestCameraToTarget()
-                                    .getTranslation().toTranslation2d();
+                            Transform3d cameraToTarget = targetWithSource.target().getBestCameraToTarget();
                             Transform3d robotToCamera = targetWithSource.source().robotToCamera();
-                            Transform2d robotToTarget = new Transform2d(
-                                    robotToCamera.getTranslation().toTranslation2d().plus(cameraToTarget),
-                                    robotToCamera.getRotation().toRotation2d().plus(cameraToTarget.getAngle()));
-                            yawErrorRad = robotToTarget.getRotation().getRadians();
-                        },
-                        () -> {
-                            if (hasSeenTag) {
-                                yawErrorRad += gyroDeltaTracker.get();
-                            } else {
-                                // yawErrorRad = PhotonUtils.getYawToPose(
-                                // drive.getPose(),
-                                // targetTag.pose.toPose2d()).getRadians();
-                            }
+                            Transform3d robotToTarget = robotToCamera.plus(cameraToTarget);
+                            targetPose = robotPose.transformBy(robotToTarget);
                         });
+
+        // yawErrorRad = PhotonUtils.getYawToPose(robotPose.toPose2d(),
+        // targetPose.toPose2d()).getRadians();
+        yawErrorRad = targetPose.relativeTo(robotPose).getTranslation().toTranslation2d().getAngle().getRadians();
 
         double rotationSpeedRad = thetaController.calculate(yawMeasurementOffset, yawErrorRad);
 
         double offsetYawRad = yawErrorRad + yawMeasurementOffset;
 
         Logger.recordOutput(logRoot + "TargetID", targetFiducialId);
+        Logger.recordOutput(logRoot + "TargetPose", targetPose);
         Logger.recordOutput(logRoot + "HasSeenTarget", hasSeenTag);
         Logger.recordOutput(logRoot + "TargetYawRad", yawErrorRad);
         Logger.recordOutput(logRoot + "TargetYawDeg", Units.radiansToDegrees(yawErrorRad));
@@ -108,7 +114,13 @@ public class RotateShooterToAprilTag extends Command {
         Logger.recordOutput(logRoot + "RotationSpeed", rotationSpeedRad);
 
         if (!thetaController.atSetpoint()) {
-            drive.runVelocity(new ChassisSpeeds(0, 0, rotationSpeedRad));
+            TeleopDrive.drive(
+                    drive,
+                    xSupplier.getAsDouble(),
+                    ySupplier.getAsDouble(),
+                    rotationSpeedRad / DriveConstants.kMaxAngularSpeed,
+                    false,
+                    true);
         }
     }
 

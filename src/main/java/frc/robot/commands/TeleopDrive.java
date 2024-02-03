@@ -9,51 +9,45 @@ import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.utils.SwerveUtils;
 
-public class TeleopDrive extends Command {
-    private final DriveSubsystem drive;
-    private final DoubleSupplier xSupplier;
-    private final DoubleSupplier ySupplier;
-    private final DoubleSupplier omegaSupplier;
-    private final boolean fieldRelative;
-    private final boolean rateLimit;
-
+public class TeleopDrive {
     // Slew rate filter variables for controlling lateral acceleration
-    private double currentRotation = 0.0;
-    private double currentTranslationDir = 0.0;
-    private double currentTranslationMag = 0.0;
+    private static double currentRotation = 0.0;
+    private static double currentTranslationDir = 0.0;
+    private static double currentTranslationMag = 0.0;
 
-    private SlewRateLimiter magLimiter = new SlewRateLimiter(DriveConstants.kMagnitudeSlewRate);
-    private SlewRateLimiter rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
-    private double prevTime = WPIUtilJNI.now() * 1e-6;
+    private static SlewRateLimiter magLimiter = new SlewRateLimiter(DriveConstants.kMagnitudeSlewRate);
+    private static SlewRateLimiter rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
+    private static double prevTime = WPIUtilJNI.now() * 1e-6;
 
-    public TeleopDrive(
-            DriveSubsystem drive,
+    public static Command asCommand(
+            DriveSubsystem driveSubsystem,
             DoubleSupplier xSupplier,
             DoubleSupplier ySupplier,
             DoubleSupplier omegaSupplier,
             boolean fieldRelative,
             boolean rateLimit) {
-        setName("TeleopDrive");
-        addRequirements(drive);
-
-        this.drive = drive;
-        this.xSupplier = xSupplier;
-        this.ySupplier = ySupplier;
-        this.omegaSupplier = omegaSupplier;
-        this.rateLimit = rateLimit;
-        this.fieldRelative = fieldRelative;
+        return Commands.run(() -> drive(
+                driveSubsystem,
+                xSupplier.getAsDouble(),
+                ySupplier.getAsDouble(),
+                omegaSupplier.getAsDouble(),
+                fieldRelative,
+                rateLimit),
+                driveSubsystem);
     }
 
-    @Override
-    public void execute() {
-        double xSpeed = xSupplier.getAsDouble();
-        double ySpeed = ySupplier.getAsDouble();
-        double rot = omegaSupplier.getAsDouble();
-
+    public static void drive(
+            DriveSubsystem driveSubsystem,
+            double xSpeed,
+            double ySpeed,
+            double rot,
+            boolean rateLimit,
+            boolean fieldRelative) {
         double xSpeedCommanded;
         double ySpeedCommanded;
 
@@ -88,7 +82,9 @@ public class TeleopDrive extends Command {
                     currentTranslationMag = magLimiter.calculate(inputTranslationMag);
                 }
             } else {
-                currentTranslationDir = SwerveUtils.StepTowardsCircular(currentTranslationDir, inputTranslationDir,
+                currentTranslationDir = SwerveUtils.StepTowardsCircular(
+                        currentTranslationDir,
+                        inputTranslationDir,
                         directionSlewRate * elapsedTime);
                 currentTranslationMag = magLimiter.calculate(0.0);
             }
@@ -97,7 +93,6 @@ public class TeleopDrive extends Command {
             xSpeedCommanded = currentTranslationMag * Math.cos(currentTranslationDir);
             ySpeedCommanded = currentTranslationMag * Math.sin(currentTranslationDir);
             currentRotation = rotLimiter.calculate(rot);
-
         } else {
             xSpeedCommanded = xSpeed;
             ySpeedCommanded = ySpeed;
@@ -120,10 +115,10 @@ public class TeleopDrive extends Command {
                         ySpeedDelivered,
                         rotDelivered,
                         isFlipped
-                                ? drive.getPose().getRotation().plus(new Rotation2d(Math.PI))
-                                : drive.getPose().getRotation())
+                                ? driveSubsystem.getPose().getRotation().plus(new Rotation2d(Math.PI))
+                                : driveSubsystem.getPose().getRotation())
                 : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered);
 
-        drive.runVelocity(speeds);
+        driveSubsystem.runVelocity(speeds);
     }
 }

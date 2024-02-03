@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.PathfindToTarget;
-import frc.robot.commands.RotateShooterToAprilTag;
+import frc.robot.commands.RotateToAprilTag;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.pathplanner.PathPlannerUtils;
 import frc.robot.pathplanner.paths.PathPlannerPaths;
@@ -73,7 +73,7 @@ public class RobotContainer {
         m_robotDrive.setDefaultCommand(
                 // The left stick controls translation of the robot.
                 // Turning is controlled by the X axis of the right stick.
-                new TeleopDrive(
+                TeleopDrive.asCommand(
                         m_robotDrive,
                         () -> -m_driverController.getLeftY(),
                         () -> -m_driverController.getLeftX(),
@@ -145,11 +145,14 @@ public class RobotContainer {
                                         m_vision::getClosestObject,
                                         m_robotDrive),
                                 Set.of(m_robotDrive)));
-        m_driverController.leftBumper().whileTrue(
-                Commands.defer(() -> new RotateShooterToAprilTag(
-                        m_robotDrive,
-                        m_vision::getVisibleAprilTags,
-                        3),
-                        Set.of(m_robotDrive)));
+        m_driverController.leftBumper()
+                .whileTrue(
+                        Commands.defer(() -> new RotateToAprilTag(
+                                () -> -m_driverController.getLeftY(),
+                                () -> -m_driverController.getLeftX(),
+                                m_vision::getVisibleAprilTags,
+                                3,
+                                m_robotDrive),
+                                Set.of(m_robotDrive)));
     }
 }
