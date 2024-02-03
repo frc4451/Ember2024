@@ -5,8 +5,6 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
-import org.photonvision.PhotonUtils;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -30,7 +28,6 @@ public class RotateToAprilTag extends Command {
 
     private final DriveSubsystem drive;
     private final int targetFiducialId;
-    // private final AprilTag targetTag;
     private final Supplier<Set<TargetWithSource>> visibleAprilTagsSupplier;
     private final DoubleSupplier xSupplier;
     private final DoubleSupplier ySupplier;
@@ -56,13 +53,10 @@ public class RotateToAprilTag extends Command {
         this.targetFiducialId = targetFiducialId;
         this.visibleAprilTagsSupplier = visibleAprilTagsSupplier;
         this.drive = drive;
-        // this.targetTag = VisionConstants.FIELD_LAYOUT.getTags().get(targetFiducialId
-        // - 1);
 
         targetPose = VisionConstants.FIELD_LAYOUT.getTagPose(targetFiducialId).get();
 
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
-        thetaController.setTolerance(Units.degreesToRadians(0.5));
     }
 
     @Override
@@ -96,8 +90,6 @@ public class RotateToAprilTag extends Command {
                             targetPose = robotPose.transformBy(robotToTarget);
                         });
 
-        // yawErrorRad = PhotonUtils.getYawToPose(robotPose.toPose2d(),
-        // targetPose.toPose2d()).getRadians();
         yawErrorRad = targetPose.relativeTo(robotPose).getTranslation().toTranslation2d().getAngle().getRadians();
 
         double rotationSpeedRad = thetaController.calculate(yawMeasurementOffset, yawErrorRad);
@@ -113,15 +105,13 @@ public class RotateToAprilTag extends Command {
         Logger.recordOutput(logRoot + "OffsetYawDeg", Units.radiansToDegrees(offsetYawRad));
         Logger.recordOutput(logRoot + "RotationSpeed", rotationSpeedRad);
 
-        if (!thetaController.atSetpoint()) {
-            TeleopDrive.drive(
-                    drive,
-                    xSupplier.getAsDouble(),
-                    ySupplier.getAsDouble(),
-                    rotationSpeedRad / DriveConstants.kMaxAngularSpeed,
-                    false,
-                    true);
-        }
+        TeleopDrive.drive(
+                drive,
+                xSupplier.getAsDouble(),
+                ySupplier.getAsDouble(),
+                rotationSpeedRad / DriveConstants.kMaxAngularSpeed,
+                false,
+                true);
     }
 
     @Override
