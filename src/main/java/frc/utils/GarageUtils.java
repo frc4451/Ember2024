@@ -21,4 +21,8 @@ public class GarageUtils {
     public static boolean isRedAlliance() {
         return GarageUtils.getAlliance() == Alliance.Red;
     }
+
+    public static double getFlipped() {
+        return GarageUtils.isRedAlliance() ? -1 : 1;
+    }
 }

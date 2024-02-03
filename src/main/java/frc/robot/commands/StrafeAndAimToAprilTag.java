@@ -15,12 +15,13 @@ import frc.robot.VisionConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
+import frc.robot.subsystems.vision.apriltag.AprilTagAlgorithms;
 
 /**
  * Command for centering the robot relative to an April Tag that the user
  * specifies. The ID must be a valid Fiducial ID.
  */
-public class RotateToAprilTag extends Command {
+public class StrafeAndAimToAprilTag extends Command {
     private static double yawMeasurementOffset = Math.PI; // To aim from the back
     private final PIDController thetaController = new PIDController(6, 0, 0.1);
     private final String logRoot;
@@ -35,14 +36,14 @@ public class RotateToAprilTag extends Command {
     private Pose3d targetPose = new Pose3d();
     private boolean hasSeenTag = false;
 
-    public RotateToAprilTag(
+    public StrafeAndAimToAprilTag(
             DoubleSupplier xSupplier,
             DoubleSupplier ySupplier,
             Supplier<Set<TargetWithSource>> visibleAprilTagsSupplier,
             int targetFiducialId,
             DriveSubsystem drive) {
         addRequirements(drive);
-        setName("RotateToAprilTag");
+        setName("StrafeAndAimToAprilTag");
 
         logRoot = "Commands/" + getName() + "/";
 
@@ -69,8 +70,7 @@ public class RotateToAprilTag extends Command {
         Pose3d robotPose = new Pose3d(drive.getPose());
 
         Set<TargetWithSource> targets = this.visibleAprilTagsSupplier.get();
-        targets.stream()
-                .filter(targetWithSource -> targetWithSource.target().getFiducialId() == targetFiducialId)
+        AprilTagAlgorithms.filterTags(targets.stream(), targetFiducialId)
                 .reduce((targetWithSourceA,
                         targetWithSourceB) -> targetWithSourceA.target().getPoseAmbiguity() <= targetWithSourceB
                                 .target().getPoseAmbiguity()

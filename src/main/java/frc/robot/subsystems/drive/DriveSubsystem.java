@@ -235,6 +235,26 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     /**
+     * Runs the drive at the desired velocity. (Field Relative)
+     *
+     * @param speeds Speeds in meters/sec
+     */
+    public void runVelocityField(ChassisSpeeds speeds) {
+        runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, m_trackedRotation));
+    }
+
+    /**
+     * Runs the drive at the desired velocity. (Field Relative)
+     *
+     */
+    public void runVelocityField(
+            double vxMetersPerSecond,
+            double vyMetersPerSecond,
+            double omegaRadiansPerSecond) {
+        runVelocityField(new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond));
+    }
+
+    /**
      * Sets the wheels into an X formation to prevent movement.
      */
     public void setCross() {

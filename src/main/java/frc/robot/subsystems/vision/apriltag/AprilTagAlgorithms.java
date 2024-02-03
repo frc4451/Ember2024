@@ -1,6 +1,7 @@
 package frc.robot.subsystems.vision.apriltag;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonPoseEstimator;
@@ -12,6 +13,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import frc.robot.VisionConstants;
+import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
 import frc.robot.subsystems.vision.VisionSubsystem.VisionMeasurement;
 
 public class AprilTagAlgorithms {
@@ -68,5 +70,18 @@ public class AprilTagAlgorithms {
         } else {
             return estimator.update(frame);
         }
+    }
+
+    public static Stream<TargetWithSource> filterTags(Stream<TargetWithSource> stream, int targetFiducialId) {
+        return stream.filter(targetWithSource -> targetWithSource.target().getFiducialId() == targetFiducialId);
+    }
+
+    public static Optional<TargetWithSource> reduceToLeastAmbiguous(Stream<TargetWithSource> stream) {
+        return stream
+                .reduce((targetWithSourceA,
+                        targetWithSourceB) -> targetWithSourceA.target().getPoseAmbiguity() <= targetWithSourceB
+                                .target().getPoseAmbiguity()
+                                        ? targetWithSourceA
+                                        : targetWithSourceB);
     }
 }

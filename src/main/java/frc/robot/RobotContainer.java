@@ -19,7 +19,9 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.PathfindToTarget;
-import frc.robot.commands.RotateToAprilTag;
+import frc.robot.commands.PositionWithAmp;
+import frc.robot.commands.StrafeAndAimToAprilTag;
+import frc.robot.commands.StrafeAndAimToSpeaker;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.pathplanner.PathPlannerUtils;
 import frc.robot.pathplanner.paths.PathPlannerPaths;
@@ -147,11 +149,26 @@ public class RobotContainer {
                                 Set.of(m_robotDrive)));
         m_driverController.leftBumper()
                 .whileTrue(
-                        Commands.defer(() -> new RotateToAprilTag(
+                        Commands.defer(() -> new StrafeAndAimToAprilTag(
                                 () -> -m_driverController.getLeftY(),
                                 () -> -m_driverController.getLeftX(),
                                 m_vision::getVisibleAprilTags,
                                 3,
+                                m_robotDrive),
+                                Set.of(m_robotDrive)));
+        m_driverController.leftTrigger()
+                .whileTrue(
+                        Commands.defer(() -> new StrafeAndAimToSpeaker(
+                                () -> -m_driverController.getLeftY(),
+                                () -> -m_driverController.getLeftX(),
+                                m_vision::getVisibleAprilTags,
+                                m_robotDrive),
+                                Set.of(m_robotDrive)));
+        m_driverController.rightTrigger()
+                .whileTrue(
+                        Commands.defer(() -> new PositionWithAmp(
+                                () -> -m_driverController.getLeftX(),
+                                m_vision::getVisibleAprilTags,
                                 m_robotDrive),
                                 Set.of(m_robotDrive)));
     }
