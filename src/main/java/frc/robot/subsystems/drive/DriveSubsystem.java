@@ -19,12 +19,12 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.vision.VisionSubsystem.VisionMeasurement;
+import frc.utils.GarageUtils;
 
 public class DriveSubsystem extends SubsystemBase {
     // Swerve Modules
@@ -67,8 +67,7 @@ public class DriveSubsystem extends SubsystemBase {
                         DriveConstants.kMaxSpeedMetersPerSecond,
                         DriveConstants.kWheelBase / 2,
                         new ReplanningConfig()),
-                () -> DriverStation.getAlliance().isPresent()
-                        && DriverStation.getAlliance().get() == Alliance.Red,
+                () -> GarageUtils.getAlliance() == Alliance.Red,
                 this);
 
         switch (AdvantageKitConstants.getMode()) {

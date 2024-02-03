@@ -6,12 +6,12 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.util.WPIUtilJNI;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.utils.GarageUtils;
 import frc.utils.SwerveUtils;
 
 public class TeleopDrive {
@@ -99,10 +99,9 @@ public class TeleopDrive {
             currentRotation = rot;
         }
 
-        // Convert to field relative speeds & send command (Copied from AdvantageKit
-        // example projects)
-        boolean isFlipped = DriverStation.getAlliance().isPresent()
-                && DriverStation.getAlliance().get() == Alliance.Red;
+        // Convert to field relative speeds & send command
+        // (Copied from AdvantageKit example projects)
+        boolean isFlipped = GarageUtils.getAlliance() == Alliance.Red;
 
         // Convert the commanded speeds into the correct units for the drivetrain
         double xSpeedDelivered = xSpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
