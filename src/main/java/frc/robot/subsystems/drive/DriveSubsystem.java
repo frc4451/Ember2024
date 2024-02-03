@@ -19,7 +19,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.DriveConstants;
@@ -67,7 +66,7 @@ public class DriveSubsystem extends SubsystemBase {
                         DriveConstants.kMaxSpeedMetersPerSecond,
                         DriveConstants.kWheelBase / 2,
                         new ReplanningConfig()),
-                () -> GarageUtils.getAlliance() == Alliance.Red,
+                () -> GarageUtils.isRedAlliance(),
                 this);
 
         switch (AdvantageKitConstants.getMode()) {

@@ -13,4 +13,12 @@ public class GarageUtils {
         return DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get()
                 : PathPlannerConstants.DEFAULT_ALLIANCE;
     }
+
+    public static boolean isBlueAlliance() {
+        return GarageUtils.getAlliance() == Alliance.Blue;
+    }
+
+    public static boolean isRedAlliance() {
+        return GarageUtils.getAlliance() == Alliance.Red;
+    }
 }

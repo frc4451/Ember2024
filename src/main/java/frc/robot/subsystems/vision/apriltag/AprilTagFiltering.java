@@ -7,7 +7,6 @@ import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.VisionConstants;
 import frc.utils.GarageUtils;
 
@@ -64,7 +63,7 @@ public class AprilTagFiltering {
      * Get IDs we're allowed to read at the time
      */
     public static Set<Integer> getAllowedIDs() {
-        boolean isBlueAlliance = GarageUtils.getAlliance() == Alliance.Blue;
+        boolean isBlueAlliance = GarageUtils.isBlueAlliance();
 
         boolean isAutonomous = DriverStation.isAutonomous();
 
