@@ -70,23 +70,27 @@ public final class VisionConstants {
     // Review the Field layout for positions
     // https://firstfrc.blob.core.windows.net/frc2024/FieldAssets/2024LayoutMarkingDiagram.pdf
     public static final Set<Integer> RED_HUMAN_PLAYER_TAGS = Set.of(1, 2);
-    public static final Set<Integer> RED_SPEAKER_TAGS = Set.of(3, 4);
-    public static final Set<Integer> RED_AMP_TAG = Set.of(5);
+    public static final Integer RED_SPEAKER_OFFSET = 3;
+    public static final Integer RED_SPEAKER_CENTER = 4;
+    public static final Set<Integer> RED_SPEAKER_TAGS = Set.of(RED_SPEAKER_OFFSET, RED_SPEAKER_CENTER);
+    public static final Integer RED_AMP_TAG = 5;
 
-    public static final Set<Integer> BLUE_AMP_TAG = Set.of(6);
-    public static final Set<Integer> BLUE_SPEAKER_TAGS = Set.of(7, 8);
+    public static final Integer BLUE_AMP_TAG = 6;
+    public static final Integer BLUE_SPEAKER_CENTER = 7;
+    public static final Integer BLUE_SPEAKER_OFFSET = 8;
+    public static final Set<Integer> BLUE_SPEAKER_TAGS = Set.of(BLUE_SPEAKER_CENTER, BLUE_SPEAKER_OFFSET);
     public static final Set<Integer> BLUE_HUMAN_PLAYER_TAGS = Set.of(9, 10);
 
     public static final Set<Integer> RED_STAGE_TAGS = Set.of(11, 12, 13);
     public static final Set<Integer> BLUE_STAGE_TAGS = Set.of(14, 15, 16);
 
     public static final Set<Integer> RED_TAG_FIDS = Stream
-            .of(RED_HUMAN_PLAYER_TAGS, RED_SPEAKER_TAGS, RED_AMP_TAG, RED_STAGE_TAGS)
+            .of(RED_HUMAN_PLAYER_TAGS, RED_SPEAKER_TAGS, Set.of(RED_AMP_TAG), RED_STAGE_TAGS)
             .flatMap(Set::stream)
             .collect(Collectors.toSet());
 
     public static final Set<Integer> BLUE_TAG_FIDS = Stream
-            .of(BLUE_HUMAN_PLAYER_TAGS, BLUE_SPEAKER_TAGS, BLUE_AMP_TAG, BLUE_STAGE_TAGS)
+            .of(BLUE_HUMAN_PLAYER_TAGS, BLUE_SPEAKER_TAGS, Set.of(BLUE_AMP_TAG), BLUE_STAGE_TAGS)
             .flatMap(Set::stream)
             .collect(Collectors.toSet());
 
