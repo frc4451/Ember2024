@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,6 +30,7 @@ import frc.robot.pathplanner.paths.PathPlannerPaths;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.utils.CommandCustomController;
+import frc.utils.LoggedDashboardButtonStateMachine;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -60,8 +61,9 @@ public class RobotContainer {
 
     public LoggedDashboardChooser<Command> m_pathChooser;
 
-    public Map<String, Command> laneAssistCommands = new HashMap<>();
-    public LoggedDashboardChooser<Command> m_laneAssistChooser;
+    public Map<String, Command> laneAssistCommands = new LinkedHashMap<>();
+
+    public LoggedDashboardButtonStateMachine m_ButtonStateMachine;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -152,23 +154,13 @@ public class RobotContainer {
         laneAssistCommands.put("Speaker", speakerLaneAssistCommand);
         laneAssistCommands.put("Amp", ampLaneAssistCommand);
 
-        // Arbitrary. This can be updated manually later.
-        String defaultKey = "Speaker";
-
-        m_laneAssistChooser = new LoggedDashboardChooser<>("Lane Assist", new SendableChooser<>());
-
-        if (laneAssistCommands.size() != 0) {
-            m_laneAssistChooser.addDefaultOption(defaultKey, laneAssistCommands.get(defaultKey));
-            laneAssistCommands.keySet().forEach((String key) -> {
-                m_laneAssistChooser.addOption(key, laneAssistCommands.get(key));
-            });
-        }
+        m_ButtonStateMachine = new LoggedDashboardButtonStateMachine("LaneAssist", laneAssistCommands);
 
         // Each command that we plan to use for 'Lane Assist' should be deferred
         // with their respective subsystems. Once they're deferred, we can then
         // proxy the deferred command to run while the button is held.
         m_driverController.rightTrigger()
-                .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get()));
+                .whileTrue(Commands.deferredProxy(() -> m_ButtonStateMachine.getCurrentCommand()));
     }
 
     /**
