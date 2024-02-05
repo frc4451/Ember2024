@@ -30,7 +30,7 @@ import frc.robot.pathplanner.paths.PathPlannerPaths;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.utils.CommandCustomController;
-import frc.utils.LoggedDashboardButtonStateMachine;
+import frc.utils.LoggedDashboardButtonFSM;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -63,7 +63,7 @@ public class RobotContainer {
 
     public Map<String, Command> laneAssistCommands = new LinkedHashMap<>();
 
-    public LoggedDashboardButtonStateMachine m_ButtonStateMachine;
+    public LoggedDashboardButtonFSM m_buttonStateMachine;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -154,13 +154,13 @@ public class RobotContainer {
         laneAssistCommands.put("Speaker", speakerLaneAssistCommand);
         laneAssistCommands.put("Amp", ampLaneAssistCommand);
 
-        m_ButtonStateMachine = new LoggedDashboardButtonStateMachine("LaneAssist", laneAssistCommands);
+        m_buttonStateMachine = new LoggedDashboardButtonFSM("LaneAssist", laneAssistCommands);
 
         // Each command that we plan to use for 'Lane Assist' should be deferred
         // with their respective subsystems. Once they're deferred, we can then
         // proxy the deferred command to run while the button is held.
         m_driverController.rightTrigger()
-                .whileTrue(Commands.deferredProxy(() -> m_ButtonStateMachine.getCurrentCommand()));
+                .whileTrue(Commands.deferredProxy(() -> m_buttonStateMachine.getCurrentCommand()));
     }
 
     /**
