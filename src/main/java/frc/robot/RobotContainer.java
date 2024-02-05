@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -58,6 +60,9 @@ public class RobotContainer {
 
     public LoggedDashboardChooser<Command> m_pathChooser;
 
+    public Map<String, Command> laneAssistCommands = new HashMap<>();
+    public LoggedDashboardChooser<Command> m_laneAssistChooser;
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -69,6 +74,7 @@ public class RobotContainer {
         configureNamedCommands();
         configurePathChooser();
         configureButtonBindings();
+        configureLaneAssistBindings();
 
         // Configure default commands
         // m_robotDrive.
@@ -117,6 +123,55 @@ public class RobotContainer {
     }
 
     /**
+     * Configure all commands that are used for 'Lane Assist'.
+     *
+     * <p>
+     * The MVP is using a HashMap with display names for keys and the Command
+     * for the value.
+     * </p>
+     *
+     * <p>
+     * We may be able to make this an Enum, but that would require
+     * making most of the codebase static, which can have unintended side effects.
+     * </p>
+     */
+    private void configureLaneAssistBindings() {
+        Command speakerLaneAssistCommand = Commands.defer(() -> new StrafeAndAimToSpeaker(
+                () -> -m_driverController.getLeftY(),
+                () -> -m_driverController.getLeftX(),
+                m_vision::getVisibleAprilTags,
+                m_robotDrive),
+                Set.of(m_robotDrive));
+
+        Command ampLaneAssistCommand = Commands.defer(() -> new PositionWithAmp(
+                () -> -m_driverController.getLeftX(),
+                m_vision::getVisibleAprilTags,
+                m_robotDrive),
+                Set.of(m_robotDrive));
+
+        laneAssistCommands.put("Speaker", speakerLaneAssistCommand);
+        laneAssistCommands.put("Amp", ampLaneAssistCommand);
+
+        // Arbitrary. This can be updated manually later.
+        String defaultKey = "Speaker";
+
+        m_laneAssistChooser = new LoggedDashboardChooser<>("Lane Assist", new SendableChooser<>());
+
+        if (laneAssistCommands.size() != 0) {
+            m_laneAssistChooser.addDefaultOption(defaultKey, laneAssistCommands.get(defaultKey));
+            laneAssistCommands.keySet().forEach((String key) -> {
+                m_laneAssistChooser.addOption(key, laneAssistCommands.get(key));
+            });
+        }
+
+        // Each command that we plan to use for 'Lane Assist' should be deferred
+        // with their respective subsystems. Once they're deferred, we can then
+        // proxy the deferred command to run while the button is held.
+        m_driverController.rightTrigger()
+                .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get()));
+    }
+
+    /**
      * Use this method to define your button->command mappings. Buttons can be
      * created by
      * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
@@ -156,20 +211,20 @@ public class RobotContainer {
                                 3,
                                 m_robotDrive),
                                 Set.of(m_robotDrive)));
-        m_driverController.leftTrigger()
-                .whileTrue(
-                        Commands.defer(() -> new StrafeAndAimToSpeaker(
-                                () -> -m_driverController.getLeftY(),
-                                () -> -m_driverController.getLeftX(),
-                                m_vision::getVisibleAprilTags,
-                                m_robotDrive),
-                                Set.of(m_robotDrive)));
-        m_driverController.rightTrigger()
-                .whileTrue(
-                        Commands.defer(() -> new PositionWithAmp(
-                                () -> -m_driverController.getLeftX(),
-                                m_vision::getVisibleAprilTags,
-                                m_robotDrive),
-                                Set.of(m_robotDrive)));
+        // m_driverController.leftTrigger()
+        // .whileTrue(
+        // Commands.defer(() -> new StrafeAndAimToSpeaker(
+        // () -> -m_driverController.getLeftY(),
+        // () -> -m_driverController.getLeftX(),
+        // m_vision::getVisibleAprilTags,
+        // m_robotDrive),
+        // Set.of(m_robotDrive)));
+        // m_driverController.rightTrigger()
+        // .whileTrue(
+        // Commands.defer(() -> new PositionWithAmp(
+        // () -> -m_driverController.getLeftX(),
+        // m_vision::getVisibleAprilTags,
+        // m_robotDrive),
+        // Set.of(m_robotDrive)));
     }
 }
