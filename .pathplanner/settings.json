@@ -3,7 +3,10 @@
   "robotLength": 0.7874,
   "holonomicMode": true,
   "pathFolders": [
-    "Note2Note"
+    "Note2Location",
+    "Note2Note",
+    "PathSegments",
+    "Test Paths"
   ],
   "autoFolders": [],
   "defaultMaxVel": 4.2,

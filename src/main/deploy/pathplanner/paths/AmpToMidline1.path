@@ -3,47 +3,50 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.9379905490722767,
-        "y": 6.937011828063687
+        "x": 2.55,
+        "y": 6.8
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.8685438691262856,
-        "y": 6.996284970494331
+        "x": 3.5199484522385713,
+        "y": 7.359999999999999
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Ampnote"
     },
     {
       "anchor": {
-        "x": 1.7288453257410594,
-        "y": 6.3975139959175396
+        "x": 7.90046841354944,
+        "y": 7.432741351969191
       },
       "prevControl": {
-        "x": 1.673669411089749,
-        "y": 6.550780425504513
+        "x": 7.85046841354944,
+        "y": 7.432741351969191
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Midline1"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 4.2,
+    "maxAcceleration": 4.2,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 43.849636938670365,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Test Paths",
-  "previewStartingState": null,
+  "folder": "Note2Note",
+  "previewStartingState": {
+    "rotation": 30.0,
+    "velocity": 0
+  },
   "useDefaultConstraints": false
 }

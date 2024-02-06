@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.5,
-        "y": 6.8
+        "x": 2.5477852757507313,
+        "y": 6.794856832956909
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6339745962155616,
-        "y": 6.3
+        "x": 1.681759871966293,
+        "y": 6.294856832956909
       },
       "isLocked": false,
       "linkedName": "Ampnote"
