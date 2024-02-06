@@ -43,7 +43,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "AmpToMid"
+                  "pathName": "AmpToMidline1"
                 }
               },
               {
@@ -53,6 +53,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Midline1To15ft"
           }
         },
         {
@@ -68,7 +74,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "MidToStage"
+                  "pathName": "15ftToMidline2"
                 }
               },
               {
@@ -78,6 +84,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Midline2To15ft"
           }
         },
         {

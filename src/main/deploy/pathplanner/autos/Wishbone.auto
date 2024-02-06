@@ -26,20 +26,8 @@
                 "data": {
                   "name": "PickUpNote"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot"
-                }
               }
             ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "AmpToMidline2"
           }
         },
         {
@@ -49,19 +37,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Midline2To15ft"
+                  "pathName": "AmpToMidline2"
                 }
               },
               {
                 "type": "named",
                 "data": {
                   "name": "PickUpNote"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot"
                 }
               }
             ]
@@ -70,7 +52,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "15ftToMidline3"
+            "pathName": "Midline2To15ft"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         },
         {
@@ -80,7 +68,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Midline3To15ft"
+                  "pathName": "15ftToMidline3"
                 }
               },
               {
@@ -88,14 +76,20 @@
                 "data": {
                   "name": "PickUpNote"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot"
-                }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Midline3To15ft"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         }
       ]

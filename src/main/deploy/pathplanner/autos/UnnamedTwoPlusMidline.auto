@@ -68,7 +68,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "MidToStage"
+                  "pathName": "MidToMidline3"
                 }
               },
               {
@@ -78,6 +78,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Midline3To15ft"
           }
         },
         {
