@@ -81,8 +81,16 @@ public final class VisionConstants {
     public static final Set<Integer> BLUE_SPEAKER_TAGS = Set.of(BLUE_SPEAKER_CENTER, BLUE_SPEAKER_OFFSET);
     public static final Set<Integer> BLUE_HUMAN_PLAYER_TAGS = Set.of(9, 10);
 
-    public static final Set<Integer> RED_STAGE_TAGS = Set.of(11, 12, 13);
-    public static final Set<Integer> BLUE_STAGE_TAGS = Set.of(14, 15, 16);
+    public static final Integer RED_STAGE_HUMAN = 11;
+    public static final Integer RED_STAGE_AMP = 12;
+    public static final Integer RED_STAGE_CENTER = 13;
+
+    public static final Integer BLUE_STAGE_CENTER = 14;
+    public static final Integer BLUE_STAGE_AMP = 15;
+    public static final Integer BLUE_STAGE_HUMAN = 16;
+
+    public static final Set<Integer> RED_STAGE_TAGS = Set.of(RED_STAGE_HUMAN, RED_STAGE_AMP, RED_STAGE_CENTER);
+    public static final Set<Integer> BLUE_STAGE_TAGS = Set.of(BLUE_STAGE_CENTER, BLUE_STAGE_AMP, BLUE_STAGE_HUMAN);
 
     public static final Set<Integer> RED_TAG_FIDS = Stream
             .of(RED_HUMAN_PLAYER_TAGS, RED_SPEAKER_TAGS, Set.of(RED_AMP_TAG), RED_STAGE_TAGS)
