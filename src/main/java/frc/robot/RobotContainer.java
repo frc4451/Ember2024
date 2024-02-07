@@ -11,12 +11,15 @@ import java.util.Set;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
@@ -98,13 +101,16 @@ public class RobotContainer {
         // m_pivot.setDefaultCommand(m_pivot.getPivotCommand());
 
         // Build an auto chooser. You can make a default auto by passing in their name
-        m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser("New Auto"));
+        m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser",
+                AutoBuilder.buildAutoChooser("Blitzgeist"));
     }
 
     /**
      * Register the commands with PathPlanner
      */
     private void configureNamedCommands() {
+        NamedCommands.registerCommand("Shoot", new InstantCommand());
+        NamedCommands.registerCommand("PickUpNote", new InstantCommand());
 
     }
 
