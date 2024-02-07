@@ -10,6 +10,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 /**
  * Creates a logged Finite State Machine controlled by Command button inputs
@@ -41,9 +42,8 @@ public class LoggedDashboardButtonFSM implements LoggedDashboardInput {
         this.currentState = this.stateCommands.keySet().iterator().next();
 
         this.stateCommands.forEach((String name, Command command) -> {
-            SmartDashboard.putData(key + "/" + name, Commands.deferredProxy(() -> {
+            SmartDashboard.putData(key + "/" + name, new InstantCommand(() -> {
                 this.currentState = name;
-                return command;
             }));
         });
 
