@@ -3,16 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3,
-        "y": 3.0
+        "x": 2.61,
+        "y": 4.32
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5113091308703495,
-        "y": 2.546846106481675
+        "x": 2.61,
+        "y": 3.8200000000000003
       },
       "isLocked": false,
-      "linkedName": "AmbitionStart"
+      "linkedName": "A3"
+    },
+    {
+      "anchor": {
+        "x": 2.8730388230007247,
+        "y": 3.1
+      },
+      "prevControl": {
+        "x": 2.5652080853378956,
+        "y": 3.4940053768033614
+      },
+      "nextControl": {
+        "x": 3.1671444903887176,
+        "y": 2.7235619120461774
+      },
+      "isLocked": false,
+      "linkedName": null
     },
     {
       "anchor": {
@@ -20,34 +36,18 @@
         "y": 0.77
       },
       "prevControl": {
-        "x": 7.85046841354944,
-        "y": 0.77
-      },
-      "nextControl": {
-        "x": 7.95046841354944,
-        "y": 0.77
-      },
-      "isLocked": false,
-      "linkedName": "B5"
-    },
-    {
-      "anchor": {
-        "x": 5.25,
-        "y": 1.9
-      },
-      "prevControl": {
-        "x": 6.020002921631652,
-        "y": 1.3608381498300164
+        "x": 4.141697930405807,
+        "y": 2.1380805733026746
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "B5"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.95,
-      "rotationDegrees": 0.0,
+      "waypointRelativePos": 1,
+      "rotationDegrees": 0,
       "rotateFast": false
     }
   ],
@@ -61,14 +61,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -35.0,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "PathSegments",
-  "previewStartingState": {
-    "rotation": -65.0,
-    "velocity": 0
-  },
+  "folder": "Note2Note",
+  "previewStartingState": null,
   "useDefaultConstraints": false
 }

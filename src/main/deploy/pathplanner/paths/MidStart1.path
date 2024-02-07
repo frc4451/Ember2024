@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.5,
+        "x": 1.42,
         "y": 5.56
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0,
+        "x": 1.47,
         "y": 5.56
       },
       "isLocked": false,
-      "linkedName": "Midnote"
+      "linkedName": "A2Start"
     },
     {
       "anchor": {
-        "x": 2.5,
-        "y": 4.29878697595233
+        "x": 2.16,
+        "y": 5.56
       },
       "prevControl": {
-        "x": 2.4292893218813454,
-        "y": 4.369497654070985
+        "x": 2.1100000000000003,
+        "y": 5.56
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Stagenote"
+      "linkedName": "A2Launch"
     }
   ],
   "rotationTargets": [],
@@ -39,11 +39,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -30.0,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Note2Note",
+  "folder": "PathSegments",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

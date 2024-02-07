@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.55,
-        "y": 6.8
+        "x": 2.557296653054846,
+        "y": 5.564955745296107
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.5199484522385713,
-        "y": 7.359999999999999
+        "x": 2.057296653054846,
+        "y": 5.564955745296107
       },
       "isLocked": false,
-      "linkedName": "Ampnote"
+      "linkedName": "A2"
     },
     {
       "anchor": {
-        "x": 7.90046841354944,
-        "y": 7.432741351969191
+        "x": 2.61,
+        "y": 4.32
       },
       "prevControl": {
-        "x": 7.85046841354944,
-        "y": 7.432741351969191
+        "x": 2.140153689607046,
+        "y": 4.148989928337166
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Midline1"
+      "linkedName": "A3"
     }
   ],
   "rotationTargets": [],
@@ -39,14 +39,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": -30.0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "Note2Note",
-  "previewStartingState": {
-    "rotation": 30.0,
-    "velocity": 0
-  },
+  "previewStartingState": null,
   "useDefaultConstraints": false
 }

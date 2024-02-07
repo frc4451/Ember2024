@@ -6,28 +6,9 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "AmpsideStart"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "PickUpNote"
-                }
-              }
-            ]
+            "pathName": "AmpsideStart1"
           }
         },
         {
@@ -43,7 +24,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "AmpToMid"
+                  "pathName": "AmpsideStart2"
                 }
               },
               {
@@ -53,6 +34,31 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "A1toB2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PickUpNote"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "B2to15FT"
           }
         },
         {
@@ -68,7 +74,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "MidToStage"
+                  "pathName": "15FTtoB3"
                 }
               },
               {
@@ -78,6 +84,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "B3to15FT"
           }
         },
         {

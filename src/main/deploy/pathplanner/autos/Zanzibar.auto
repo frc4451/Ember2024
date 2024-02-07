@@ -6,6 +6,12 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "AmpsideStart1"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "Shoot"
@@ -18,7 +24,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "AmpsideStart"
+                  "pathName": "AmpsideStart2"
                 }
               },
               {
@@ -43,7 +49,32 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "AmpToMidline1"
+                  "pathName": "A1toA2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PickUpNote"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "A2toB3"
                 }
               },
               {
@@ -58,38 +89,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Midline1To15ft"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "15ftToMidline2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "PickUpNote"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Midline2To15ft"
+            "pathName": "B3to15FT"
           }
         },
         {

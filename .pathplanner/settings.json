@@ -1,6 +1,6 @@
 {
-  "robotWidth": 0.7874,
-  "robotLength": 0.7874,
+  "robotWidth": 0.89,
+  "robotLength": 0.889,
   "holonomicMode": true,
   "pathFolders": [
     "Note2Location",

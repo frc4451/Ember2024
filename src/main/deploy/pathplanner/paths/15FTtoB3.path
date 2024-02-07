@@ -3,38 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.5477852757507313,
-        "y": 6.794856832956909
+        "x": 4.570152986459821,
+        "y": 5.900431800863602
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.681759871966293,
-        "y": 6.294856832956909
+        "x": 4.570152986459821,
+        "y": 3.9004318008636023
       },
       "isLocked": false,
-      "linkedName": "Ampnote"
+      "linkedName": "center15ft"
     },
     {
       "anchor": {
-        "x": 2.5,
-        "y": 5.56
+        "x": 7.881979007201258,
+        "y": 4.095403506122328
       },
       "prevControl": {
-        "x": 2.56,
-        "y": 5.56
+        "x": 7.831979007201258,
+        "y": 4.095403506122328
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Midnote"
+      "linkedName": "B3"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.0,
-      "rotationDegrees": 30.0,
-      "rotateFast": false
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -49,10 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Note2Note",
-  "previewStartingState": {
-    "rotation": 30.0,
-    "velocity": 0
-  },
-  "useDefaultConstraints": true
+  "folder": "Note2Location",
+  "previewStartingState": null,
+  "useDefaultConstraints": false
 }
