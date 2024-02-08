@@ -13,7 +13,7 @@ public interface IntakeIO {
     public default void updateInputs(IntakeIOInputs inputs) {
     }
 
-    public default void setVelocity(double velocityRotPerSecondTop) {
+    public default void setVelocity(double velocityRotPerSecond) {
     }
 
     public default void setVoltage(double topVoltage) {
