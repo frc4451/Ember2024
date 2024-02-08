@@ -71,22 +71,22 @@ public class DriveSubsystem extends SubsystemBase {
 
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
-                m_modules[0] = new SwerveModuleSparkMax(
+                m_modules[0] = new SwerveModuleSparks(
                         DriveConstants.kFrontLeftDrivingCanId,
                         DriveConstants.kFrontLeftTurningCanId,
                         DriveConstants.kFrontLeftChassisAngularOffset);
 
-                m_modules[1] = new SwerveModuleSparkMax(
+                m_modules[1] = new SwerveModuleSparks(
                         DriveConstants.kFrontRightDrivingCanId,
                         DriveConstants.kFrontRightTurningCanId,
                         DriveConstants.kFrontRightChassisAngularOffset);
 
-                m_modules[2] = new SwerveModuleSparkMax(
+                m_modules[2] = new SwerveModuleSparks(
                         DriveConstants.kRearLeftDrivingCanId,
                         DriveConstants.kRearLeftTurningCanId,
                         DriveConstants.kBackLeftChassisAngularOffset);
 
-                m_modules[3] = new SwerveModuleSparkMax(
+                m_modules[3] = new SwerveModuleSparks(
                         DriveConstants.kRearRightDrivingCanId,
                         DriveConstants.kRearRightTurningCanId,
                         DriveConstants.kBackRightChassisAngularOffset);

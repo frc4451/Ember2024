@@ -6,6 +6,7 @@ package frc.robot.subsystems.drive;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
@@ -16,8 +17,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants.ModuleConstants;
 
-public class SwerveModuleSparkMax implements SwerveModuleIO {
-    private final CANSparkMax m_drivingSparkMax;
+public class SwerveModuleSparks implements SwerveModuleIO {
+    private final CANSparkFlex m_drivingSparkFlex;
     private final CANSparkMax m_turningSparkMax;
 
     private final RelativeEncoder m_drivingEncoder;
@@ -30,24 +31,24 @@ public class SwerveModuleSparkMax implements SwerveModuleIO {
     private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
 
     /**
-     * Constructs a MAXSwerveModule and configures the driving and turning motor,
+     * Constructs a Swerve Module and configures the driving and turning motor,
      * encoder, and PID controller. This configuration is specific to the REV
-     * MAXSwerve Module built with NEOs, SPARKS MAX, and a Through Bore
+     * MAXSwerve Module built with NEOs, a SPARK Flex, and a Through Bore
      * Encoder.
      */
-    public SwerveModuleSparkMax(int drivingCANId, int turningCANId, double chassisAngularOffset) {
-        m_drivingSparkMax = new CANSparkMax(drivingCANId, MotorType.kBrushless);
+    public SwerveModuleSparks(int drivingCANId, int turningCANId, double chassisAngularOffset) {
+        m_drivingSparkFlex = new CANSparkFlex(drivingCANId, MotorType.kBrushless);
         m_turningSparkMax = new CANSparkMax(turningCANId, MotorType.kBrushless);
 
-        // Factory reset, so we get the SPARKS MAX to a known state before configuring
-        // them. This is useful in case a SPARK MAX is swapped out.
-        m_drivingSparkMax.restoreFactoryDefaults();
+        // Factory reset, so we get the SPARK Flexes to a known state before configuring
+        // them. This is useful in case a SPARK Flex is swapped out.
+        m_drivingSparkFlex.restoreFactoryDefaults();
         m_turningSparkMax.restoreFactoryDefaults();
 
-        // Setup encoders and PID controllers for the driving and turning SPARKS MAX.
-        m_drivingEncoder = m_drivingSparkMax.getEncoder();
+        // Setup encoders and PID controllers for the driving and turning SPARK Flexes.
+        m_drivingEncoder = m_drivingSparkFlex.getEncoder();
         m_turningEncoder = m_turningSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
-        m_drivingPIDController = m_drivingSparkMax.getPIDController();
+        m_drivingPIDController = m_drivingSparkFlex.getPIDController();
         m_turningPIDController = m_turningSparkMax.getPIDController();
         m_drivingPIDController.setFeedbackDevice(m_drivingEncoder);
         m_turningPIDController.setFeedbackDevice(m_turningEncoder);
@@ -66,7 +67,7 @@ public class SwerveModuleSparkMax implements SwerveModuleIO {
 
         // Invert the turning encoder, since the output shaft rotates in the opposite
         // direction of
-        // the steering motor in the MAXSwerve Module.
+        // the steering motor in the FlexSwerve Module.
         m_turningEncoder.setInverted(ModuleConstants.kTurningEncoderInverted);
 
         // Enable PID wrap around for the turning motor. This will allow the PID
@@ -97,14 +98,14 @@ public class SwerveModuleSparkMax implements SwerveModuleIO {
         m_turningPIDController.setOutputRange(ModuleConstants.kTurningMinOutput,
                 ModuleConstants.kTurningMaxOutput);
 
-        m_drivingSparkMax.setIdleMode(ModuleConstants.kDrivingMotorIdleMode);
+        m_drivingSparkFlex.setIdleMode(ModuleConstants.kDrivingMotorIdleMode);
         m_turningSparkMax.setIdleMode(ModuleConstants.kTurningMotorIdleMode);
-        m_drivingSparkMax.setSmartCurrentLimit(ModuleConstants.kDrivingMotorCurrentLimit);
+        m_drivingSparkFlex.setSmartCurrentLimit(ModuleConstants.kDrivingMotorCurrentLimit);
         m_turningSparkMax.setSmartCurrentLimit(ModuleConstants.kTurningMotorCurrentLimit);
 
-        // Save the SPARK MAX configurations. If a SPARK MAX browns out during
+        // Save the SPARK Flex configurations. If a SPARK Flex browns out during
         // operation, it will maintain the above configurations.
-        m_drivingSparkMax.burnFlash();
+        m_drivingSparkFlex.burnFlash();
         m_turningSparkMax.burnFlash();
 
         m_chassisAngularOffset = chassisAngularOffset;
@@ -141,14 +142,14 @@ public class SwerveModuleSparkMax implements SwerveModuleIO {
                 correctedDesiredState,
                 new Rotation2d(m_turningEncoder.getPosition()));
 
-        // Command driving and turning SPARKS MAX towards their respective setpoints.
+        // Command driving and turning SPARKS Flex towards their respective setpoints.
         m_drivingPIDController.setReference(
                 optimizedDesiredState.speedMetersPerSecond,
-                CANSparkMax.ControlType.kVelocity);
+                CANSparkFlex.ControlType.kVelocity);
 
         m_turningPIDController.setReference(
                 optimizedDesiredState.angle.getRadians(),
-                CANSparkMax.ControlType.kPosition);
+                CANSparkFlex.ControlType.kPosition);
 
         m_desiredState = desiredState;
     }
