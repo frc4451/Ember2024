@@ -101,8 +101,8 @@ public class RobotContainer {
         // m_pivot.setDefaultCommand(m_pivot.getPivotCommand());
 
         // Build an auto chooser. You can make a default auto by passing in their name
-        m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser",
-                AutoBuilder.buildAutoChooser("Blitzgeist"));
+        m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
+        // m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser");
     }
 
     /**
@@ -111,7 +111,7 @@ public class RobotContainer {
     private void configureNamedCommands() {
         NamedCommands.registerCommand("Shoot", new InstantCommand());
         NamedCommands.registerCommand("PickUpNote", new InstantCommand());
-
+        NamedCommands.registerCommand("FindNote", new InstantCommand());
     }
 
     /**
