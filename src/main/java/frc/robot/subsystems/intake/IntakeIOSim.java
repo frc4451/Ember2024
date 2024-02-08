@@ -12,15 +12,19 @@ public class IntakeIOSim implements IntakeIO {
 
     private final PIDController pidController = new PIDController(1, 0, 0);
 
-    private double velocityRotPerSecond;
+    private double velocityRotPerSecond = 0.0;
+
+    private boolean closedLoop = false;
+    private double appliedVoltage = 0.0;
 
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
-        double appliedVoltage = 12.0
-                * pidController.calculate(wheelSim.getAngularVelocityRPM() / 60.0, velocityRotPerSecond);
+        if (closedLoop) {
+            appliedVoltage = 12.0
+                    * pidController.calculate(wheelSim.getAngularVelocityRPM() / 60.0, velocityRotPerSecond);
+        }
 
         wheelSim.setInputVoltage(appliedVoltage);
-
         wheelSim.update(0.02); // 20 ms is the standard periodic loop time
 
         inputs.appliedVoltage = appliedVoltage;
@@ -30,11 +34,13 @@ public class IntakeIOSim implements IntakeIO {
 
     @Override
     public void setVelocity(double velocityRotPerSecond) {
+        closedLoop = true;
         this.velocityRotPerSecond = velocityRotPerSecond;
     }
 
     @Override
     public void setVoltage(double voltage) {
-        wheelSim.setInputVoltage(voltage);
+        closedLoop = false;
+        appliedVoltage = voltage;
     }
 }
