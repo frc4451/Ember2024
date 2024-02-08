@@ -31,6 +31,7 @@ public class StrafeAndAimToAprilTag extends Command {
     private final Supplier<Set<TargetWithSource>> visibleAprilTagsSupplier;
     private final DoubleSupplier xSupplier;
     private final DoubleSupplier ySupplier;
+    private final boolean fieldRelative;
 
     private double yawErrorRad = yawMeasurementOffset;
     private Pose3d targetPose = new Pose3d();
@@ -41,7 +42,8 @@ public class StrafeAndAimToAprilTag extends Command {
             DoubleSupplier ySupplier,
             Supplier<Set<TargetWithSource>> visibleAprilTagsSupplier,
             int targetFiducialId,
-            DriveSubsystem drive) {
+            DriveSubsystem drive,
+            boolean fieldRelative) {
         addRequirements(drive);
         setName("StrafeAndAimToAprilTag");
 
@@ -52,10 +54,20 @@ public class StrafeAndAimToAprilTag extends Command {
         this.targetFiducialId = targetFiducialId;
         this.visibleAprilTagsSupplier = visibleAprilTagsSupplier;
         this.drive = drive;
+        this.fieldRelative = fieldRelative;
 
         targetPose = VisionConstants.FIELD_LAYOUT.getTagPose(targetFiducialId).get();
 
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    }
+
+    public StrafeAndAimToAprilTag(
+            DoubleSupplier xSupplier,
+            DoubleSupplier ySupplier,
+            Supplier<Set<TargetWithSource>> visibleAprilTagsSupplier,
+            int targetFiducialId,
+            DriveSubsystem drive) {
+        this(xSupplier, ySupplier, visibleAprilTagsSupplier, targetFiducialId, drive, true);
     }
 
     @Override
@@ -106,7 +118,7 @@ public class StrafeAndAimToAprilTag extends Command {
                 ySupplier.getAsDouble(),
                 rotationSpeedRad / DriveConstants.kMaxAngularSpeed,
                 false,
-                true);
+                fieldRelative);
     }
 
     @Override
