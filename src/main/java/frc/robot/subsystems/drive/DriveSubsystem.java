@@ -219,9 +219,6 @@ public class DriveSubsystem extends SubsystemBase {
 
         // Send setpoints to modules
         setModuleStates(setpointStates);
-
-        // Log setpoint states
-        Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
     }
 
     /**
@@ -258,10 +255,14 @@ public class DriveSubsystem extends SubsystemBase {
      * Sets the wheels into an X formation to prevent movement.
      */
     public void setCross() {
-        m_modules[0].setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
-        m_modules[1].setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-        m_modules[2].setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-        m_modules[3].setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+        SwerveModuleState[] desiredStates = new SwerveModuleState[] {
+                new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+                new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+                new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+                new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+        };
+
+        setModuleStates(desiredStates);
     }
 
     /**
@@ -275,6 +276,9 @@ public class DriveSubsystem extends SubsystemBase {
         for (int i = 0; i < desiredStates.length; i++) {
             m_modules[i].setDesiredState(desiredStates[i]);
         }
+
+        // Log setpoint states
+        Logger.recordOutput("SwerveStates/Setpoints", desiredStates);
     }
 
     /** Zeroes the heading of the robot. */
