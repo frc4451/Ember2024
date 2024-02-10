@@ -101,7 +101,6 @@ public class RobotContainer {
 
         // Build an auto chooser. You can make a default auto by passing in their name
         m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
-        // m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser");
     }
 
     /**
