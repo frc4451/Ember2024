@@ -14,23 +14,26 @@ public class ShooterIOSim implements ShooterIO {
     private final PIDController leftPidController = new PIDController(1, 0, 0);
     private final PIDController rightPidController = new PIDController(1, 0, 0);
 
-    private double velocityRotPerSecondLeft;
-    private double velocityRotPerSecondRight;
+    private double velocityRotPerSecondLeft = 0.0;
+    private double velocityRotPerSecondRight = 0.0;
+
+    private double appliedVoltageLeft = 0.0;
+    private double appliedVoltageRight = 0.0;
 
     @Override
     public void updateInputs(ShooterIOInputs inputs) {
-        double leftVoltage = 12.0
+        appliedVoltageLeft = 12.0
                 * leftPidController.calculate(leftSim.getAngularVelocityRPM() / 60.0, velocityRotPerSecondLeft);
-        double rightVoltage = 12.0
+        appliedVoltageRight = 12.0
                 * rightPidController.calculate(rightSim.getAngularVelocityRPM() / 60.0, velocityRotPerSecondRight);
 
-        leftSim.setInputVoltage(leftVoltage);
-        rightSim.setInputVoltage(rightVoltage);
+        leftSim.setInputVoltage(appliedVoltageLeft);
+        rightSim.setInputVoltage(appliedVoltageRight);
 
         leftSim.update(0.02); // 20 ms is the standard periodic loop time
         rightSim.update(0.02);
 
-        inputs.appliedVoltage = new double[] { leftVoltage, rightVoltage };
+        inputs.appliedVoltage = new double[] { appliedVoltageLeft, appliedVoltageRight };
         inputs.currentAmperage = new double[] { leftSim.getCurrentDrawAmps(), rightSim.getCurrentDrawAmps() };
         inputs.velocityRotPerSecond = new double[] {
                 leftSim.getAngularVelocityRPM() / 60.0,
@@ -45,13 +48,8 @@ public class ShooterIOSim implements ShooterIO {
     }
 
     @Override
-    public void setFree() {
+    public void stop() {
         leftSim.setInputVoltage(0);
         rightSim.setInputVoltage(0);
-    }
-
-    @Override
-    public void stop() {
-        setVelocity(0.0, 0.0);
     }
 }

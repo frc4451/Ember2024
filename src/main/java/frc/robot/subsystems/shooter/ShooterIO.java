@@ -17,10 +17,6 @@ public interface ShooterIO {
     public default void setVelocity(double velocityRotPerSecondLeft, double velocityRotPerSecondRight) {
     }
 
-    public default void setFree() {
-    }
-
     public default void stop() {
-        setVelocity(0.0, 0.0);
     }
 }
