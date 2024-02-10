@@ -91,15 +91,15 @@ public final class Constants {
         public static final double kBackRightChassisAngularOffset = Math.PI / 2;
 
         // SPARK MAX CAN IDs
-        public static final int kFrontLeftDrivingCanId = -1;
-        public static final int kRearLeftDrivingCanId = -1;
-        public static final int kFrontRightDrivingCanId = -1;
-        public static final int kRearRightDrivingCanId = -1;
+        public static final int kFrontLeftDrivingCanId = 11;
+        public static final int kRearLeftDrivingCanId = 13;
+        public static final int kFrontRightDrivingCanId = 15;
+        public static final int kRearRightDrivingCanId = 17;
 
-        public static final int kFrontLeftTurningCanId = -1;
-        public static final int kRearLeftTurningCanId = -1;
-        public static final int kFrontRightTurningCanId = -1;
-        public static final int kRearRightTurningCanId = -1;
+        public static final int kFrontLeftTurningCanId = 10;
+        public static final int kRearLeftTurningCanId = 12;
+        public static final int kFrontRightTurningCanId = 14;
+        public static final int kRearRightTurningCanId = 16;
 
         public static final int kGyroCanId = 1;
     }
@@ -175,8 +175,8 @@ public final class Constants {
                 .withSupplyCurrentThreshold(35.0)
                 .withSupplyTimeThreshold(0.5);
 
-        public static final int kTopRollerCanId = -1;
-        public static final int kBottomRollerCanId = -1;
+        public static final int kTopRollerCanId = 20;
+        public static final int kBottomRollerCanId = 21;
         public static final int kBeamBreakChannel = 0;
 
         // public static final double kPivotMinDegrees = 10.0;
@@ -184,7 +184,7 @@ public final class Constants {
 
         public static final double kPivotReduction = 240.0;
 
-        public static final int kPivotCanId = -1;
+        public static final int kPivotCanId = 22;
         public static final double kPivotVelocityRadiansPerSecond = Units.degreesToRadians(15.0);
 
         public static final double kPivotP = 0.3;
