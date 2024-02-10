@@ -57,7 +57,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void stop() {
-        io.setFree();
+        io.stop();
     }
 
     public Command stopCommand() {

@@ -19,6 +19,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     private final StatusSignal<Double> leftVoltage = left.getMotorVoltage();
     private final StatusSignal<Double> leftTempCelsius = left.getDeviceTemp();
     private final StatusSignal<Double> leftVelocity = left.getVelocity();
+
     private final StatusSignal<Double> rightVoltage = right.getMotorVoltage();
     private final StatusSignal<Double> rightAmperage = right.getSupplyCurrent();
     private final StatusSignal<Double> rightTempCelsius = right.getDeviceTemp();
@@ -45,7 +46,6 @@ public class ShooterIOTalonFX implements ShooterIO {
                                 .withKP(0.12)
                                 .withKI(0.0)
                                 .withKD(0.0)));
-        // bottom.setControl(new Follower(top.getDeviceID(), false));
         velocity.Slot = 0;
     }
 
@@ -87,8 +87,8 @@ public class ShooterIOTalonFX implements ShooterIO {
     }
 
     @Override
-    public void setFree() {
-        left.setControl(new CoastOut());
-        right.setControl(new CoastOut());
+    public void stop() {
+        left.setVoltage(0);
+        right.setVoltage(0);
     }
 }
