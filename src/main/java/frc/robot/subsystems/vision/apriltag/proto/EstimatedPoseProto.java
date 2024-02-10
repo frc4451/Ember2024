@@ -1,7 +1,5 @@
 package frc.robot.subsystems.vision.apriltag.proto;
 
-import java.util.ArrayList;
-
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.geometry.Pose3d;
@@ -33,17 +31,11 @@ public class EstimatedPoseProto implements Protobuf<EstimatedPose, ProtobufEstim
 
     @Override
     public EstimatedPose unpack(ProtobufEstimatedPose msg) {
-        ArrayList<PhotonTrackedTarget> targets = new ArrayList<>(msg.getTargets().length());
-        for (var packedTarget : msg.getTargets()) {
-            PhotonTrackedTarget target = PhotonTrackedTarget.proto.unpack(packedTarget);
-            targets.add(target);
-        }
-
         return new EstimatedPose(
                 msg.getIsPresent(),
                 Pose3d.proto.unpack(msg.getPose()),
                 msg.getTimestamp(),
-                targets);
+                PhotonTrackedTarget.proto.unpack(msg.getTargets()));
     }
 
     @Override
