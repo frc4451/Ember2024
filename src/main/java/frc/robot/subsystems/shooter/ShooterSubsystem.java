@@ -10,25 +10,38 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants;
 import frc.robot.Constants.AdvantageKitConstants;
+import frc.robot.reusable_io.beambreak.BeambreakDigitalInput;
+import frc.robot.reusable_io.beambreak.BeambreakIO;
+import frc.robot.reusable_io.beambreak.BeambreakIOInputsAutoLogged;
+import frc.robot.reusable_io.beambreak.BeambreakIOSim;
 
 public class ShooterSubsystem extends SubsystemBase {
     private final ShooterIO io;
+    private final BeambreakIO beambreak;
+
     private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
+    private final BeambreakIOInputsAutoLogged beambreakInputs = new BeambreakIOInputsAutoLogged();
 
     /** Creates a new ShooterSubsystem. */
     public ShooterSubsystem() {
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
                 io = new ShooterIOTalonFX();
+                beambreak = new BeambreakDigitalInput(Constants.ShooterConstants.kBeamBreakCanID);
                 break;
             case SIM:
                 io = new ShooterIOSim() {
                 };
+                beambreak = new BeambreakIOSim(Constants.ShooterConstants.kBeamBreakCanID);
                 break;
             case REPLAY:
             default:
                 io = new ShooterIO() {
+                };
+                beambreak = new BeambreakIO() {
                 };
                 break;
         }
@@ -36,24 +49,27 @@ public class ShooterSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        io.updateInputs(inputs);
-        Logger.processInputs("Shooter", inputs);
+        this.io.updateInputs(inputs);
+        this.beambreak.updateInputs(this.beambreakInputs);
+
+        Logger.processInputs("Shooter", this.inputs);
+        Logger.processInputs("Shooter/BeamBreak", this.beambreakInputs);
 
         if (DriverStation.isDisabled()) {
             io.stop();
         }
     }
 
-    public void setVelocity(double velocityRotPerSecondLeft, double velocityRotPerSecondRight) {
-        io.setVelocity(velocityRotPerSecondLeft, velocityRotPerSecondRight);
+    public void setVelocity(double velocityRotPerSecondLeft, double velocityRotPerSecondRight,
+            double velocityRotPerSecondFeeder) {
+        io.setVelocity(velocityRotPerSecondLeft, velocityRotPerSecondRight, velocityRotPerSecondFeeder);
     }
 
-    public double[] getVelocity() {
-        return inputs.velocityRotPerSecond;
-    }
-
-    public Command setVelocityCommand(double velocityRotPerSecondLeft, double velocityRotPerSecondRight) {
-        return new InstantCommand(() -> setVelocity(velocityRotPerSecondLeft, velocityRotPerSecondRight), this);
+    public Command setVelocityCommand(double velocityRotPerSecondLeft, double velocityRotPerSecondRight,
+            double velocityRotPerSecondFeeder) {
+        return new InstantCommand(
+                () -> setVelocity(velocityRotPerSecondLeft, velocityRotPerSecondRight, velocityRotPerSecondFeeder),
+                this);
     }
 
     public void stop() {
@@ -62,5 +78,15 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public Command stopCommand() {
         return new InstantCommand(() -> stop(), this);
+    }
+
+    public Command overrideBeamBreakActivatedCommand(boolean value) {
+        return new InstantCommand(() -> {
+            this.beambreak.overrideActivated(value);
+        });
+    }
+
+    public Trigger beambreakIsActivated() {
+        return new Trigger(() -> this.beambreakInputs.isActivated);
     }
 }
