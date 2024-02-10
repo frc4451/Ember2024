@@ -1,0 +1,74 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.3,
+        "y": 3.0
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.5113091308703495,
+        "y": 2.546846106481675
+      },
+      "isLocked": false,
+      "linkedName": "AmbitionStart"
+    },
+    {
+      "anchor": {
+        "x": 7.90046841354944,
+        "y": 0.77
+      },
+      "prevControl": {
+        "x": 7.85046841354944,
+        "y": 0.77
+      },
+      "nextControl": {
+        "x": 7.95046841354944,
+        "y": 0.77
+      },
+      "isLocked": false,
+      "linkedName": "B5"
+    },
+    {
+      "anchor": {
+        "x": 5.25,
+        "y": 1.9
+      },
+      "prevControl": {
+        "x": 6.020002921631652,
+        "y": 1.3608381498300164
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.95,
+      "rotationDegrees": 0.0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.2,
+    "maxAcceleration": 4.2,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -35.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "PathSegments",
+  "previewStartingState": {
+    "rotation": -65.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}
