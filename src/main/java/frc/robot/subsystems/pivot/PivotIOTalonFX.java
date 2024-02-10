@@ -1,6 +1,8 @@
 package frc.robot.subsystems.pivot;
 
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -8,24 +10,30 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants.IntakeConstants;
 
-public class PivotIOFalcon implements PivotIO {
-    private final TalonFX pivot = new TalonFX(IntakeConstants.kPivotCanId);
-    private final double positionConversionFactor = 2.0 * Math.PI / IntakeConstants.kPivotReduction;
+public class PivotIOTalonFX implements PivotIO {
+    private static final double kPositionConversionFactor = 2.0 * Math.PI / IntakeConstants.kPivotReduction;
 
-    public PivotIOFalcon() {
+    private final TalonFX pivot = new TalonFX(IntakeConstants.kPivotCanId);
+
+    private final StatusSignal<Double> appliedVoltage = pivot.getMotorVoltage();
+    private final StatusSignal<Double> temperatureCelsius = pivot.getDeviceTemp();
+    private final StatusSignal<Double> currentAmperage = pivot.getSupplyCurrent();
+
+    public PivotIOTalonFX() {
         this.pivot.getConfigurator().apply(
                 new TalonFXConfiguration()
+                        .withMotorOutput(new MotorOutputConfigs()
+                                .withNeutralMode(NeutralModeValue.Brake))
                         .withClosedLoopRamps(new ClosedLoopRampsConfigs()
                                 .withDutyCycleClosedLoopRampPeriod(1.0)));
-        this.pivot.setNeutralMode(NeutralModeValue.Brake);
     }
 
     @Override
     public void updateInputs(PivotIOInputs inputs) {
-        inputs.appliedVoltage = this.pivot.getDutyCycle().getValueAsDouble()
-                * this.pivot.getMotorVoltage().getValueAsDouble();
-        inputs.temperatureCelsius = this.pivot.getDeviceTemp().getValueAsDouble();
-        inputs.currentAmperage = this.pivot.getSupplyCurrent().getValueAsDouble();
+        StatusSignal.refreshAll(appliedVoltage, temperatureCelsius, currentAmperage);
+        inputs.appliedVoltage = appliedVoltage.getValueAsDouble();
+        inputs.temperatureCelsius = temperatureCelsius.getValueAsDouble();
+        inputs.currentAmperage = currentAmperage.getValueAsDouble();
     }
 
     @Override
@@ -40,7 +48,7 @@ public class PivotIOFalcon implements PivotIO {
 
     @Override
     public void setAngle(Rotation2d angle) {
-        this.pivot.setPosition(angle.getRadians() / positionConversionFactor);
+        this.pivot.setPosition(angle.getRadians() / kPositionConversionFactor);
     }
 
     @Override
