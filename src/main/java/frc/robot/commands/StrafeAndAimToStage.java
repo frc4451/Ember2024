@@ -21,7 +21,7 @@ public class StrafeAndAimToStage extends StrafeAndAimToAprilTag {
         super(xSupplier,
                 ySupplier,
                 visibleAprilTagsSupplier,
-                stageTag.get(),
+                stageTag.getId(),
                 drive,
                 false);
         setName("StrafeAndAimToStage");
