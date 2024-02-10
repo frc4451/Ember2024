@@ -49,8 +49,8 @@ public class EstimatedPoseProto implements Protobuf<EstimatedPose, ProtobufEstim
     @Override
     public void pack(ProtobufEstimatedPose msg, EstimatedPose value) {
         msg.setIsPresent(value.isPresent);
-        Pose3d.proto.pack(msg.getPose(), value.pose);
+        Pose3d.proto.pack(msg.getMutablePose(), value.pose);
         msg.setTimestamp(value.timestamp);
-        PhotonTrackedTarget.proto.pack(msg.getTargets(), value.targets);
+        PhotonTrackedTarget.proto.pack(msg.getMutableTargets(), value.targets);
     }
 }

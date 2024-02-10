@@ -123,6 +123,13 @@ public class Robot extends LoggedRobot {
         // SmartDashboard.putNumber("Arm Pivot Setpoint Deg",
         // m_robotContainer.m_pivot.getSetpoint().getDegrees());
         SmartDashboard.putData("Field", m_robotContainer.field);
+
+        // if (m_robotContainer.m_autoChooser.get() != new InstantCommand()) {
+        // String autonomousName = m_robotContainer.m_autoChooser.get().getName();
+        // Logger.recordOutput("Autonomous/AutoName", autonomousName);
+        // Logger.recordOutput("Autonomous/StartingPose",
+        // PathPlannerAuto.getStaringPoseFromAutoFile(autonomousName));
+        // }
     }
 
     /** This function is called once each time the robot enters Disabled mode. */

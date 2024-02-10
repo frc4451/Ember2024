@@ -1,7 +1,19 @@
 {
-  "robotWidth": 0.7874,
-  "robotLength": 0.7874,
+  "robotWidth": 0.89,
+  "robotLength": 0.889,
   "holonomicMode": true,
-  "generateJSON": false,
-  "generateCSV": false
+  "pathFolders": [
+    "Kates Paths",
+    "New New Folder",
+    "Note2Location",
+    "Note2Note",
+    "PathSegments",
+    "Test Paths"
+  ],
+  "autoFolders": [],
+  "defaultMaxVel": 4.2,
+  "defaultMaxAccel": 4.2,
+  "defaultMaxAngVel": 540.0,
+  "defaultMaxAngAccel": 720.0,
+  "maxModuleSpeed": 4.5
 }

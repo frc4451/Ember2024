@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.16,
+        "y": 6.55
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.203301270189222,
+        "y": 6.575
+      },
+      "isLocked": false,
+      "linkedName": "AmpLaunch"
+    },
+    {
+      "anchor": {
+        "x": 2.6263652527305066,
+        "y": 6.82792442507962
+      },
+      "prevControl": {
+        "x": 2.583063982541285,
+        "y": 6.8029244250796195
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "A1"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.2,
+    "maxAcceleration": 4.2,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 30.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "PathSegments",
+  "previewStartingState": {
+    "rotation": 30.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

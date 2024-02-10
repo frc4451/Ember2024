@@ -1,21 +1,19 @@
 package frc.robot.subsystems.vision;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
-import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -40,6 +38,14 @@ public class VisionSubsystem extends VirtualSubsystem {
     public static record VisionMeasurement(EstimatedRobotPose estimation, Matrix<N3, N1> confidence) {
     }
 
+    public static record TargetWithSource(PhotonTrackedTarget target, VisionSource source) {
+        public double getYawRobotRelativeRad() {
+            return Rotation2d.fromDegrees(target.getYaw())
+                    .rotateBy(source.robotToCamera().getRotation().toRotation2d())
+                    .getRadians();
+        }
+    }
+
     public static record AprilTagCamera(
             AprilTagIO io,
             AprilTagIOInputsAutoLogged inputs,
@@ -59,6 +65,10 @@ public class VisionSubsystem extends VirtualSubsystem {
     private ObjectDetectionCamera objectDetectionCamera;
 
     private ConcurrentLinkedQueue<VisionMeasurement> visionMeasurements = new ConcurrentLinkedQueue<>();
+
+    private Optional<PhotonTrackedTarget> closetObject = Optional.empty();
+
+    private Set<TargetWithSource> visibleAprilTags = new HashSet<>();
 
     public Supplier<Pose2d> robotPoseSupplier = () -> new Pose2d();
 
@@ -103,12 +113,14 @@ public class VisionSubsystem extends VirtualSubsystem {
                 break;
             default:
                 io = new ObjectDetectionIO() {
-
                 };
                 break;
         }
-        objectDetectionCamera = new ObjectDetectionCamera(io, new ObjectDetectionIOInputsAutoLogged(),
-                VisionConstants.OBJECT_DETECTION_SOURCE, new DuplicateTracker());
+        objectDetectionCamera = new ObjectDetectionCamera(
+                io,
+                new ObjectDetectionIOInputsAutoLogged(),
+                VisionConstants.OBJECT_DETECTION_SOURCE,
+                new DuplicateTracker());
 
     }
 
@@ -116,10 +128,10 @@ public class VisionSubsystem extends VirtualSubsystem {
     @Override
     public void periodic() {
         // Check for updates to Measurements from April Tags
-        findVisionMeasurements();
+        updateVisionMeasurements();
 
         // Check for updates to Measurements away from Notes
-        findClosestObject();
+        updateClosestObject();
     }
 
     public void simulationPeriodic() {
@@ -132,31 +144,49 @@ public class VisionSubsystem extends VirtualSubsystem {
      * Using all available camera estimators, we poll each and try to build
      * our VisionMeasurements to help correct our position and odometry.
      */
-    private void findVisionMeasurements() {
+    private void updateVisionMeasurements() {
+        Set<TargetWithSource> currentVisibleAprilTags = new HashSet<>();
+
         // For each camera we need to do the following:
         for (AprilTagCamera cam : aprilTagCameras) {
+            String cameraLogRoot = "AprilTagCamera/" + cam.source.name() + "/";
+
             cam.io.updateInputs(cam.inputs);
+            Logger.processInputs(cameraLogRoot, cam.inputs);
 
             // If we have a duplicate frame, don't bother updating anything
             if (cam.inputs.isDuplicateFrame) {
                 continue;
             }
 
-            String cameraLogRoot = "AprilTagCamera/" + cam.source.name() + "/";
+            List<PhotonTrackedTarget> targets = cam.inputs.frame.getTargets();
 
-            Logger.processInputs(cameraLogRoot, cam.inputs);
+            currentVisibleAprilTags.addAll(
+                    targets.stream()
+                            .map((target) -> new TargetWithSource(target, cam.source))
+                            .toList());
 
-            Logger.recordOutput(cameraLogRoot + "Targets",
-                    cam.inputs.frame.getTargets().stream()
-                            .mapToInt(PhotonTrackedTarget::getFiducialId)
-                            .distinct()
-                            .toArray());
+            // Logger.recordOutput(cameraLogRoot + "ListOfVisibleTargets",
+            // targets.toArray().toString());
+
+            // Logger.recordOutput(cameraLogRoot + "Targets/IDs",
+            // targets.stream()
+            // .mapToInt(PhotonTrackedTarget::getFiducialId)
+            // .toArray());
+
+            // Logger.recordOutput(cameraLogRoot + "Targets/YawRad",
+            // targets.stream()
+            // .mapToDouble(PhotonTrackedTarget::getYaw)
+            // .map((yawDeg) -> Units.degreesToRadians(yawDeg))
+            // .toArray());
+
+            // Logger.recordOutput(cameraLogRoot + "Targets/YawDeg",
+            // targets.stream()
+            // .mapToDouble(PhotonTrackedTarget::getYaw)
+            // .toArray());
 
             // Add estimated position and deviation to be used by SwerveDrivePoseEstimator
             EstimatedPose estimatedPose = cam.inputs.estimatedPose;
-
-            Logger.recordOutput(cameraLogRoot + "EstimatedPose", estimatedPose.pose);
-            Logger.recordOutput(cameraLogRoot + "EstimatedPoseTimestamp", estimatedPose.timestamp);
 
             if (estimatedPose.isPresent) {
                 // Find Vision Measurement and add it for our Queue if it exists
@@ -165,44 +195,60 @@ public class VisionSubsystem extends VirtualSubsystem {
                         .ifPresent(visionMeasurements::add);
             }
         }
+
+        if (!currentVisibleAprilTags.isEmpty()) {
+            currentVisibleAprilTags.removeIf(targetWithSource -> targetWithSource.target.getFiducialId() == -1);
+        }
+
+        visibleAprilTags = currentVisibleAprilTags;
     }
 
     /**
      * Alternative strategy for Notes, we need to find _where_ the note is
      * and how we need to rotate the robot to be in-line with the note.
      */
-    public Optional<PhotonTrackedTarget> findClosestObject() {
+    public void updateClosestObject() {
         String cameraLogRoot = "ObjectDetection/" + objectDetectionCamera.source.name() + "/";
 
         objectDetectionCamera.io.updateInputs(objectDetectionCamera.inputs);
         Logger.processInputs(cameraLogRoot, objectDetectionCamera.inputs);
 
+        if (objectDetectionCamera.inputs.isDuplicateFrame) {
+            return;
+        }
+
         List<PhotonTrackedTarget> nonFiducialTargets = ObjectDetectionFiltering
                 .getNonFiducialTargets(objectDetectionCamera.inputs.frame);
-
-        Logger.recordOutput(cameraLogRoot + "HasNotes", !nonFiducialTargets.isEmpty());
 
         // PhotonVision orders targets by "best", which in their `getBestTarget` method
         // just gets the first target, assuming there is a target. We just get that.
         // If there isn't a valid non-fiducial target, we display NaN.
 
         if (nonFiducialTargets.isEmpty()) {
-            Logger.recordOutput(cameraLogRoot + "YawFromRobotCenterDeg", Double.NaN);
-            return Optional.empty();
+            if (objectDetectionCamera.inputs.hasExceededTargetlessThreshold) {
+                Logger.recordOutput(cameraLogRoot + "HasNotes", false);
+                Logger.recordOutput(cameraLogRoot + "YawFromRobotCenterDeg", Double.NaN);
+                closetObject = Optional.empty();
+            }
         } else {
             PhotonTrackedTarget object = nonFiducialTargets.get(0);
 
+            Logger.recordOutput(cameraLogRoot + "HasNotes", true);
             Logger.recordOutput(cameraLogRoot + "YawFromRobotCenterDeg", object.getYaw());
 
-            return Optional.of(object);
+            closetObject = Optional.of(object);
         }
+    }
+
+    public Optional<PhotonTrackedTarget> getClosestObject() {
+        return closetObject;
     }
 
     /**
      * Determines whether a "Note" is within the camera's sight
      */
     public Trigger cameraSeesObject() {
-        return new Trigger(() -> findClosestObject().isPresent());
+        return new Trigger(() -> getClosestObject().isPresent());
     }
 
     /**
@@ -212,38 +258,7 @@ public class VisionSubsystem extends VirtualSubsystem {
         return visionMeasurements.poll();
     }
 
-    /**
-     * Gets a list of the Fiducial IDs for April Tags we detect
-     *
-     * @return Pipe concatenated list of IDs
-     */
-    public String getVisibleTargets() {
-        List<Integer> targetIds = new ArrayList<>();
-
-        for (AprilTagCamera cam : aprilTagCameras) {
-            PhotonPipelineResult frame = cam.inputs.frame;
-            for (PhotonTrackedTarget target : frame.targets) {
-                targetIds.add(target.getFiducialId());
-            }
-        }
-
-        Set<Integer> uniqueIds = new HashSet<>(targetIds);
-        List<Integer> organizedIds = new ArrayList<>(uniqueIds);
-
-        Collections.sort(organizedIds);
-
-        String visibleTargets = organizedIds.stream()
-                .map(Object::toString)
-                .reduce((s1, s2) -> s1 + " | " + s2)
-                .orElse("");
-
-        return visibleTargets;
-    }
-
-    /**
-     * Eventually return whether or not we see "notes"
-     */
-    public boolean doWeSeeNotes() {
-        return false;
+    public Set<TargetWithSource> getVisibleAprilTags() {
+        return visibleAprilTags;
     }
 }

@@ -1,0 +1,39 @@
+<dashboard-tab
+    tab-name="Operator"
+    slot="tab"
+    source-provider="NetworkTables"
+    selected=""
+><frc-field-wrapper
+        source-key="/SmartDashboard/Field"
+        source-provider="NetworkTables"
+        style="width: 870px; height: 799px; transform: translate(0px, 0px);"
+        game="Crescendo"
+        rotation="180"
+        grid-size="1"
+        origin="red"
+    >
+    </frc-field-wrapper><frc-basic-fms-info
+        source-provider="NetworkTables"
+        style="transform: translate(0px, 0px);"
+        source-key="/FMSInfo"
+    ></frc-basic-fms-info><garage-toggle-sendable
+        source-provider="NetworkTables"
+        style="transform: translate(1180.5px, 17px); flex-direction: column; width: 259.5px; height: 782px;"
+        source-key="/SmartDashboard/LaneAssist"
+        options="[&quot;On&quot;,&quot;Off&quot;]"
+        selected="On"
+    ></garage-toggle-sendable><frc-label
+        text="Lane Assist"
+        source-provider="NetworkTables"
+        style="transform: translate(1275px, 0px); width: 81.8281px; height: 21.5px;"
+    ></frc-label></dashboard-tab><dashboard-tab
+    slot="tab"
+    tab-name="Developer"
+    source-provider="NetworkTables"
+><garage-toggle-sendable
+        source-provider="NetworkTables"
+        style="transform: translate(1162.5px, 0px); flex-direction: column; width: 277.5px; height: 799px;"
+        source-key="/SmartDashboard/LaneAssist"
+        options="[&quot;On&quot;,&quot;Off&quot;]"
+        selected="On"
+    ></garage-toggle-sendable></dashboard-tab>

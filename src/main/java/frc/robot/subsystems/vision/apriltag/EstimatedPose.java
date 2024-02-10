@@ -8,6 +8,7 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.util.protobuf.ProtobufSerializable;
 import frc.robot.subsystems.vision.apriltag.proto.EstimatedPoseProto;
 
@@ -23,8 +24,8 @@ public class EstimatedPose implements ProtobufSerializable {
     /** Default constructor for when no values are set */
     public EstimatedPose() {
         isPresent = false;
-        pose = new Pose3d();
-        timestamp = -1.0;
+        pose = new Pose3d(Double.NaN, Double.NaN, Double.NaN, new Rotation3d(Double.NaN, Double.NaN, Double.NaN));
+        timestamp = Double.NaN;
         targets = new ArrayList<>();
     }
 
@@ -37,8 +38,8 @@ public class EstimatedPose implements ProtobufSerializable {
             targets = estimate.targetsUsed;
         } else {
             isPresent = false;
-            pose = new Pose3d();
-            timestamp = -1.0;
+            pose = new Pose3d(Double.NaN, Double.NaN, Double.NaN, new Rotation3d(Double.NaN, Double.NaN, Double.NaN));
+            timestamp = Double.NaN;
             targets = new ArrayList<>();
         }
     }
