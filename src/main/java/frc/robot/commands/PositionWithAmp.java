@@ -37,16 +37,23 @@ public class PositionWithAmp extends Command {
     public PositionWithAmp(
             DoubleSupplier ySupplier,
             Supplier<Set<TargetWithSource>> visibleAprilTagsSupplier,
-            DriveSubsystem drive) {
+            DriveSubsystem drive,
+            boolean isCoopertition) {
         addRequirements(drive);
         setName("PositionWithAmp");
 
         logRoot = "Commands/" + getName() + "/";
 
         this.ySupplier = ySupplier;
-        this.targetFiducialId = GarageUtils.isBlueAlliance()
-                ? VisionConstants.BLUE_AMP_TAG
-                : VisionConstants.RED_AMP_TAG;
+
+        this.targetFiducialId = !isCoopertition
+                ? GarageUtils.isBlueAlliance()
+                        ? VisionConstants.BLUE_AMP_TAG
+                        : VisionConstants.RED_AMP_TAG
+                : GarageUtils.isRedAlliance()
+                        ? VisionConstants.BLUE_AMP_TAG
+                        : VisionConstants.RED_AMP_TAG;
+
         this.visibleAprilTagsSupplier = visibleAprilTagsSupplier;
         this.drive = drive;
 
