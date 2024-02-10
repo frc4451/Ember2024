@@ -29,6 +29,7 @@ import frc.robot.commands.PathfindToTarget;
 import frc.robot.commands.PositionWithAmp;
 import frc.robot.commands.StrafeAndAimToAprilTag;
 import frc.robot.commands.StrafeAndAimToSpeaker;
+import frc.robot.commands.StrafeAndAimToStage;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.pathplanner.PathPlannerUtils;
 import frc.robot.pathplanner.paths.PathPlannerPaths;
@@ -38,6 +39,7 @@ import frc.robot.subsystems.pivot.PivotLocation;
 import frc.robot.subsystems.pivot.PivotSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
+import frc.robot.subsystems.vision.apriltag.StageTags;
 import frc.utils.CommandCustomController;
 
 /*
@@ -169,7 +171,7 @@ public class RobotContainer {
                 false),
                 Set.of(m_robotDrive));
 
-        Command coopertitionLaneAssistCommand = Commands.defer(() -> new PositionWithAmp(
+        Command otherAmpLaneAssistCommand = Commands.defer(() -> new PositionWithAmp(
                 () -> -m_driverController.getLeftX(),
                 m_vision::getVisibleAprilTags,
                 m_robotDrive,
@@ -182,8 +184,36 @@ public class RobotContainer {
         laneAssistCommands.put("Speaker Left", speakerLaneAssistCommand);
         laneAssistCommands.put("Speaker Right", speakerLaneAssistCommand);
 
+        Command stageHuman = Commands.defer(() -> new StrafeAndAimToStage(
+                () -> -m_driverController.getLeftY(),
+                () -> -m_driverController.getLeftX(),
+                m_vision::getVisibleAprilTags,
+                StageTags.HUMAN,
+                m_robotDrive),
+                Set.of(m_robotDrive));
+
+        Command stageAmp = Commands.defer(() -> new StrafeAndAimToStage(
+                () -> -m_driverController.getLeftY(),
+                () -> -m_driverController.getLeftX(),
+                m_vision::getVisibleAprilTags,
+                StageTags.AMP,
+                m_robotDrive),
+                Set.of(m_robotDrive));
+
+        Command stageCenter = Commands.defer(() -> new StrafeAndAimToStage(
+                () -> -m_driverController.getLeftY(),
+                () -> -m_driverController.getLeftX(),
+                m_vision::getVisibleAprilTags,
+                StageTags.CENTER,
+                m_robotDrive),
+                Set.of(m_robotDrive));
+
+        laneAssistCommands.put("Stage Human", stageHuman);
+        laneAssistCommands.put("Stage Amp", stageAmp);
+        laneAssistCommands.put("Stage Center", stageCenter);
+
         laneAssistCommands.put("Amp", ampLaneAssistCommand);
-        laneAssistCommands.put("Other Amp", coopertitionLaneAssistCommand);
+        laneAssistCommands.put("Other Amp", otherAmpLaneAssistCommand);
 
         m_laneAssistChooser = new LoggedDashboardChooser<>("LaneAssist", new SendableChooser<>());
         laneAssistCommands.forEach((String key, Command command) -> {
