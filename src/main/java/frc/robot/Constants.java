@@ -5,12 +5,14 @@
 package frc.robot;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.pathplanner.lib.path.PathConstraints;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -42,10 +44,29 @@ public final class Constants {
         }
     }
 
+    public static final class PathPlannerConstants {
+        public static final Alliance DEFAULT_ALLIANCE = Alliance.Blue;
+
+        public static final double kMaxAngularAcceleration = 4 * Math.PI; // This was made up
+        public static final double kMaxAccelerationMetersPerSecondSquared = 3.00; // This was made up
+
+        public static final PathConstraints DEFAULT_PATH_CONSTRAINTS = new PathConstraints(
+                DriveConstants.kMaxSpeedMetersPerSecond,
+                PathPlannerConstants.kMaxAccelerationMetersPerSecondSquared,
+                DriveConstants.kMaxAngularSpeed,
+                5 * Math.PI);
+
+        public static final PathConstraints TEST_PATH_CONSTRAINTS = new PathConstraints(
+                1.0,
+                PathPlannerConstants.kMaxAccelerationMetersPerSecondSquared,
+                DriveConstants.kMaxAngularSpeed,
+                5 * Math.PI);
+    }
+
     public static final class DriveConstants {
         // Driving Parameters - Note that these are not the maximum capable speeds of
         // the robot, rather the allowed maximum speeds
-        public static final double kMaxSpeedMetersPerSecond = 4.2;
+        public static final double kMaxSpeedMetersPerSecond = 5.5;
         public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
         public static final double kDirectionSlewRate = 1.2; // radians per second
@@ -80,7 +101,6 @@ public final class Constants {
         public static final int kFrontRightTurningCanId = 14;
         public static final int kRearRightTurningCanId = 16;
 
-        public static final boolean kGyroReversed = false;
         public static final int kGyroCanId = 1;
     }
 
@@ -99,7 +119,7 @@ public final class Constants {
 
         // Calculations required for driving motor conversion factors and feed forward
         public static final double kDrivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60;
-        public static final double kWheelDiameterMeters = 0.0762;
+        public static final double kWheelDiameterMeters = Units.inchesToMeters(3);
         public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
         // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
         // teeth on the bevel pinion
@@ -146,7 +166,7 @@ public final class Constants {
     }
 
     public static final class NeoMotorConstants {
-        public static final double kFreeSpeedRpm = 5676;
+        public static final double kFreeSpeedRpm = 6784;
     }
 
     public static final class IntakeConstants {

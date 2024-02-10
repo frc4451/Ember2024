@@ -10,12 +10,15 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import org.littletonrobotics.urcl.URCL;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.AdvantageKitConstants;
-import frc.robot.subsystems.pivot.PivotLocation;
+import frc.utils.VirtualSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -27,6 +30,7 @@ import frc.robot.subsystems.pivot.PivotLocation;
  * project.
  */
 public class Robot extends LoggedRobot {
+    private Command m_autoCommand;
     private RobotContainer m_robotContainer;
 
     /**
@@ -73,7 +77,10 @@ public class Robot extends LoggedRobot {
                 break;
         }
 
+        DriverStation.silenceJoystickConnectionWarning(true);
+
         // Start AdvantageKit Logger
+        Logger.registerURCL(URCL.startExternal());
         Logger.start();
 
         m_robotContainer = new RobotContainer();
@@ -91,6 +98,7 @@ public class Robot extends LoggedRobot {
      */
     @Override
     public void robotPeriodic() {
+        VirtualSubsystem.runPeriodically();
         CommandScheduler.getInstance().run();
         // Runs the Scheduler. This is responsible for polling buttons, adding
         // newly-scheduled
@@ -106,11 +114,22 @@ public class Robot extends LoggedRobot {
         SmartDashboard.putNumber("Y", m_robotContainer.m_robotDrive.getPose().getY());
         SmartDashboard.putNumber("Pose Rotation", m_robotContainer.m_robotDrive.getPose().getRotation().getDegrees());
         SmartDashboard.putNumber("Gyro Heading", m_robotContainer.m_robotDrive.getHeading().getDegrees());
-        SmartDashboard.putBoolean("Roller Beambreak Activated", m_robotContainer.m_rollers.isBeamBreakActivated());
-        SmartDashboard.putNumber("Arm Pivot Deg", m_robotContainer.m_pivot.getAngle().getDegrees());
-        SmartDashboard.putNumber("Arm Pivot Rad", m_robotContainer.m_pivot.getAngle().getRadians());
-        SmartDashboard.putNumber("Arm Pivot Setpoint Deg", m_robotContainer.m_pivot.getSetpoint().getDegrees());
+        // SmartDashboard.putBoolean("Roller Beambreak Activated",
+        // m_robotContainer.m_rollers.isBeamBreakActivated());
+        // SmartDashboard.putNumber("Arm Pivot Deg",
+        // m_robotContainer.m_pivot.getAngle().getDegrees());
+        // SmartDashboard.putNumber("Arm Pivot Rad",
+        // m_robotContainer.m_pivot.getAngle().getRadians());
+        // SmartDashboard.putNumber("Arm Pivot Setpoint Deg",
+        // m_robotContainer.m_pivot.getSetpoint().getDegrees());
         SmartDashboard.putData("Field", m_robotContainer.field);
+
+        // if (m_robotContainer.m_autoChooser.get() != new InstantCommand()) {
+        // String autonomousName = m_robotContainer.m_autoChooser.get().getName();
+        // Logger.recordOutput("Autonomous/AutoName", autonomousName);
+        // Logger.recordOutput("Autonomous/StartingPose",
+        // PathPlannerAuto.getStaringPoseFromAutoFile(autonomousName));
+        // }
     }
 
     /** This function is called once each time the robot enters Disabled mode. */
@@ -120,10 +139,10 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledPeriodic() {
-        if (m_robotContainer.m_driverController.b().getAsBoolean()) {
+        if (m_robotContainer.m_driverController.getHID().getBButtonPressed()) {
             m_robotContainer.m_robotDrive.zeroHeading();
             m_robotContainer.m_robotDrive.resetPose(new Pose2d());
-            m_robotContainer.m_pivot.setAngle(PivotLocation.INITIAL.angle);
+            // m_robotContainer.m_pivot.setAngle(PivotLocation.INITIAL.angle);
         }
     }
 
@@ -133,6 +152,11 @@ public class Robot extends LoggedRobot {
      */
     @Override
     public void autonomousInit() {
+        m_autoCommand = m_robotContainer.m_autoChooser.get();
+
+        if (m_autoCommand != null) {
+            m_autoCommand.schedule();
+        }
     }
 
     /** This function is called periodically during autonomous. */
@@ -159,5 +183,20 @@ public class Robot extends LoggedRobot {
     /** This function is called periodically during test mode. */
     @Override
     public void testPeriodic() {
+    }
+
+    @Override
+    public void simulationInit() {
+        // Add all the AprilTags inside the tag layout as visible targets to this
+        // simulated field.
+        VisionConstants.VISION_SYSTEM_SIM
+                .ifPresent(visionSystemSim -> visionSystemSim.addAprilTags(VisionConstants.FIELD_LAYOUT));
+
+        m_robotContainer.m_vision.robotPoseSupplier = m_robotContainer.m_robotDrive::getPose;
+    }
+
+    @Override
+    public void simulationPeriodic() {
+        VirtualSubsystem.runSimulationPeriodically();
     }
 }

@@ -1,0 +1,37 @@
+{
+  "name": "toggle-sendable-plugin",
+  "private": true,
+  "version": "0.1.0",
+  "displayName": "toggle-sendable",
+  "description": "Toggle Button Group using SendableChooser",
+  "author": "FRC 4451 - ROBOTZ Garage",
+  "email": "judsonjames96@gmail.com",
+  "license": "MIT",
+  "type": "module",
+  "files": [
+    "plugin"
+  ],
+  "main": "./plugin/index.js",
+  "module": "./plugin/index.js",
+  "types": "./plugin/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./plugin/index.d.ts",
+      "import": "./plugin/index.js"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "lit": "^2.7.6",
+    "@frc-web-components/app": "^0.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5",
+    "vite-plugin-dts": "^3.7.0"
+  }
+}
