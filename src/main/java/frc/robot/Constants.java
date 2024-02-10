@@ -162,6 +162,7 @@ public final class Constants {
     public static final class OIConstants {
         public static final int kDriverControllerPort = 0;
         public static final int kOperatorControllerPort = 1;
+        public static final int kProgrammerControllerPort = 2;
         public static final double kDriveDeadband = 0.05;
     }
 
@@ -177,7 +178,28 @@ public final class Constants {
 
         public static final int kTopRollerCanId = 20;
         public static final int kBottomRollerCanId = 21;
-        public static final int kBeamBreakChannel = 0;
+        public static final int kBeamBreakChannel = 7;
+
+        // public static final double kPivotMinDegrees = 10.0;
+        // public static final double kPivotMaxDegrees = 167.25;
+
+        public static final double kPivotReduction = 240.0;
+
+        public static final int kPivotCanId = 22;
+        public static final double kPivotVelocityRadiansPerSecond = Units.degreesToRadians(15.0);
+
+        public static final double kPivotP = 0.3;
+        public static final double kPivotI = 0.0;
+        public static final double kPivotD = 0.0;
+    }
+
+    public static final class AmptrapConstants {
+        public static final CurrentLimitsConfigs rollerCurrentConfig = new CurrentLimitsConfigs()
+                .withSupplyCurrentLimit(30.0)
+                .withSupplyCurrentThreshold(35.0)
+                .withSupplyTimeThreshold(0.5);
+
+        public static final int kBeamBreakCanID = 0;
 
         // public static final double kPivotMinDegrees = 10.0;
         // public static final double kPivotMaxDegrees = 167.25;
@@ -195,6 +217,8 @@ public final class Constants {
     public static final class ShooterConstants {
         public static final int kLeftShooterCanID = 4;
         public static final int kRightShooterCanID = 3;
+        public static final int kFeederCanID = -25;
+        public static final int kBeamBreakCanID = 0;
 
     }
 }

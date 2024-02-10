@@ -14,4 +14,9 @@ public class BeambreakSim implements BeambreakIO {
         inputs.isConnected = beamBreakSim.getInitialized();
         inputs.isActivated = !beamBreakSim.getValue();
     }
+
+    @Override
+    public void overrideActivated(boolean isActivated) {
+        this.beamBreakSim.setValue(!isActivated);
+    }
 }

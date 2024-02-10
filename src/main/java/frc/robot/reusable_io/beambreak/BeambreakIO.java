@@ -11,4 +11,7 @@ public interface BeambreakIO {
 
     public default void updateInputs(BeambreakIOInputs inputs) {
     }
+
+    public default void overrideActivated(boolean isActivated) {
+    }
 }

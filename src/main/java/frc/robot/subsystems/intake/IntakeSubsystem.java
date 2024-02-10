@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AdvantageKitConstants;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.reusable_io.beambreak.BeambreakDigitalInput;
 import frc.robot.reusable_io.beambreak.BeambreakIO;
 import frc.robot.reusable_io.beambreak.BeambreakIOInputsAutoLogged;
@@ -28,12 +29,12 @@ public class IntakeSubsystem extends SubsystemBase {
             case REAL:
                 top = new IntakeIOTalonFX(1, true);
                 bottom = new IntakeIOTalonFX(2, false);
-                beambreak = new BeambreakDigitalInput(0);
+                beambreak = new BeambreakDigitalInput(IntakeConstants.kBeamBreakChannel);
                 break;
             case SIM:
-                top = new IntakeIOSim();
-                bottom = new IntakeIOSim();
-                beambreak = new BeambreakSim(0);
+                top = new IntakeSim();
+                bottom = new IntakeSim();
+                beambreak = new BeambreakSim(IntakeConstants.kBeamBreakChannel);
                 break;
             case REPLAY:
             default:
@@ -43,6 +44,7 @@ public class IntakeSubsystem extends SubsystemBase {
                 };
                 beambreak = new BeambreakIO() {
                 };
+
                 break;
         }
     }
@@ -71,9 +73,21 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public Command stopCommand() {
-        return new ParallelCommandGroup(
-                new InstantCommand(() -> this.top.setVoltage(0.0)),
-                new InstantCommand(() -> this.bottom.setVoltage(0.0)));
+        return setVelocityCommand(0, 0);
+    }
+
+    // For testing and sim
+    public Command setBeamBreakActivatedCommand(boolean value) {
+        return new InstantCommand(() -> {
+            this.beambreak.overrideActivated(value);
+        });
+    }
+
+    // For testing and sim
+    public Command toggleBeamBrakeActivatedCommand() {
+        return new InstantCommand(() -> {
+            this.beambreak.overrideActivated(!this.beambreakIsActivated().getAsBoolean());
+        });
     }
 
     public Trigger beambreakIsActivated() {

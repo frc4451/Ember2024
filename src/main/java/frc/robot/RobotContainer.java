@@ -25,9 +25,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
-import frc.robot.commands.PathfindToTarget;
 import frc.robot.commands.PositionWithAmp;
-import frc.robot.commands.StrafeAndAimToAprilTag;
 import frc.robot.commands.StrafeAndAimToSpeaker;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.pathplanner.PathPlannerUtils;
@@ -52,24 +50,25 @@ public class RobotContainer {
     public final PowerDistribution pdp = new PowerDistribution(Constants.pdp, ModuleType.kCTRE);
     public final VisionSubsystem m_vision = new VisionSubsystem();
 
-    // The robot's subsystems
+    // ROBOT SUBSYSTEMS
     public final DriveSubsystem m_robotDrive = new DriveSubsystem(m_vision::pollLatestVisionMeasurement);
 
     public final IntakeSubsystem m_intake = new IntakeSubsystem();
-
-    // public final RollerSubsystem m_rollers = new RollerSubsystem();
 
     public final PivotSubsystem m_pivot = new PivotSubsystem();
 
     public final ShooterSubsystem m_shooter = new ShooterSubsystem();
 
-    // public final MiscSubsystem m_misc = new MiscSubsystem();
-
+    // CONTROLLERS
     final CommandCustomController m_driverController = new CommandCustomController(
             OIConstants.kDriverControllerPort);
 
     final CommandCustomController m_operatorController = new CommandCustomController(
             OIConstants.kOperatorControllerPort);
+
+    // For tests only
+    final CommandCustomController m_programmerController = new CommandCustomController(
+            OIConstants.kProgrammerControllerPort);
 
     // private final SendableChooser<Command> autoChooser;
     public final LoggedDashboardChooser<Command> m_autoChooser;
@@ -106,11 +105,6 @@ public class RobotContainer {
                         true,
                         true));
         m_pivot.setDefaultCommand(m_pivot.pivotPIDCommand());
-        // m_pivot.setDefaultCommand(new RunCommand(() -> {
-        // m_pivot.runAtPercent(m_operatorController.getRightY());
-        // }, m_pivot));
-
-        // m_pivot.setDefaultCommand(m_pivot.getPivotCommand());
 
         // Build an auto chooser. You can make a default auto by passing in their name
         m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
@@ -210,37 +204,41 @@ public class RobotContainer {
      * {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-        // m_driverController.rightBumper()
-        // .whileTrue(new RunCommand(
-        // () -> m_robotDrive.setCross(),
-        // m_robotDrive));
-
-        m_driverController.b()
-                .onTrue(m_shooter.setVelocityCommand(60.0, 60.0))
-                .onFalse(m_shooter.stopCommand());
-        m_driverController.y()
-                .onTrue(m_shooter.setVelocityCommand(10.0, 10.0))
-                .onFalse(m_shooter.stopCommand());
-
-        // 60 rps shot, 10 feet out, 40 degrees shooter angle ()
-        m_driverController.x()
-                .onTrue(m_shooter.setVelocityCommand(65.0, 65.0))
-                .onFalse(m_shooter.stopCommand());
-
-        //
-        m_driverController.a()
-                .onTrue(m_shooter.setVelocityCommand(85.0, 70.0))
-                .onFalse(m_shooter.stopCommand());
-
-        // m_driverController.rightBumper()
-        // .onTrue(m_misc.setVelocityCommand(20.0))
-        // .onFalse(m_misc.stopCommand());
+        SmartDashboard.putData("Run Chosen Path", Commands.deferredProxy(
+                () -> m_pathChooser.get()));
 
         m_driverController.rightBumper()
                 .whileTrue(new RunCommand(
                         () -> m_robotDrive.setCross(),
                         m_robotDrive));
+        m_driverController.povUp()
+                .whileTrue(
+                        Commands.deferredProxy(
+                                () -> m_pathChooser.get()));
+        m_driverController.x()
+                .onTrue(m_intake.setVelocityCommand(20, 20))
+                .onFalse(m_intake.stopCommand());
+        m_driverController.y()
+                .onTrue(m_intake.setVelocityCommand(50, 50))
+                .onFalse(m_intake.stopCommand());
+        m_driverController.a() /* Don't need to do this. Use for has piece lights */
+                .and(m_intake.beambreakIsActivated().negate())
+                .onTrue(m_intake.setVelocityCommand(20, 20))
+                .onFalse(m_intake.stopCommand());
 
+        // 60 rps shot, 10 feet out, 40 degrees shooter angle ()
+        m_operatorController.x() /* 65rps 10ft 36degrees */
+                .onTrue(m_shooter.setVelocityCommand(65.0, 65.0, 0))
+                .onFalse(m_shooter.stopCommand());
+        m_operatorController.y() /* 10rps amp */
+                .onTrue(m_shooter.setVelocityCommand(10.0, 10.0, 0))
+                .onFalse(m_shooter.stopCommand());
+        m_operatorController.a() /* 21ft shot and preferably use for other distances */
+                .onTrue(m_shooter.setVelocityCommand(85.0, 70.0, 0))
+                .onFalse(m_shooter.stopCommand());
+        m_operatorController.b()
+                .onTrue(m_shooter.setVelocityCommand(60.0, 60.0, 0))
+                .onFalse(m_shooter.stopCommand());
         m_operatorController.rightY()
                 .whileTrue(m_pivot.runPercentCommand(() -> -m_operatorController.getRightY() / 2.0))
                 .onFalse(m_pivot.setSetpointCurrentCommand());
@@ -248,57 +246,13 @@ public class RobotContainer {
         m_operatorController.povRight().onTrue(m_pivot.setSetpointCommand(PivotLocation.k160.angle));
         m_operatorController.povDown().onTrue(m_pivot.setSetpointCommand(PivotLocation.k45.angle));
         m_operatorController.povLeft().onTrue(m_pivot.setSetpointCommand(PivotLocation.k90.angle));
-        m_driverController.povUp()
-                .whileTrue(
-                        Commands.deferredProxy(
-                                () -> m_pathChooser.get()));
 
-        SmartDashboard.putData("Run Chosen Path", Commands.deferredProxy(
-                () -> m_pathChooser.get()));
-
-        m_driverController
-                .rightBumper()
-                .whileTrue(
-                        Commands.defer(
-                                () -> new PathfindToTarget(
-                                        m_vision::getClosestObject,
-                                        m_robotDrive),
-                                Set.of(m_robotDrive)));
-        m_driverController.leftBumper()
-                .whileTrue(
-                        Commands.defer(() -> new StrafeAndAimToAprilTag(
-                                () -> -m_driverController.getLeftY(),
-                                () -> -m_driverController.getLeftX(),
-                                m_vision::getVisibleAprilTags,
-                                3,
-                                m_robotDrive),
-                                Set.of(m_robotDrive)));
-        // m_driverController.leftTrigger()
-        // .whileTrue(
-        // Commands.defer(() -> new StrafeAndAimToSpeaker(
-        // () -> -m_driverController.getLeftY(),
-        // () -> -m_driverController.getLeftX(),
-        // m_vision::getVisibleAprilTags,
-        // m_robotDrive),
-        // Set.of(m_robotDrive)));
-        // m_driverController.rightTrigger()
-        // .whileTrue(
-        // Commands.defer(() -> new PositionWithAmp(
-        // () -> -m_driverController.getLeftX(),
-        // m_vision::getVisibleAprilTags,
-        // m_robotDrive),
-        // Set.of(m_robotDrive)));
-        m_driverController.y()
-                .onTrue(m_intake.setVelocityCommand(50, 50))
-                .onFalse(m_intake.stopCommand());
-        m_driverController.x()
-                .onTrue(m_intake.setVelocityCommand(20, 20))
-                .onFalse(m_intake.stopCommand());
-        m_driverController.a()
-                .and(m_intake.beambreakIsActivated())
-                .onTrue(m_intake.setVelocityCommand(20, 20))
-                .onFalse(m_intake.stopCommand());
-        ;
+        // TEST CONTROLLER
+        m_programmerController.x()
+                .onTrue(m_intake.toggleBeamBrakeActivatedCommand());
+        m_programmerController.a()
+                .onTrue(m_shooter.setVelocityCommand(60.0, 60.0, 0.0))
+                .onFalse(m_shooter.stopCommand());
     }
 
 }

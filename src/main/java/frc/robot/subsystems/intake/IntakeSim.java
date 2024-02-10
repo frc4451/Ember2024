@@ -4,7 +4,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 
-public class IntakeIOSim implements IntakeIO {
+public class IntakeSim implements IntakeIO {
     // private static double momentOfInertiaKgMSquared = 0.0000032998;
     private static double momentOfInertiaKgMSquared = 1.0;
 
