@@ -264,7 +264,7 @@ public class RobotContainer {
                 .onTrue(m_intake.setVelocityCommand(20, 20))
                 .onFalse(m_intake.stopCommand());
         m_driverController.a()
-                .and(m_intake.beamBreakIsNotCovered())
+                .and(m_intake.beambreakIsActivated())
                 .onTrue(m_intake.setVelocityCommand(20, 20))
                 .onFalse(m_intake.stopCommand());
         ;

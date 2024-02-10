@@ -9,15 +9,15 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AdvantageKitConstants;
-import frc.robot.reusable_io.beambreak.BeambreakIOInputsAutoLogged;
-import frc.robot.reusable_io.beambreak.BeambreakIO;
 import frc.robot.reusable_io.beambreak.BeambreakDigitalInput;
+import frc.robot.reusable_io.beambreak.BeambreakIO;
+import frc.robot.reusable_io.beambreak.BeambreakIOInputsAutoLogged;
 import frc.robot.reusable_io.beambreak.BeambreakSim;
 
 public class IntakeSubsystem extends SubsystemBase {
-    private final IntakeIO topIO;
-    private final IntakeIO bottomIO;
-    private final BeambreakIO beamBreakIO;
+    private final IntakeIO top;
+    private final IntakeIO bottom;
+    private final BeambreakIO beambreak;
 
     private final IntakeIOInputsAutoLogged topInputs = new IntakeIOInputsAutoLogged();
     private final IntakeIOInputsAutoLogged bottomInputs = new IntakeIOInputsAutoLogged();
@@ -26,22 +26,22 @@ public class IntakeSubsystem extends SubsystemBase {
     public IntakeSubsystem() {
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
-                topIO = new IntakeIOTalonFX(1, true);
-                bottomIO = new IntakeIOTalonFX(2, false);
-                beamBreakIO = new BeambreakDigitalInput(0);
+                top = new IntakeIOTalonFX(1, true);
+                bottom = new IntakeIOTalonFX(2, false);
+                beambreak = new BeambreakDigitalInput(0);
                 break;
             case SIM:
-                topIO = new IntakeIOSim();
-                bottomIO = new IntakeIOSim();
-                beamBreakIO = new BeambreakSim(0);
+                top = new IntakeIOSim();
+                bottom = new IntakeIOSim();
+                beambreak = new BeambreakSim(0);
                 break;
             case REPLAY:
             default:
-                topIO = new IntakeIO() {
+                top = new IntakeIO() {
                 };
-                bottomIO = new IntakeIO() {
+                bottom = new IntakeIO() {
                 };
-                beamBreakIO = new BeambreakIO() {
+                beambreak = new BeambreakIO() {
                 };
                 break;
         }
@@ -49,9 +49,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        this.topIO.updateInputs(this.topInputs);
-        this.bottomIO.updateInputs(this.bottomInputs);
-        this.beamBreakIO.updateInputs(this.beambreakInputs);
+        this.top.updateInputs(this.topInputs);
+        this.bottom.updateInputs(this.bottomInputs);
+        this.beambreak.updateInputs(this.beambreakInputs);
 
         Logger.processInputs("Intake/Top", this.topInputs);
         Logger.processInputs("Intake/Bottom", this.topInputs);
@@ -59,24 +59,24 @@ public class IntakeSubsystem extends SubsystemBase {
 
         // Make sure the motor actually stops when the robot disabled
         if (DriverStation.isDisabled()) {
-            this.topIO.setVelocity(0.0);
-            this.bottomIO.setVelocity(0.0);
+            this.top.setVelocity(0.0);
+            this.bottom.setVelocity(0.0);
         }
     }
 
     public Command setVelocityCommand(double topSpeed, double bottomSpeed) {
         return new ParallelCommandGroup(
-                new InstantCommand(() -> this.topIO.setVelocity(topSpeed)),
-                new InstantCommand(() -> this.bottomIO.setVelocity(bottomSpeed)));
+                new InstantCommand(() -> this.top.setVelocity(topSpeed)),
+                new InstantCommand(() -> this.bottom.setVelocity(bottomSpeed)));
     }
 
     public Command stopCommand() {
         return new ParallelCommandGroup(
-                new InstantCommand(() -> this.topIO.setVelocity(0.0)),
-                new InstantCommand(() -> this.bottomIO.setVelocity(0.0)));
+                new InstantCommand(() -> this.top.setVoltage(0.0)),
+                new InstantCommand(() -> this.bottom.setVoltage(0.0)));
     }
 
-    public Trigger beamBreakIsNotCovered() {
+    public Trigger beambreakIsActivated() {
         return new Trigger(() -> this.beambreakInputs.isActivated);
     }
 }
