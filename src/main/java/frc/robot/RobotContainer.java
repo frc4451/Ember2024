@@ -13,6 +13,8 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -31,6 +33,9 @@ import frc.robot.commands.TeleopDrive;
 import frc.robot.pathplanner.PathPlannerUtils;
 import frc.robot.pathplanner.paths.PathPlannerPaths;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.pivot.PivotLocation;
+import frc.robot.subsystems.pivot.PivotSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.utils.CommandCustomController;
 
@@ -43,14 +48,17 @@ import frc.utils.CommandCustomController;
 public class RobotContainer {
     public final Field2d field = new Field2d();
 
+    public final PowerDistribution pdp = new PowerDistribution(Constants.pdp, ModuleType.kCTRE);
     public final VisionSubsystem m_vision = new VisionSubsystem();
 
     // The robot's subsystems
     public final DriveSubsystem m_robotDrive = new DriveSubsystem(m_vision::pollLatestVisionMeasurement);
 
+    public final IntakeSubsystem m_intake = new IntakeSubsystem();
+
     // public final RollerSubsystem m_rollers = new RollerSubsystem();
 
-    // public final PivotSubsystem m_pivot = new PivotSubsystem();
+    public final PivotSubsystem m_pivot = new PivotSubsystem();
 
     final CommandCustomController m_driverController = new CommandCustomController(
             OIConstants.kDriverControllerPort);
@@ -92,7 +100,7 @@ public class RobotContainer {
                         () -> -m_driverController.getRightX(),
                         true,
                         true));
-
+        m_pivot.setDefaultCommand(m_pivot.pivotPIDCommand());
         // m_pivot.setDefaultCommand(new RunCommand(() -> {
         // m_pivot.runAtPercent(m_operatorController.getRightY());
         // }, m_pivot));
@@ -202,6 +210,13 @@ public class RobotContainer {
                         () -> m_robotDrive.setCross(),
                         m_robotDrive));
 
+        m_operatorController.rightY()
+                .whileTrue(m_pivot.runPercentCommand(() -> -m_operatorController.getRightY() / 2.0))
+                .onFalse(m_pivot.setSetpointCurrentCommand());
+        m_operatorController.povUp().onTrue(m_pivot.setSetpointCommand(PivotLocation.k0.angle));
+        m_operatorController.povRight().onTrue(m_pivot.setSetpointCommand(PivotLocation.k160.angle));
+        m_operatorController.povDown().onTrue(m_pivot.setSetpointCommand(PivotLocation.k45.angle));
+        m_operatorController.povLeft().onTrue(m_pivot.setSetpointCommand(PivotLocation.k90.angle));
         m_driverController.povUp()
                 .whileTrue(
                         Commands.deferredProxy(
@@ -242,5 +257,17 @@ public class RobotContainer {
         // m_vision::getVisibleAprilTags,
         // m_robotDrive),
         // Set.of(m_robotDrive)));
+        m_driverController.y()
+                .onTrue(m_intake.setVelocityCommand(50, 50))
+                .onFalse(m_intake.stopCommand());
+        m_driverController.x()
+                .onTrue(m_intake.setVelocityCommand(20, 20))
+                .onFalse(m_intake.stopCommand());
+        m_driverController.a()
+                .and(m_intake.beamBreakIsNotCovered())
+                .onTrue(m_intake.setVelocityCommand(20, 20))
+                .onFalse(m_intake.stopCommand());
+        ;
     }
+
 }
