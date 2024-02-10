@@ -60,6 +60,10 @@ public class RobotContainer {
 
     public final PivotSubsystem m_pivot = new PivotSubsystem();
 
+    public final ShooterSubsystem m_shooter = new ShooterSubsystem();
+
+    // public final MiscSubsystem m_misc = new MiscSubsystem();
+
     final CommandCustomController m_driverController = new CommandCustomController(
             OIConstants.kDriverControllerPort);
 
@@ -205,6 +209,32 @@ public class RobotContainer {
      * {@link JoystickButton}.
      */
     private void configureButtonBindings() {
+        // m_driverController.rightBumper()
+        // .whileTrue(new RunCommand(
+        // () -> m_robotDrive.setCross(),
+        // m_robotDrive));
+
+        m_driverController.b()
+                .onTrue(m_shooter.setVelocityCommand(60.0, 60.0))
+                .onFalse(m_shooter.stopCommand());
+        m_driverController.y()
+                .onTrue(m_shooter.setVelocityCommand(10.0, 10.0))
+                .onFalse(m_shooter.stopCommand());
+
+        // 60 rps shot, 10 feet out, 40 degrees shooter angle ()
+        m_driverController.x()
+                .onTrue(m_shooter.setVelocityCommand(65.0, 65.0))
+                .onFalse(m_shooter.stopCommand());
+
+        //
+        m_driverController.a()
+                .onTrue(m_shooter.setVelocityCommand(85.0, 70.0))
+                .onFalse(m_shooter.stopCommand());
+
+        // m_driverController.rightBumper()
+        // .onTrue(m_misc.setVelocityCommand(20.0))
+        // .onFalse(m_misc.stopCommand());
+
         m_driverController.rightBumper()
                 .whileTrue(new RunCommand(
                         () -> m_robotDrive.setCross(),
