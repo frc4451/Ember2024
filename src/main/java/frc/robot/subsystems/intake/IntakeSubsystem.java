@@ -13,7 +13,7 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.reusable_io.beambreak.BeambreakDigitalInput;
 import frc.robot.reusable_io.beambreak.BeambreakIO;
 import frc.robot.reusable_io.beambreak.BeambreakIOInputsAutoLogged;
-import frc.robot.reusable_io.beambreak.BeambreakSim;
+import frc.robot.reusable_io.beambreak.BeambreakIOSim;
 
 public class IntakeSubsystem extends SubsystemBase {
     private final IntakeIO top;
@@ -32,9 +32,9 @@ public class IntakeSubsystem extends SubsystemBase {
                 beambreak = new BeambreakDigitalInput(IntakeConstants.kBeamBreakChannel);
                 break;
             case SIM:
-                top = new IntakeSim();
-                bottom = new IntakeSim();
-                beambreak = new BeambreakSim(IntakeConstants.kBeamBreakChannel);
+                top = new IntakeIOSim();
+                bottom = new IntakeIOSim();
+                beambreak = new BeambreakIOSim(IntakeConstants.kBeamBreakChannel);
                 break;
             case REPLAY:
             default:
