@@ -300,9 +300,9 @@ public class RobotContainer {
                 .onTrue(m_intake.setVelocityCommand(20, 20))
                 .onFalse(m_intake.stopCommand());
 
-        m_driverController.povUp().onTrue(new InstantCommand(() -> m_blinkin.setColor(BlinkinColors.SOLID_RED)));
-        m_driverController.povRight().onTrue(new InstantCommand(() -> m_blinkin.setColor(BlinkinColors.SOLID_GREEN)));
-        m_driverController.povDown().onTrue(new InstantCommand(() -> m_blinkin.setColor(BlinkinColors.SOLID_BLUE)));
-        m_driverController.povLeft().onTrue(new InstantCommand(() -> m_blinkin.setColor(BlinkinColors.SOLID_YELLOW)));
+        m_driverController.povUp().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_RED));
+        m_driverController.povRight().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_GREEN));
+        m_driverController.povDown().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_BLUE));
+        m_driverController.povLeft().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_YELLOW));
     }
 }
