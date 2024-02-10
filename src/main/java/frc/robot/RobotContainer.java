@@ -33,7 +33,6 @@ import frc.robot.pathplanner.paths.PathPlannerPaths;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.utils.CommandCustomController;
-import frc.utils.LoggedDashboardButtonFSM;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -64,9 +63,9 @@ public class RobotContainer {
 
     public LoggedDashboardChooser<Command> m_pathChooser;
 
-    public Map<String, Command> laneAssistCommands = new LinkedHashMap<>();
+    public final Map<String, Command> laneAssistCommands = new LinkedHashMap<>();
 
-    public LoggedDashboardButtonFSM m_buttonStateMachine;
+    public LoggedDashboardChooser<Command> m_laneAssistChooser;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -101,8 +100,7 @@ public class RobotContainer {
         // m_pivot.setDefaultCommand(m_pivot.getPivotCommand());
 
         // Build an auto chooser. You can make a default auto by passing in their name
-        m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser",
-                AutoBuilder.buildAutoChooser("Blitzgeist"));
+        m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
     }
 
     /**
@@ -111,7 +109,7 @@ public class RobotContainer {
     private void configureNamedCommands() {
         NamedCommands.registerCommand("Shoot", new InstantCommand());
         NamedCommands.registerCommand("PickUpNote", new InstantCommand());
-
+        NamedCommands.registerCommand("FindNote", new InstantCommand());
     }
 
     /**
@@ -154,19 +152,39 @@ public class RobotContainer {
         Command ampLaneAssistCommand = Commands.defer(() -> new PositionWithAmp(
                 () -> -m_driverController.getLeftX(),
                 m_vision::getVisibleAprilTags,
-                m_robotDrive),
+                m_robotDrive,
+                false),
                 Set.of(m_robotDrive));
 
-        laneAssistCommands.put("Speaker", speakerLaneAssistCommand);
-        laneAssistCommands.put("Amp", ampLaneAssistCommand);
+        Command coopertitionLaneAssistCommand = Commands.defer(() -> new PositionWithAmp(
+                () -> -m_driverController.getLeftX(),
+                m_vision::getVisibleAprilTags,
+                m_robotDrive,
+                true),
+                Set.of(m_robotDrive));
 
-        m_buttonStateMachine = new LoggedDashboardButtonFSM("LaneAssist", laneAssistCommands);
+        String defaultKey = "Speaker Center";
+
+        laneAssistCommands.put("Speaker Center", speakerLaneAssistCommand);
+        laneAssistCommands.put("Speaker Left", speakerLaneAssistCommand);
+        laneAssistCommands.put("Speaker Right", speakerLaneAssistCommand);
+
+        laneAssistCommands.put("Amp", ampLaneAssistCommand);
+        laneAssistCommands.put("Other Amp", coopertitionLaneAssistCommand);
+
+        m_laneAssistChooser = new LoggedDashboardChooser<>("LaneAssist", new SendableChooser<>());
+        laneAssistCommands.forEach((String key, Command command) -> {
+            m_laneAssistChooser.addOption(key, command);
+        });
+
+        m_laneAssistChooser.addDefaultOption(defaultKey,
+                laneAssistCommands.get(defaultKey));
 
         // Each command that we plan to use for 'Lane Assist' should be deferred
         // with their respective subsystems. Once they're deferred, we can then
         // proxy the deferred command to run while the button is held.
         m_driverController.rightTrigger()
-                .whileTrue(Commands.deferredProxy(() -> m_buttonStateMachine.getCurrentCommand()));
+                .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get()));
     }
 
     /**

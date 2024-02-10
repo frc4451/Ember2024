@@ -24,6 +24,10 @@ public enum PathPlannerPaths {
             "Amp",
             new Pose2d(14.70, 8.0, Rotation2d.fromDegrees(90)),
             new Pose2d(1.84, 8.0, Rotation2d.fromDegrees(90))),
+    OTHER_AMP(
+            "Other Amp",
+            new Pose2d(1.84, 8.0, Rotation2d.fromDegrees(90)),
+            new Pose2d(14.70, 8.0, Rotation2d.fromDegrees(90))),
 
     HUMAN_PLAYER(
             "HumanPlayer",

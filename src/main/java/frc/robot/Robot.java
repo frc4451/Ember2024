@@ -12,8 +12,6 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.urcl.URCL;
 
-import com.pathplanner.lib.commands.PathPlannerAuto;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -126,11 +124,12 @@ public class Robot extends LoggedRobot {
         // m_robotContainer.m_pivot.getSetpoint().getDegrees());
         SmartDashboard.putData("Field", m_robotContainer.field);
 
-        if (m_robotContainer.m_autoChooser.get() != null) {
-            String autonomousName = m_robotContainer.m_autoChooser.get().getName();
-            Logger.recordOutput("Autonomous/AutoName", autonomousName);
-            Logger.recordOutput("Autonomous/StartingPose", PathPlannerAuto.getStaringPoseFromAutoFile(autonomousName));
-        }
+        // if (m_robotContainer.m_autoChooser.get() != new InstantCommand()) {
+        // String autonomousName = m_robotContainer.m_autoChooser.get().getName();
+        // Logger.recordOutput("Autonomous/AutoName", autonomousName);
+        // Logger.recordOutput("Autonomous/StartingPose",
+        // PathPlannerAuto.getStaringPoseFromAutoFile(autonomousName));
+        // }
     }
 
     /** This function is called once each time the robot enters Disabled mode. */
