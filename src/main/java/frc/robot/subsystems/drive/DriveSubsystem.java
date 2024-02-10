@@ -40,7 +40,6 @@ public class DriveSubsystem extends SubsystemBase {
     private final SwerveGyroIOInputsAutoLogged m_gyroInputs = new SwerveGyroIOInputsAutoLogged();
 
     // Odometry for tracking robot pose
-    private double[] m_lastModulePositionsMeters = new double[4];
     private Rotation2d m_trackedRotation = new Rotation2d();
     private final SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
             DriveConstants.kDriveKinematics,
@@ -130,16 +129,6 @@ public class DriveSubsystem extends SubsystemBase {
             positions[i] = m_moduleInputs[i].position;
         }
         return positions;
-    }
-
-    public SwerveModulePosition[] getModuleWheelDeltas() {
-        SwerveModulePosition[] output = new SwerveModulePosition[m_moduleInputs.length];
-        for (int i = 0; i < m_moduleInputs.length; i++) {
-            output[i] = new SwerveModulePosition(
-                    m_moduleInputs[i].drivePositionMeters - m_lastModulePositionsMeters[i],
-                    new Rotation2d(m_moduleInputs[i].turnAngularOffsetPositionRad));
-        }
-        return output;
     }
 
     @Override

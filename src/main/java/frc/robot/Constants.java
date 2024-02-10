@@ -27,6 +27,9 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+    public static int pdp = 0;
+
     public static final class AdvantageKitConstants {
         public static enum Mode {
             REAL,
@@ -176,13 +179,17 @@ public final class Constants {
         public static final int kBottomRollerCanId = -1;
         public static final int kBeamBreakChannel = 0;
 
-        public static final double kPivotMinDegrees = 10.0;
-        public static final double kPivotMaxDegrees = 167.25;
+        // public static final double kPivotMinDegrees = 10.0;
+        // public static final double kPivotMaxDegrees = 167.25;
 
         public static final double kPivotReduction = 240.0;
 
         public static final int kPivotCanId = -1;
         public static final double kPivotVelocityRadiansPerSecond = Units.degreesToRadians(15.0);
+
+        public static final double kPivotP = 0.3;
+        public static final double kPivotI = 0.0;
+        public static final double kPivotD = 0.0;
     }
 
     public static final class ShooterConstants {

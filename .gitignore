@@ -180,3 +180,9 @@ ctre_sim/
 
 # Build Constants
 src/main/java/frc/robot/BuildConstants.java
+
+# simgui
+simgui.json
+simgui-ds.json
+simgui-window.json
+networktables.json

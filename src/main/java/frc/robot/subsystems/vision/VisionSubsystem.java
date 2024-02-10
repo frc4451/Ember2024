@@ -7,13 +7,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -39,10 +41,15 @@ public class VisionSubsystem extends VirtualSubsystem {
     }
 
     public static record TargetWithSource(PhotonTrackedTarget target, VisionSource source) {
-        public double getYawRobotRelativeRad() {
-            return Rotation2d.fromDegrees(target.getYaw())
-                    .rotateBy(source.robotToCamera().getRotation().toRotation2d())
-                    .getRadians();
+        public Transform3d getRobotToTarget() {
+            Transform3d cameraToTarget = target.getBestCameraToTarget();
+            Transform3d robotToCamera = source.robotToCamera();
+            Transform3d robotToTarget = robotToCamera.plus(cameraToTarget);
+            return robotToTarget;
+        }
+
+        public Pose3d getTargetPoseFrom(Pose3d poseOrigin) {
+            return poseOrigin.transformBy(getRobotToTarget());
         }
     }
 
