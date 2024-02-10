@@ -4,13 +4,15 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.revrobotics.CANSparkMax.IdleMode;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.pathplanner.lib.path.PathConstraints;
+import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -25,10 +27,43 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+    public static final class AdvantageKitConstants {
+        public static enum Mode {
+            REAL,
+            REPLAY,
+            SIM
+        }
+
+        private static Mode kfakeMode = Mode.SIM;
+
+        public static Mode getMode() {
+            return RobotBase.isReal() ? Mode.REAL : kfakeMode;
+        }
+    }
+
+    public static final class PathPlannerConstants {
+        public static final Alliance DEFAULT_ALLIANCE = Alliance.Blue;
+
+        public static final double kMaxAngularAcceleration = 4 * Math.PI; // This was made up
+        public static final double kMaxAccelerationMetersPerSecondSquared = 3.00; // This was made up
+
+        public static final PathConstraints DEFAULT_PATH_CONSTRAINTS = new PathConstraints(
+                DriveConstants.kMaxSpeedMetersPerSecond,
+                PathPlannerConstants.kMaxAccelerationMetersPerSecondSquared,
+                DriveConstants.kMaxAngularSpeed,
+                5 * Math.PI);
+
+        public static final PathConstraints TEST_PATH_CONSTRAINTS = new PathConstraints(
+                1.0,
+                PathPlannerConstants.kMaxAccelerationMetersPerSecondSquared,
+                DriveConstants.kMaxAngularSpeed,
+                5 * Math.PI);
+    }
+
     public static final class DriveConstants {
         // Driving Parameters - Note that these are not the maximum capable speeds of
         // the robot, rather the allowed maximum speeds
-        public static final double kMaxSpeedMetersPerSecond = 4.2;
+        public static final double kMaxSpeedMetersPerSecond = 5.5;
         public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
         public static final double kDirectionSlewRate = 1.2; // radians per second
@@ -63,7 +98,6 @@ public final class Constants {
         public static final int kFrontRightTurningCanId = 14;
         public static final int kRearRightTurningCanId = 16;
 
-        public static final boolean kGyroReversed = false;
         public static final int kGyroCanId = 1;
     }
 
@@ -82,7 +116,7 @@ public final class Constants {
 
         // Calculations required for driving motor conversion factors and feed forward
         public static final double kDrivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60;
-        public static final double kWheelDiameterMeters = 0.0762;
+        public static final double kWheelDiameterMeters = Units.inchesToMeters(3);
         public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
         // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
         // teeth on the bevel pinion
@@ -128,31 +162,15 @@ public final class Constants {
         public static final double kDriveDeadband = 0.05;
     }
 
-    public static final class AutoConstants {
-        public static final double kMaxSpeedMetersPerSecond = 3;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-        public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
-        public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
-
-        public static final double kPXController = 1;
-        public static final double kPYController = 1;
-        public static final double kPThetaController = 1;
-
-        // Constraint for the motion profiled robot angle controller
-        public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
-                kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
-    }
-
     public static final class NeoMotorConstants {
-        public static final double kFreeSpeedRpm = 5676;
+        public static final double kFreeSpeedRpm = 6784;
     }
 
     public static final class IntakeConstants {
-        public static final SupplyCurrentLimitConfiguration rollerCurrentConfig = new SupplyCurrentLimitConfiguration(
-                true,
-                30.0,
-                35.0,
-                0.5);
+        public static final CurrentLimitsConfigs rollerCurrentConfig = new CurrentLimitsConfigs()
+                .withSupplyCurrentLimit(30.0)
+                .withSupplyCurrentThreshold(35.0)
+                .withSupplyTimeThreshold(0.5);
 
         public static final int kTopRollerCanId = 2;
         public static final int kBottomRollerCanId = 3;
@@ -160,6 +178,8 @@ public final class Constants {
 
         public static final double kPivotMinDegrees = 10.0;
         public static final double kPivotMaxDegrees = 167.25;
+
+        public static final double kPivotReduction = 240.0;
 
         public static final int kPivotCanId = 4;
         public static final double kPivotVelocityRadiansPerSecond = Units.degreesToRadians(15.0);
