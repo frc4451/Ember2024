@@ -33,6 +33,7 @@ import frc.robot.commands.TeleopDrive;
 import frc.robot.pathplanner.PathPlannerUtils;
 import frc.robot.pathplanner.paths.PathPlannerPaths;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.pivot.PivotLocation;
 import frc.robot.subsystems.pivot.PivotSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
@@ -52,6 +53,8 @@ public class RobotContainer {
 
     // The robot's subsystems
     public final DriveSubsystem m_robotDrive = new DriveSubsystem(m_vision::pollLatestVisionMeasurement);
+
+    public final IntakeSubsystem m_intake = new IntakeSubsystem();
 
     // public final RollerSubsystem m_rollers = new RollerSubsystem();
 
@@ -254,6 +257,17 @@ public class RobotContainer {
         // m_vision::getVisibleAprilTags,
         // m_robotDrive),
         // Set.of(m_robotDrive)));
+        m_driverController.y()
+                .onTrue(m_intake.setVelocityCommand(50, 50))
+                .onFalse(m_intake.stopCommand());
+        m_driverController.x()
+                .onTrue(m_intake.setVelocityCommand(20, 20))
+                .onFalse(m_intake.stopCommand());
+        m_driverController.a()
+                .and(m_intake.beamBreakIsNotCovered())
+                .onTrue(m_intake.setVelocityCommand(20, 20))
+                .onFalse(m_intake.stopCommand());
+        ;
     }
 
 }
