@@ -33,7 +33,7 @@ public class AmptrapSubsystem extends SubsystemBase {
                 io = new AmptrapIOTalonFX();
                 break;
             case SIM:
-                io = new AmptrapSim();
+                io = new AmptrapIOSim();
                 break;
             case REPLAY:
             default:

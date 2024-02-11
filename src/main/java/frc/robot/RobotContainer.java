@@ -13,8 +13,6 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -25,11 +23,14 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.PathfindToTarget;
 import frc.robot.commands.PositionWithAmp;
 import frc.robot.commands.StrafeAndAimToSpeaker;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.pathplanner.PathPlannerUtils;
 import frc.robot.pathplanner.paths.PathPlannerPaths;
+import frc.robot.subsystems.blinkin.BlinkinColors;
+import frc.robot.subsystems.blinkin.BlinkinSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.pivot.PivotLocation;
@@ -47,7 +48,6 @@ import frc.utils.CommandCustomController;
 public class RobotContainer {
     public final Field2d field = new Field2d();
 
-    public final PowerDistribution pdp = new PowerDistribution(Constants.pdp, ModuleType.kCTRE);
     public final VisionSubsystem m_vision = new VisionSubsystem();
 
     // ROBOT SUBSYSTEMS
@@ -59,7 +59,10 @@ public class RobotContainer {
 
     public final ShooterSubsystem m_shooter = new ShooterSubsystem();
 
-    // CONTROLLERS
+    // public final MiscSubsystem m_misc = new MiscSubsystem();
+
+    public final BlinkinSubsystem m_blinkin = new BlinkinSubsystem();
+
     final CommandCustomController m_driverController = new CommandCustomController(
             OIConstants.kDriverControllerPort);
 
@@ -253,6 +256,30 @@ public class RobotContainer {
         m_programmerController.a()
                 .onTrue(m_shooter.setVelocityCommand(60.0, 60.0, 0.0))
                 .onFalse(m_shooter.stopCommand());
-    }
 
+        m_driverController
+                .rightBumper()
+                .whileTrue(
+                        Commands.defer(
+                                () -> new PathfindToTarget(
+                                        m_vision::getClosestObject,
+                                        m_robotDrive),
+                                Set.of(m_robotDrive)));
+
+        m_driverController.y()
+                .onTrue(m_intake.setVelocityCommand(50, 50))
+                .onFalse(m_intake.stopCommand());
+        m_driverController.x()
+                .onTrue(m_intake.setVelocityCommand(20, 20))
+                .onFalse(m_intake.stopCommand());
+        m_driverController.a()
+                .and(m_intake.beambreakIsActivated())
+                .onTrue(m_intake.setVelocityCommand(20, 20))
+                .onFalse(m_intake.stopCommand());
+
+        m_driverController.povUp().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_RED));
+        m_driverController.povRight().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_GREEN));
+        m_driverController.povDown().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_BLUE));
+        m_driverController.povLeft().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_YELLOW));
+    }
 }
