@@ -168,14 +168,14 @@ public class RobotContainer {
                 Set.of(m_robotDrive));
 
         Command stageAmpCommand = Commands.defer(() -> new PositionWithStageSingleClimb(
-                () -> -m_driverController.getLeftX(),
+                () -> -m_driverController.getLeftY(),
                 m_vision::getVisibleAprilTags,
                 StageTags.AMP,
                 m_robotDrive),
                 Set.of(m_robotDrive));
 
         Command stageCenterCommand = Commands.defer(() -> new PositionWithStageSingleClimb(
-                () -> -m_driverController.getLeftX(),
+                () -> -m_driverController.getLeftY(),
                 m_vision::getVisibleAprilTags,
                 StageTags.CENTER,
                 m_robotDrive),
@@ -209,6 +209,8 @@ public class RobotContainer {
         m_laneAssistCommands.forEach((String key, LaneAssist laneAssist) -> {
             m_laneAssistChooser.addOption(key, laneAssist);
         });
+
+        m_laneAssistChooser.addDefaultOption("Human Player", m_laneAssistCommands.get("Human Player"));
 
         m_driverController.leftTrigger()
                 .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get().pathfindCommand()));
