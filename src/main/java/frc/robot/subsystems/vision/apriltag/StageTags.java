@@ -3,6 +3,7 @@ package frc.robot.subsystems.vision.apriltag;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -22,6 +23,18 @@ public enum StageTags {
     private StageTags(int red, int blue) {
         this.redId = red;
         this.blueId = blue;
+    }
+
+    public Pose3d getFieldPose() {
+        return GarageUtils.isRedAlliance() ? getRedFieldPose() : getBlueFieldPose();
+    }
+
+    public Pose3d getRedFieldPose() {
+        return VisionConstants.FIELD_LAYOUT.getTagPose(redId).get();
+    }
+
+    public Pose3d getBlueFieldPose() {
+        return VisionConstants.FIELD_LAYOUT.getTagPose(blueId).get();
     }
 
     public Pose2d getPathfindingPose() {

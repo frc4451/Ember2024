@@ -9,7 +9,6 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
@@ -17,12 +16,10 @@ import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
 import frc.robot.subsystems.vision.apriltag.AprilTagAlgorithms;
 import frc.robot.subsystems.vision.apriltag.StageTags;
-import frc.utils.GarageUtils;
 
 public class PositionWithStageSingleClimb extends Command {
     // private static double yawMeasurementOffset = Math.PI; // To aim from the back
     private final PIDController thetaController = new PIDController(6, 0, 0.1);
-    private final PIDController xController = new PIDController(5, 0, 0);
     private final PIDController yController = new PIDController(5, 0, 0);
 
     private final String logRoot;
@@ -44,7 +41,7 @@ public class PositionWithStageSingleClimb extends Command {
             DriveSubsystem drive) {
 
         addRequirements(drive);
-        setName("PositionWithAmp");
+        setName("PositionWithStageSingleClimb");
 
         logRoot = "Commands/" + getName() + "/";
 
@@ -54,8 +51,7 @@ public class PositionWithStageSingleClimb extends Command {
         this.drive = drive;
 
         this.stageTag = stageTag;
-        targetPose = new Pose3d(stageTag.getPathfindingPose());
-        // targetPose = VisionConstants.FIELD_LAYOUT.getTagPose(targetFiducialId).get();
+        targetPose = stageTag.getFieldPose();
 
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
     }
@@ -71,8 +67,8 @@ public class PositionWithStageSingleClimb extends Command {
     public void execute() {
         Pose3d robotPose = new Pose3d(drive.getPose());
 
-        Set<TargetWithSource> targets = this.visibleAprilTagsSupplier.get();
-        AprilTagAlgorithms.filterTags(targets.stream(), this.stageTag.getId())
+        Set<TargetWithSource> targets = visibleAprilTagsSupplier.get();
+        AprilTagAlgorithms.filterTags(targets.stream(), stageTag.getId())
                 .reduce((targetWithSourceA,
                         targetWithSourceB) -> targetWithSourceA.target().getPoseAmbiguity() <= targetWithSourceB
                                 .target().getPoseAmbiguity()
@@ -81,86 +77,47 @@ public class PositionWithStageSingleClimb extends Command {
                 .ifPresent(
                         targetWithSource -> {
                             hasSeenTag = true;
-                            Transform3d cameraToTarget = targetWithSource.target().getBestCameraToTarget();
-                            Transform3d robotToCamera = targetWithSource.source().robotToCamera();
-                            Transform3d robotToTarget = robotToCamera.plus(cameraToTarget);
-                            targetPose = robotPose.transformBy(robotToTarget);
+                            targetPose = targetWithSource.getTargetPoseFrom(robotPose);
                         });
 
-        // double xErrorMeters = targetPose.getX() - robotPose.getX();
-        // double yErrorMeters = targetPose.getY() - robotPose.getY();
+        ChassisSpeeds speeds = calculateCenteringSpeeds();
 
-        ChassisSpeeds calc = new ChassisSpeeds(0, 0, 0);
-
-        if (this.stageTag == StageTags.CENTER) {
-            calc = aimCenterFieldFacingSide();
-        } else if (this.stageTag == StageTags.AMP || this.stageTag == StageTags.HUMAN) {
-            calc = aimAngledFacingSide();
-        }
-
-        double xSpeedMeters = MathUtil.clamp(
-                xController.calculate(0, calc.vxMetersPerSecond),
-                -DriveConstants.kMaxSpeedMetersPerSecond,
-                DriveConstants.kMaxSpeedMetersPerSecond);
-
-        double ySpeedMeters = MathUtil.clamp(
-                yController.calculate(0, calc.vyMetersPerSecond),
-                -DriveConstants.kMaxSpeedMetersPerSecond,
-                DriveConstants.kMaxSpeedMetersPerSecond);
-
-        Logger.recordOutput(logRoot + "TargetID", this.stageTag.getId());
+        Logger.recordOutput(logRoot + "TargetID", stageTag.getId());
         Logger.recordOutput(logRoot + "TargetPose", targetPose);
         Logger.recordOutput(logRoot + "HasSeenTarget", hasSeenTag);
-        Logger.recordOutput(logRoot + "RotationSpeed", calc.omegaRadiansPerSecond);
+        Logger.recordOutput(logRoot + "RotationSpeed", speeds.omegaRadiansPerSecond);
 
-        TeleopDrive.drive(
-                drive,
-                GarageUtils.getFlipped() * xSpeedMeters / DriveConstants.kMaxSpeedMetersPerSecond,
-                GarageUtils.getFlipped() * ySpeedMeters / DriveConstants.kMaxSpeedMetersPerSecond,
-                calc.omegaRadiansPerSecond / DriveConstants.kMaxAngularSpeed,
-                false,
-                true);
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        Logger.recordOutput(logRoot + "IsRunning", false);
+        TeleopDrive.drive(drive, speeds, true, false);
     }
 
     /**
      * Handle Side of Stage closest to the center of the field.
      */
-    private ChassisSpeeds aimCenterFieldFacingSide() {
+    private ChassisSpeeds calculateCenteringSpeeds() {
         double rotationSpeedRad = thetaController.calculate(
                 drive.getPose().getRotation().getRadians(),
                 stageTag.getPathfindingPose().getRotation().getRadians());
 
-        double yErrorMeters = targetPose.getY() - drive.getPose().getY();
+        double xSpeedMeters = MathUtil.clamp(
+                xSupplier.getAsDouble() * DriveConstants.kMaxSpeedMetersPerSecond,
+                -DriveConstants.kMaxSpeedMetersPerSecond,
+                DriveConstants.kMaxSpeedMetersPerSecond);
 
-        return new ChassisSpeeds(-this.xSupplier.getAsDouble(), yErrorMeters, rotationSpeedRad);
+        // double yErrorMeters = drive.getPose().getY() - targetPose.getY();
+        double yErrorMeters = targetPose.toPose2d().relativeTo(drive.getPose())
+                .getTranslation()
+                .getY();
+
+        double ySpeedMeters = MathUtil.clamp(
+                yController.calculate(yErrorMeters, 0),
+                -DriveConstants.kMaxSpeedMetersPerSecond,
+                DriveConstants.kMaxSpeedMetersPerSecond);
+
+        return new ChassisSpeeds(-xSpeedMeters, -ySpeedMeters, rotationSpeedRad);
     }
 
-    /**
-     * Handle Sides of Stage visible to the Driver Station.
-     */
-    private ChassisSpeeds aimAngledFacingSide() {
-        double rotationSpeedRad = thetaController.calculate(
-                drive.getPose().getRotation().getRadians(),
-                stageTag.getPathfindingPose().getRotation().getRadians());
-
-        double threshold = 0.4;
-
-        double x = xSupplier.getAsDouble();
-        double y = xSupplier.getAsDouble();
-
-        double xSpeedMeters = 0.0;
-        double ySpeedMeters = 0.0;
-
-        if (Math.abs(x) > threshold && Math.abs(y) > threshold) {
-            xSpeedMeters = x * stageTag.getPathfindingPose().getRotation().getCos();
-            ySpeedMeters = y * -stageTag.getPathfindingPose().getRotation().getSin();
-        }
-
-        return new ChassisSpeeds(-xSpeedMeters, ySpeedMeters, rotationSpeedRad);
+    @Override
+    public void end(boolean interrupted) {
+        Logger.recordOutput(logRoot + "IsRunning", false);
     }
 }
