@@ -18,7 +18,6 @@ import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
 import frc.robot.subsystems.vision.apriltag.AprilTagAlgorithms;
 import frc.robot.subsystems.vision.apriltag.StageTags;
 import frc.utils.GarageUtils;
-import frc.utils.PathfindPIDCalculation;
 
 public class PositionWithStageSingleClimb extends Command {
     // private static double yawMeasurementOffset = Math.PI; // To aim from the back
@@ -91,7 +90,7 @@ public class PositionWithStageSingleClimb extends Command {
         // double xErrorMeters = targetPose.getX() - robotPose.getX();
         // double yErrorMeters = targetPose.getY() - robotPose.getY();
 
-        PathfindPIDCalculation calc = new PathfindPIDCalculation(0, 0, 0);
+        ChassisSpeeds calc = new ChassisSpeeds(0, 0, 0);
 
         if (this.stageTag == StageTags.CENTER) {
             calc = aimCenterFieldFacingSide();
@@ -100,25 +99,25 @@ public class PositionWithStageSingleClimb extends Command {
         }
 
         double xSpeedMeters = MathUtil.clamp(
-                xController.calculate(0, calc.xSpeedMeters()),
+                xController.calculate(0, calc.vxMetersPerSecond),
                 -DriveConstants.kMaxSpeedMetersPerSecond,
                 DriveConstants.kMaxSpeedMetersPerSecond);
 
         double ySpeedMeters = MathUtil.clamp(
-                yController.calculate(0, calc.ySpeedMeters()),
+                yController.calculate(0, calc.vyMetersPerSecond),
                 -DriveConstants.kMaxSpeedMetersPerSecond,
                 DriveConstants.kMaxSpeedMetersPerSecond);
 
         Logger.recordOutput(logRoot + "TargetID", this.stageTag.getId());
         Logger.recordOutput(logRoot + "TargetPose", targetPose);
         Logger.recordOutput(logRoot + "HasSeenTarget", hasSeenTag);
-        Logger.recordOutput(logRoot + "RotationSpeed", calc.rotationSpeedRad());
+        Logger.recordOutput(logRoot + "RotationSpeed", calc.omegaRadiansPerSecond);
 
         TeleopDrive.drive(
                 drive,
                 GarageUtils.getFlipped() * xSpeedMeters / DriveConstants.kMaxSpeedMetersPerSecond,
                 GarageUtils.getFlipped() * ySpeedMeters / DriveConstants.kMaxSpeedMetersPerSecond,
-                calc.rotationSpeedRad() / DriveConstants.kMaxAngularSpeed,
+                calc.omegaRadiansPerSecond / DriveConstants.kMaxAngularSpeed,
                 false,
                 true);
     }
@@ -131,20 +130,20 @@ public class PositionWithStageSingleClimb extends Command {
     /**
      * Handle Side of Stage closest to the center of the field.
      */
-    private PathfindPIDCalculation aimCenterFieldFacingSide() {
+    private ChassisSpeeds aimCenterFieldFacingSide() {
         double rotationSpeedRad = thetaController.calculate(
                 drive.getPose().getRotation().getRadians(),
                 stageTag.getPathfindingPose().getRotation().getRadians());
 
         double yErrorMeters = targetPose.getY() - drive.getPose().getY();
 
-        return new PathfindPIDCalculation(-this.xSupplier.getAsDouble(), yErrorMeters, rotationSpeedRad);
+        return new ChassisSpeeds(-this.xSupplier.getAsDouble(), yErrorMeters, rotationSpeedRad);
     }
 
     /**
      * Handle Sides of Stage visible to the Driver Station.
      */
-    private PathfindPIDCalculation aimAngledFacingSide() {
+    private ChassisSpeeds aimAngledFacingSide() {
         double rotationSpeedRad = thetaController.calculate(
                 drive.getPose().getRotation().getRadians(),
                 stageTag.getPathfindingPose().getRotation().getRadians());
@@ -158,10 +157,10 @@ public class PositionWithStageSingleClimb extends Command {
         double ySpeedMeters = 0.0;
 
         if (Math.abs(x) > threshold && Math.abs(y) > threshold) {
-            xSpeedMeters = x * Math.cos(stageTag.getPathfindingPose().getRotation().getRadians());
-            ySpeedMeters = y * -Math.sin(stageTag.getPathfindingPose().getRotation().getRadians());
+            xSpeedMeters = x * stageTag.getPathfindingPose().getRotation().getCos();
+            ySpeedMeters = y * -stageTag.getPathfindingPose().getRotation().getSin();
         }
 
-        return new PathfindPIDCalculation(-xSpeedMeters, ySpeedMeters, rotationSpeedRad);
+        return new ChassisSpeeds(-xSpeedMeters, ySpeedMeters, rotationSpeedRad);
     }
 }

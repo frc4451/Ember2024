@@ -146,14 +146,14 @@ public class RobotContainer {
                 Set.of(m_robotDrive));
 
         Command ampCommand = Commands.defer(() -> new PositionWithAmp(
-                () -> -m_driverController.getLeftY(),
+                () -> -m_driverController.getLeftX(),
                 m_vision::getVisibleAprilTags,
                 m_robotDrive,
                 false),
                 Set.of(m_robotDrive));
 
         Command otherAmpCommand = Commands.defer(() -> new PositionWithAmp(
-                () -> -m_driverController.getLeftY(),
+                () -> -m_driverController.getLeftX(),
                 m_vision::getVisibleAprilTags,
                 m_robotDrive,
                 true),
