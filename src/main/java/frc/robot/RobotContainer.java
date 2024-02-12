@@ -168,14 +168,14 @@ public class RobotContainer {
                 Set.of(m_robotDrive));
 
         Command stageAmpCommand = Commands.defer(() -> new PositionWithStageSingleClimb(
-                () -> -m_driverController.getLeftX(),
+                () -> -m_driverController.getLeftY(),
                 m_vision::getVisibleAprilTags,
                 StageTags.AMP,
                 m_robotDrive),
                 Set.of(m_robotDrive));
 
         Command stageCenterCommand = Commands.defer(() -> new PositionWithStageSingleClimb(
-                () -> -m_driverController.getLeftX(),
+                () -> -m_driverController.getLeftY(),
                 m_vision::getVisibleAprilTags,
                 StageTags.CENTER,
                 m_robotDrive),
@@ -186,25 +186,30 @@ public class RobotContainer {
         // proxy the deferred command to run while the button is held.
         m_laneAssistChooser = new LoggedDashboardChooser<>("LaneAssist", new SendableChooser<>());
 
-        m_laneAssistCommands.put("Human Player",
-                new LaneAssist(PathPlannerPoses.HUMAN_PLAYER.getDeferredCommand(),
-                        new InstantCommand()));
-        m_laneAssistCommands.put("Speaker Center",
-                new LaneAssist(PathPlannerPoses.SPEAKER_CENTER.getDeferredCommand(), speakerCommand));
-        m_laneAssistCommands.put("Speaker Left",
-                new LaneAssist(PathPlannerPoses.SPEAKER_LEFT.getDeferredCommand(), speakerCommand));
-        m_laneAssistCommands.put("Speaker Right",
-                new LaneAssist(PathPlannerPoses.SPEAKER_RIGHT.getDeferredCommand(), speakerCommand));
         m_laneAssistCommands.put("Amp",
                 new LaneAssist(PathPlannerPoses.AMP.getDeferredCommand(), ampCommand));
         m_laneAssistCommands.put("Other Amp",
                 new LaneAssist(PathPlannerPoses.OTHER_AMP.getDeferredCommand(), otherAmpCommand));
+        m_laneAssistCommands.put("Human Player",
+                new LaneAssist(PathPlannerPoses.HUMAN_PLAYER.getDeferredCommand(),
+                        new InstantCommand()));
+        m_laneAssistCommands.put("Speaker Left",
+                new LaneAssist(PathPlannerPoses.SPEAKER_LEFT.getDeferredCommand(), speakerCommand));
+        m_laneAssistCommands.put("Speaker Center",
+                new LaneAssist(PathPlannerPoses.SPEAKER_CENTER.getDeferredCommand(), speakerCommand));
+        m_laneAssistCommands.put("Speaker Right",
+                new LaneAssist(PathPlannerPoses.SPEAKER_RIGHT.getDeferredCommand(), speakerCommand));
         m_laneAssistCommands.put("Stage Center",
                 new LaneAssist(StageTags.CENTER.getDeferredCommand(), stageCenterCommand));
         m_laneAssistCommands.put("Stage Human",
                 new LaneAssist(StageTags.HUMAN.getDeferredCommand(), stageHumanCommand));
         m_laneAssistCommands.put("Stage Amp",
                 new LaneAssist(StageTags.AMP.getDeferredCommand(), stageAmpCommand));
+
+        {
+            String defaultLaneAssist = "Amp";
+            m_laneAssistChooser.addDefaultOption(defaultLaneAssist, m_laneAssistCommands.get(defaultLaneAssist));
+        }
 
         m_laneAssistCommands.forEach((String key, LaneAssist laneAssist) -> {
             m_laneAssistChooser.addOption(key, laneAssist);
