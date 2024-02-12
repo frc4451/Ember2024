@@ -57,7 +57,7 @@ public class PivotSubsystem extends SubsystemBase {
             this.io.stop();
         }
 
-        this.angle = new Rotation2d(this.inputs.relativeAngleRad);
+        this.angle = new Rotation2d(this.inputs.relativeAngleRadLeader);
 
         Logger.recordOutput("Pivot/Angle", getAngle().getDegrees());
         Logger.recordOutput("Pivot/SetpointAngle", getSetpoint().getDegrees());

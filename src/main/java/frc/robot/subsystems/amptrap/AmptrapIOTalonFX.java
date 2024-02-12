@@ -8,18 +8,18 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.AmpTrapConstants;
 
-public class AmptrapIOTalonFX implements AmptrapIO {
-    private static final double kPositionConversionFactor = 2.0 * Math.PI / IntakeConstants.kPivotReduction;
+public class AmpTrapIOTalonFX implements AmpTrapIO {
+    private static final double kPositionConversionFactor = 2.0 * Math.PI / AmpTrapConstants.kPivotReduction;
 
-    private final TalonFX pivot = new TalonFX(IntakeConstants.kPivotCanId);
+    private final TalonFX pivot = new TalonFX(AmpTrapConstants.kPivotCanId);
 
     private final StatusSignal<Double> appliedVoltage = pivot.getMotorVoltage();
     private final StatusSignal<Double> temperatureCelsius = pivot.getDeviceTemp();
     private final StatusSignal<Double> currentAmperage = pivot.getSupplyCurrent();
 
-    public AmptrapIOTalonFX() {
+    public AmpTrapIOTalonFX() {
         this.pivot.getConfigurator().apply(
                 new TalonFXConfiguration()
                         .withMotorOutput(new MotorOutputConfigs()
@@ -29,7 +29,7 @@ public class AmptrapIOTalonFX implements AmptrapIO {
     }
 
     @Override
-    public void updateInputs(AmptrapIOInputs inputs) {
+    public void updateInputs(AmpTrapIOInputs inputs) {
         StatusSignal.refreshAll(appliedVoltage, temperatureCelsius, currentAmperage);
         inputs.appliedVoltage = appliedVoltage.getValueAsDouble();
         inputs.temperatureCelsius = temperatureCelsius.getValueAsDouble();

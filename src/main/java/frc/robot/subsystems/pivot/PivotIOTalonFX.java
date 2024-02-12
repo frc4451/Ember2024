@@ -4,6 +4,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -13,32 +14,55 @@ import frc.robot.Constants.IntakeConstants;
 public class PivotIOTalonFX implements PivotIO {
     private static final double kPositionConversionFactor = 2.0 * Math.PI / IntakeConstants.kPivotReduction;
 
-    private final TalonFX pivot = new TalonFX(IntakeConstants.kPivotCanId);
+    private final TalonFX pivotLeader = new TalonFX(IntakeConstants.kPivotLeaderCanId);
+    private final TalonFX pivotFollower = new TalonFX(IntakeConstants.kPivotFollowerCanId);
 
-    private final StatusSignal<Double> appliedVoltage = pivot.getMotorVoltage();
-    private final StatusSignal<Double> temperatureCelsius = pivot.getDeviceTemp();
-    private final StatusSignal<Double> currentAmperage = pivot.getSupplyCurrent();
+    private final StatusSignal<Double> appliedVoltageLeader = pivotLeader.getMotorVoltage();
+    private final StatusSignal<Double> temperatureCelsiusLeader = pivotLeader.getDeviceTemp();
+    private final StatusSignal<Double> currentAmperageLeader = pivotLeader.getSupplyCurrent();
+
+    private final StatusSignal<Double> appliedVoltageFollower = pivotFollower.getMotorVoltage();
+    private final StatusSignal<Double> temperatureCelsiusFollower = pivotFollower.getDeviceTemp();
+    private final StatusSignal<Double> currentAmperageFollower = pivotFollower.getSupplyCurrent();
 
     public PivotIOTalonFX() {
-        this.pivot.getConfigurator().apply(
+        this.pivotLeader.getConfigurator().apply(
                 new TalonFXConfiguration()
                         .withMotorOutput(new MotorOutputConfigs()
                                 .withNeutralMode(NeutralModeValue.Brake))
                         .withClosedLoopRamps(new ClosedLoopRampsConfigs()
                                 .withDutyCycleClosedLoopRampPeriod(1.0)));
+        this.pivotFollower.getConfigurator().apply(
+                new TalonFXConfiguration()
+                        .withMotorOutput(new MotorOutputConfigs()
+                                .withNeutralMode(NeutralModeValue.Brake))
+                        .withClosedLoopRamps(new ClosedLoopRampsConfigs()
+                                .withDutyCycleClosedLoopRampPeriod(1.0)));    
+        this.pivotFollower.setControl(new Follower(pivotLeader.getDeviceID(), true));
     }
 
     @Override
     public void updateInputs(PivotIOInputs inputs) {
-        StatusSignal.refreshAll(appliedVoltage, temperatureCelsius, currentAmperage);
-        inputs.appliedVoltage = appliedVoltage.getValueAsDouble();
-        inputs.temperatureCelsius = temperatureCelsius.getValueAsDouble();
-        inputs.currentAmperage = currentAmperage.getValueAsDouble();
+        StatusSignal.refreshAll(
+            appliedVoltageLeader,
+            temperatureCelsiusLeader,
+            currentAmperageLeader,
+            appliedVoltageFollower,
+            temperatureCelsiusFollower,
+            currentAmperageFollower
+        );
+        inputs.appliedVoltageLeader = appliedVoltageLeader.getValueAsDouble();
+        inputs.temperatureCelsiusLeader = temperatureCelsiusLeader.getValueAsDouble();
+        inputs.currentAmperageLeader = currentAmperageLeader.getValueAsDouble();
+
+        inputs.appliedVoltageFollower = appliedVoltageFollower.getValueAsDouble();
+        inputs.temperatureCelsiusFollower = temperatureCelsiusFollower.getValueAsDouble();
+        inputs.currentAmperageFollower = currentAmperageFollower.getValueAsDouble();
     }
 
     @Override
     public void setVoltage(double voltage) {
-        this.pivot.setVoltage(voltage);
+        this.pivotLeader.setVoltage(voltage);
     }
 
     @Override
@@ -48,11 +72,11 @@ public class PivotIOTalonFX implements PivotIO {
 
     @Override
     public void setAngle(Rotation2d angle) {
-        this.pivot.setPosition(angle.getRadians() / kPositionConversionFactor);
+        this.pivotLeader.setPosition(angle.getRadians() / kPositionConversionFactor);
     }
 
     @Override
     public void setPercentOutput(double percent) {
-        this.pivot.set(percent);
+        this.pivotLeader.set(percent);
     }
 }

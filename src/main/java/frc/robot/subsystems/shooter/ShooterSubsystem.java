@@ -11,8 +11,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants;
 import frc.robot.Constants.AdvantageKitConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.reusable_io.beambreak.BeambreakDigitalInput;
 import frc.robot.reusable_io.beambreak.BeambreakIO;
 import frc.robot.reusable_io.beambreak.BeambreakIOInputsAutoLogged;
@@ -30,12 +30,12 @@ public class ShooterSubsystem extends SubsystemBase {
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
                 io = new ShooterIOTalonFX();
-                beambreak = new BeambreakDigitalInput(Constants.ShooterConstants.kBeamBreakCanID);
+                beambreak = new BeambreakDigitalInput(ShooterConstants.kBeamBreakCanID);
                 break;
             case SIM:
                 io = new ShooterIOSim() {
                 };
-                beambreak = new BeambreakIOSim(Constants.ShooterConstants.kBeamBreakCanID);
+                beambreak = new BeambreakIOSim(ShooterConstants.kBeamBreakCanID);
                 break;
             case REPLAY:
             default:
@@ -60,7 +60,7 @@ public class ShooterSubsystem extends SubsystemBase {
         }
     }
 
-    public void setVelocity(double velocityRotPerSecondLeft, double velocityRotPerSecondRight,
+    private void setVelocity(double velocityRotPerSecondLeft, double velocityRotPerSecondRight,
             double velocityRotPerSecondFeeder) {
         io.setVelocity(velocityRotPerSecondLeft, velocityRotPerSecondRight, velocityRotPerSecondFeeder);
     }
@@ -86,7 +86,7 @@ public class ShooterSubsystem extends SubsystemBase {
         });
     }
 
-    public Trigger beambreakIsActivated() {
+    public Trigger beambreakActivated() {
         return new Trigger(() -> this.beambreakInputs.isActivated);
     }
 }

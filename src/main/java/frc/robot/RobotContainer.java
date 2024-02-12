@@ -224,8 +224,8 @@ public class RobotContainer {
         m_driverController.y()
                 .onTrue(m_intake.setVelocityCommand(50, 50))
                 .onFalse(m_intake.stopCommand());
-        m_driverController.a() /* Don't need to do this. Use for has piece lights */
-                .and(m_intake.beambreakIsActivated().negate())
+        m_driverController.a() 
+                .and(m_shooter.beambreakActivated().negate())
                 .onTrue(m_intake.setVelocityCommand(20, 20))
                 .onFalse(m_intake.stopCommand());
 
@@ -245,10 +245,10 @@ public class RobotContainer {
         m_operatorController.rightY()
                 .whileTrue(m_pivot.runPercentCommand(() -> -m_operatorController.getRightY() / 2.0))
                 .onFalse(m_pivot.setSetpointCurrentCommand());
-        m_operatorController.povUp().onTrue(m_pivot.setSetpointCommand(PivotLocation.k0.angle));
-        m_operatorController.povRight().onTrue(m_pivot.setSetpointCommand(PivotLocation.k160.angle));
-        m_operatorController.povDown().onTrue(m_pivot.setSetpointCommand(PivotLocation.k45.angle));
-        m_operatorController.povLeft().onTrue(m_pivot.setSetpointCommand(PivotLocation.k90.angle));
+        m_operatorController.povLeft().onTrue(m_pivot.setSetpointCommand(PivotLocation.k85.angle));
+        m_operatorController.povUp().onTrue(m_pivot.setSetpointCommand(PivotLocation.k55.angle));
+        m_operatorController.povRight().onTrue(m_pivot.setSetpointCommand(PivotLocation.k36.angle));
+        m_operatorController.povDown().onTrue(m_pivot.setSetpointCommand(PivotLocation.k26.angle));
 
         // TEST CONTROLLER
         m_programmerController.x()
@@ -273,7 +273,7 @@ public class RobotContainer {
                 .onTrue(m_intake.setVelocityCommand(20, 20))
                 .onFalse(m_intake.stopCommand());
         m_driverController.a()
-                .and(m_intake.beambreakIsActivated())
+                .and(m_shooter.beambreakActivated())
                 .onTrue(m_intake.setVelocityCommand(20, 20))
                 .onFalse(m_intake.stopCommand());
 

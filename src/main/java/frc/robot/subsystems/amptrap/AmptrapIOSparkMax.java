@@ -7,26 +7,26 @@ import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.Constants.AmptrapConstants;
+import frc.robot.Constants.AmpTrapConstants;
 
-public class AmptrapIOSparkMax implements AmptrapIO {
-    private final CANSparkMax pivot = new CANSparkMax(AmptrapConstants.kPivotCanId, MotorType.kBrushless);
+public class AmpTrapIOSparkMax implements AmpTrapIO {
+    private final CANSparkMax pivot = new CANSparkMax(AmpTrapConstants.kPivotCanId, MotorType.kBrushless);
 
     private final RelativeEncoder encoder = pivot.getEncoder();
 
-    public AmptrapIOSparkMax() {
+    public AmpTrapIOSparkMax() {
         this.pivot.restoreFactoryDefaults();
         this.pivot.setIdleMode(IdleMode.kCoast);
         this.pivot.setClosedLoopRampRate(1.0);
         this.pivot.setInverted(true);
         this.pivot.burnFlash();
 
-        this.encoder.setPositionConversionFactor(2.0 * Math.PI / AmptrapConstants.kPivotReduction);
+        this.encoder.setPositionConversionFactor(2.0 * Math.PI / AmpTrapConstants.kPivotReduction);
         this.encoder.setPosition(0);
     }
 
     @Override
-    public void updateInputs(AmptrapIOInputs inputs) {
+    public void updateInputs(AmpTrapIOInputs inputs) {
         inputs.appliedVoltage = this.pivot.getAppliedOutput() * this.pivot.getBusVoltage();
         inputs.temperatureCelsius = this.pivot.getMotorTemperature();
         inputs.currentAmperage = this.pivot.getOutputCurrent();

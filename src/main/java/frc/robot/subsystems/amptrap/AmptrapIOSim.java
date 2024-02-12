@@ -10,7 +10,7 @@ import frc.robot.Constants.IntakeConstants;
 // I also can't figure out how to implement the `setAngle` method for this.
 // I think we could change the code in the real implementation to start at 0 instead of 184 degrees to make them line up.
 // Won't be doing that right now but that might work.
-public class AmptrapIOSim implements AmptrapIO {
+public class AmpTrapIOSim implements AmpTrapIO {
     private final SingleJointedArmSim armSim = new SingleJointedArmSim(
             DCMotor.getNEO(1),
             IntakeConstants.kPivotReduction,
@@ -19,12 +19,12 @@ public class AmptrapIOSim implements AmptrapIO {
             0.0, // physical min (rad)
             Math.PI, // physical max (rad)
             false, // whether to simulate gravity
-            AmptrapLocation.INITIAL.angle.getRadians()); // starting angle
+            AmpTrapLocation.INITIAL.angle.getRadians()); // starting angle
 
     private double appliedVoltage = 0.0;
 
     @Override
-    public void updateInputs(AmptrapIOInputs inputs) {
+    public void updateInputs(AmpTrapIOInputs inputs) {
         armSim.update(0.02); // 20 ms is the standard periodic loop time
 
         inputs.appliedVoltage = appliedVoltage;

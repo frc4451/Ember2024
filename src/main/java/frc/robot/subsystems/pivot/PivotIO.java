@@ -7,11 +7,15 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public interface PivotIO {
     @AutoLog
     public static class PivotIOInputs {
-        public double appliedVoltage = 0.0;
-        public double currentAmperage = 0.0;
-        public double temperatureCelsius = 0.0;
+        public double appliedVoltageLeader = 0.0;
+        public double currentAmperageLeader = 0.0;
+        public double temperatureCelsiusLeader = 0.0;
+        public double relativeAngleRadLeader = 0.0;
 
-        public double relativeAngleRad = 0.0;
+        public double appliedVoltageFollower = 0.0;
+        public double currentAmperageFollower = 0.0;
+        public double temperatureCelsiusFollower = 0.0;
+        public double relativeAngleRadFollower = 0.0;
     }
 
     public default void updateInputs(PivotIOInputs inputs) {

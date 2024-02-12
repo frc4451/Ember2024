@@ -185,7 +185,8 @@ public final class Constants {
 
         public static final double kPivotReduction = 240.0;
 
-        public static final int kPivotCanId = 22;
+        public static final int kPivotLeaderCanId = 22;
+        public static final int kPivotFollowerCanId = 23;
         public static final double kPivotVelocityRadiansPerSecond = Units.degreesToRadians(15.0);
 
         public static final double kPivotP = 0.3;
@@ -193,7 +194,7 @@ public final class Constants {
         public static final double kPivotD = 0.0;
     }
 
-    public static final class AmptrapConstants {
+    public static final class AmpTrapConstants {
         public static final CurrentLimitsConfigs rollerCurrentConfig = new CurrentLimitsConfigs()
                 .withSupplyCurrentLimit(30.0)
                 .withSupplyCurrentThreshold(35.0)
@@ -204,7 +205,7 @@ public final class Constants {
         // public static final double kPivotMinDegrees = 10.0;
         // public static final double kPivotMaxDegrees = 167.25;
 
-        public static final double kPivotReduction = 240.0;
+        public static final double kPivotReduction = 5.0;
 
         public static final int kPivotCanId = 22;
         public static final double kPivotVelocityRadiansPerSecond = Units.degreesToRadians(15.0);

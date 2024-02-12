@@ -26,11 +26,13 @@ public class PivotIOSim implements PivotIO {
     @Override
     public void updateInputs(PivotIOInputs inputs) {
         armSim.update(0.02); // 20 ms is the standard periodic loop time
+        inputs.appliedVoltageLeader = appliedVoltage;
+        inputs.appliedVoltageFollower = appliedVoltage;
+        inputs.currentAmperageLeader = armSim.getCurrentDrawAmps();
+        inputs.currentAmperageFollower = armSim.getCurrentDrawAmps();
 
-        inputs.appliedVoltage = appliedVoltage;
-        inputs.currentAmperage = armSim.getCurrentDrawAmps();
-
-        inputs.relativeAngleRad = armSim.getAngleRads();
+        inputs.relativeAngleRadLeader = armSim.getAngleRads();
+        inputs.relativeAngleRadFollower = armSim.getAngleRads();
     }
 
     @Override
