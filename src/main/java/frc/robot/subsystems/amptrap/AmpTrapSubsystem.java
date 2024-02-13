@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.AmpTrapConstants;
+import frc.robot.commands.RunVelocity;
 import frc.robot.reusable_io.beambreak.BeambreakDigitalInput;
 import frc.robot.reusable_io.beambreak.BeambreakIO;
 import frc.robot.reusable_io.beambreak.BeambreakIOInputsAutoLogged;
@@ -28,8 +29,6 @@ public class AmpTrapSubsystem extends SubsystemBase {
     private final AmpTrapIOInputsAutoLogged inputs = new AmpTrapIOInputsAutoLogged();
     private final BeambreakIOInputsAutoLogged beambreakInputs = new BeambreakIOInputsAutoLogged();
 
-
-    private Rotation2d angle = new Rotation2d();
     private Rotation2d setpoint = new Rotation2d();
 
     private final PIDController pidController = new PIDController(
@@ -56,71 +55,47 @@ public class AmpTrapSubsystem extends SubsystemBase {
                 break;
         }
 
-        setAngle(AmpTrapLocation.INITIAL.angle);
-        setSetpoint(AmpTrapLocation.INITIAL.angle);
     }
 
     @Override
     public void periodic() {
         this.io.updateInputs(this.inputs);
         this.beambreak.updateInputs(this.beambreakInputs);
-        
+
         Logger.processInputs("AmpTrap", this.inputs);
         Logger.processInputs("AmpTrap/BeamBreak", this.beambreakInputs);
 
-    
         // Make sure the motor actually stops when the robot disabled
         if (DriverStation.isDisabled()) {
-            this.setSetpoint(AmpTrapLocation.INITIAL.angle);
             this.io.stop();
         }
-
-        this.angle = new Rotation2d(this.inputs.relativeAngleRad);
-
-        Logger.recordOutput("AmpTrap/Angle", getAngle().getDegrees());
-        Logger.recordOutput("AmpTrap/SetpointAngle", getSetpoint().getDegrees());
     }
 
-    public void setAngle(Rotation2d angle) {
-        this.io.setAngle(angle);
+    public void runPercent(double percent) {
+        io.setVelocity(percent);
     }
 
-    public Rotation2d getAngle() {
-        return this.angle;
+    public Command runPercentCommand(double percent) {
+        return new RunCommand(() -> runPercent(percent), this);
     }
 
-    public Rotation2d getSetpoint() {
-        return this.setpoint;
+    public void runVelocity(double velocityRotPerSecond) {
+        io.setVelocity(velocityRotPerSecond);
     }
 
-    private void setSetpoint(Rotation2d angle) {
-        this.setpoint = angle;
-        this.pidController.setSetpoint(angle.getDegrees());
+    public Command runVelocityCommand(double velocityRotPerSecond) {
+        return new RunCommand(() -> runVelocity(velocityRotPerSecond), this);
     }
 
-    public Command setSetpointCommand(Rotation2d angle) {
-        return new InstantCommand(() -> this.setSetpoint(angle), this);
+    public void stop() {
+        this.io.stop();
     }
 
-    public Command setSetpointCurrentCommand() {
-        return new InstantCommand(() -> this.setSetpoint(this.angle), this);
+    public Command stopCommand() {
+        return new InstantCommand(() -> stop(), this);
     }
 
-    public Command amptrapPIDCommand() {
-        return new RunCommand(() -> {
-            double output = this.pidController.calculate(this.getAngle().getDegrees());
-            useOutput(output);
-        }, this);
-    }
-
-    public void useOutput(double output) {
-        this.io.setVoltage(MathUtil.clamp(output, -12, 12));
-    }
-
-    public Command runPercentCommand(DoubleSupplier decimalPercent) {
-        return new RunCommand(() -> this.io.setPercentOutput(decimalPercent.getAsDouble()), this);
-    }
-
+    /** This is specifically for sim testing, as beambreaks are not simulated */
     public Command overrideBeamBreakActivatedCommand(boolean value) {
         return new InstantCommand(() -> {
             this.beambreak.overrideActivated(value);

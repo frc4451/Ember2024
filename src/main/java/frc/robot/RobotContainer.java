@@ -29,6 +29,7 @@ import frc.robot.commands.StrafeAndAimToSpeaker;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.pathplanner.PathPlannerUtils;
 import frc.robot.pathplanner.paths.PathPlannerPaths;
+import frc.robot.subsystems.amptrap.AmpTrapSubsystem;
 import frc.robot.subsystems.blinkin.BlinkinColors;
 import frc.robot.subsystems.blinkin.BlinkinSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -58,6 +59,8 @@ public class RobotContainer {
     public final PivotSubsystem m_pivot = new PivotSubsystem();
 
     public final ShooterSubsystem m_shooter = new ShooterSubsystem();
+
+    public final AmpTrapSubsystem m_ampTrap = new AmpTrapSubsystem();
 
     // public final MiscSubsystem m_misc = new MiscSubsystem();
 
@@ -224,7 +227,7 @@ public class RobotContainer {
         m_driverController.y()
                 .onTrue(m_intake.setVelocityCommand(50, 50))
                 .onFalse(m_intake.stopCommand());
-        m_driverController.a() 
+        m_driverController.a()
                 .and(m_shooter.beambreakActivated().negate())
                 .onTrue(m_intake.setVelocityCommand(20, 20))
                 .onFalse(m_intake.stopCommand());
@@ -251,11 +254,10 @@ public class RobotContainer {
         m_operatorController.povDown().onTrue(m_pivot.setSetpointCommand(PivotLocation.k26.angle));
 
         // TEST CONTROLLER
-        m_programmerController.x()
-                .onTrue(m_intake.toggleBeamBrakeActivatedCommand());
         m_programmerController.a()
-                .onTrue(m_shooter.setVelocityCommand(60.0, 60.0, 0.0))
-                .onFalse(m_shooter.stopCommand());
+                .onTrue(m_ampTrap.runVelocityCommand(1.0));
+        m_programmerController.b()
+                .onTrue(m_ampTrap.stopCommand());
 
         m_driverController
                 .rightBumper()

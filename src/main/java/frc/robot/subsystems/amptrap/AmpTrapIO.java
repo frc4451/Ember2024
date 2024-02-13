@@ -10,10 +10,13 @@ public interface AmpTrapIO {
         public double appliedVoltage = 0.0;
         public double currentAmperage = 0.0;
         public double temperatureCelsius = 0.0;
-        public double relativeAngleRad = 0.0;
+        public double velocityRotPerSecond = 0.0;
     }
 
     public default void updateInputs(AmpTrapIOInputs inputs) {
+    }
+
+    public default void setVelocity(double velocity) {
     }
 
     public default void setVoltage(double voltage) {
@@ -24,8 +27,5 @@ public interface AmpTrapIO {
 
     public default void stop() {
         setVoltage(0.0);
-    }
-
-    public default void setAngle(Rotation2d angle) {
     }
 }

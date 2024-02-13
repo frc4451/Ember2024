@@ -4,28 +4,31 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants.AmpTrapConstants;
 
 public class AmpTrapIOTalonFX implements AmpTrapIO {
-    private static final double kPositionConversionFactor = 2.0 * Math.PI / AmpTrapConstants.kPivotReduction;
+    private final TalonFX roller = new TalonFX(AmpTrapConstants.kPivotCanId);
 
-    private final TalonFX pivot = new TalonFX(AmpTrapConstants.kPivotCanId);
+    private final StatusSignal<Double> appliedVoltage = roller.getMotorVoltage();
+    private final StatusSignal<Double> temperatureCelsius = roller.getDeviceTemp();
+    private final StatusSignal<Double> currentAmperage = roller.getSupplyCurrent();
+    private final StatusSignal<Double> velocityRotPerSecond = roller.getSupplyCurrent();
 
-    private final StatusSignal<Double> appliedVoltage = pivot.getMotorVoltage();
-    private final StatusSignal<Double> temperatureCelsius = pivot.getDeviceTemp();
-    private final StatusSignal<Double> currentAmperage = pivot.getSupplyCurrent();
+    private final VelocityVoltage velocity = new VelocityVoltage(0);
 
     public AmpTrapIOTalonFX() {
-        this.pivot.getConfigurator().apply(
+        this.roller.getConfigurator().apply(
                 new TalonFXConfiguration()
                         .withMotorOutput(new MotorOutputConfigs()
                                 .withNeutralMode(NeutralModeValue.Brake))
                         .withClosedLoopRamps(new ClosedLoopRampsConfigs()
                                 .withDutyCycleClosedLoopRampPeriod(1.0)));
+
+        velocity.Slot = 0;
     }
 
     @Override
@@ -37,8 +40,13 @@ public class AmpTrapIOTalonFX implements AmpTrapIO {
     }
 
     @Override
+    public void setVelocity(double velocityRotPerSecond) {
+        roller.setControl(velocity.withVelocity(velocityRotPerSecond));
+    }
+
+    @Override
     public void setVoltage(double voltage) {
-        this.pivot.setVoltage(voltage);
+        this.roller.setVoltage(voltage);
     }
 
     @Override
@@ -47,12 +55,7 @@ public class AmpTrapIOTalonFX implements AmpTrapIO {
     }
 
     @Override
-    public void setAngle(Rotation2d angle) {
-        this.pivot.setPosition(angle.getRadians() / kPositionConversionFactor);
-    }
-
-    @Override
     public void setPercentOutput(double percent) {
-        this.pivot.set(percent);
+        this.roller.set(percent);
     }
 }

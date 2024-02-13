@@ -1,54 +1,48 @@
 package frc.robot.subsystems.amptrap;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import frc.robot.Constants.IntakeConstants;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 
-// This doesn't work too well in some ways because it measures the angles differently than the real implementation.
-// I also can't figure out how to implement the `setAngle` method for this.
-// I think we could change the code in the real implementation to start at 0 instead of 184 degrees to make them line up.
-// Won't be doing that right now but that might work.
 public class AmpTrapIOSim implements AmpTrapIO {
-    private final SingleJointedArmSim armSim = new SingleJointedArmSim(
-            DCMotor.getNEO(1),
-            IntakeConstants.kPivotReduction,
-            0.3, // moment of intertia (I think this is in kg * m^2) (number is wrong)
-            0.8, // arm length (m) (number is wrong)
-            0.0, // physical min (rad)
-            Math.PI, // physical max (rad)
-            false, // whether to simulate gravity
-            AmpTrapLocation.INITIAL.angle.getRadians()); // starting angle
+    private static double momentOfInertiaKgMSquared = 1.0;
+
+    private final FlywheelSim rollerSim = new FlywheelSim(DCMotor.getFalcon500(1), 1, momentOfInertiaKgMSquared);
+
+    private final PIDController rollerPidController = new PIDController(1, 0, 0);
 
     private double appliedVoltage = 0.0;
+    private double velocityRotPerSecond = 0.0;
 
     @Override
     public void updateInputs(AmpTrapIOInputs inputs) {
-        armSim.update(0.02); // 20 ms is the standard periodic loop time
+        appliedVoltage = 12.0
+                * rollerPidController.calculate(rollerSim.getAngularVelocityRPM() / 60.0, velocityRotPerSecond);
+
+        rollerSim.setInputVoltage(appliedVoltage);
+
+        rollerSim.update(0.02); // 20 ms is the standard periodic loop time
 
         inputs.appliedVoltage = appliedVoltage;
-        inputs.currentAmperage = armSim.getCurrentDrawAmps();
+        inputs.currentAmperage = rollerSim.getCurrentDrawAmps();
+        inputs.velocityRotPerSecond = rollerSim.getAngularVelocityRPM() / 60.0;
 
-        inputs.relativeAngleRad = armSim.getAngleRads();
+    }
+
+    @Override
+    public void setVelocity(double velocityRotPerSecond) {
+        this.velocityRotPerSecond = velocityRotPerSecond;
     }
 
     @Override
     public void setVoltage(double voltage) {
         voltage = MathUtil.clamp(voltage, -12.0, 12.0);
-
         appliedVoltage = voltage;
-
-        armSim.setInputVoltage(voltage);
     }
 
     @Override
     public void setPercentOutput(double decimalPercent) {
         setVoltage(12.0 * decimalPercent);
-    }
-
-    @Override
-    public void setAngle(Rotation2d angle) {
-        armSim.setState(angle.getRadians(), armSim.getVelocityRadPerSec());
     }
 }
