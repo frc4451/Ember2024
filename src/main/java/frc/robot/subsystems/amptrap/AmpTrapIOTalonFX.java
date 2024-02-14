@@ -33,10 +33,11 @@ public class AmpTrapIOTalonFX implements AmpTrapIO {
 
     @Override
     public void updateInputs(AmpTrapIOInputs inputs) {
-        StatusSignal.refreshAll(appliedVoltage, temperatureCelsius, currentAmperage);
+        StatusSignal.refreshAll(appliedVoltage, temperatureCelsius, currentAmperage, velocityRotPerSecond);
         inputs.appliedVoltage = appliedVoltage.getValueAsDouble();
         inputs.temperatureCelsius = temperatureCelsius.getValueAsDouble();
         inputs.currentAmperage = currentAmperage.getValueAsDouble();
+        inputs.velocityRotPerSecond = velocityRotPerSecond.getValueAsDouble();
     }
 
     @Override

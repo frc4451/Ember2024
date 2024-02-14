@@ -1,22 +1,15 @@
 package frc.robot.subsystems.amptrap;
 
-import java.util.function.DoubleSupplier;
-
 import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.AmpTrapConstants;
-import frc.robot.commands.RunVelocity;
 import frc.robot.reusable_io.beambreak.BeambreakDigitalInput;
 import frc.robot.reusable_io.beambreak.BeambreakIO;
 import frc.robot.reusable_io.beambreak.BeambreakIOInputsAutoLogged;
@@ -28,13 +21,6 @@ public class AmpTrapSubsystem extends SubsystemBase {
 
     private final AmpTrapIOInputsAutoLogged inputs = new AmpTrapIOInputsAutoLogged();
     private final BeambreakIOInputsAutoLogged beambreakInputs = new BeambreakIOInputsAutoLogged();
-
-    private Rotation2d setpoint = new Rotation2d();
-
-    private final PIDController pidController = new PIDController(
-            Constants.IntakeConstants.kPivotP,
-            Constants.IntakeConstants.kPivotI,
-            Constants.IntakeConstants.kPivotD);
 
     public AmpTrapSubsystem() {
         switch (AdvantageKitConstants.getMode()) {

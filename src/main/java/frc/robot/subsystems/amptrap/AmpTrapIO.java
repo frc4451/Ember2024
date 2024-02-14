@@ -2,8 +2,6 @@ package frc.robot.subsystems.amptrap;
 
 import org.littletonrobotics.junction.AutoLog;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-
 public interface AmpTrapIO {
     @AutoLog
     public static class AmpTrapIOInputs {
