@@ -24,17 +24,26 @@ public class ShooterIOSim implements ShooterIO {
     private double appliedVoltageRight = 0.0;
     private double appliedVoltageFeeder = 0.0;
 
+    private boolean closedLoopShooter = false;
+    private boolean closedLoopFeeder = false;
+
     @Override
     public void updateInputs(ShooterIOInputs inputs) {
-        appliedVoltageLeft = 12.0
-                * leftPidController.calculate(leftSim.getAngularVelocityRPM() / 60.0, velocityRotPerSecondLeft);
-        appliedVoltageRight = 12.0
-                * rightPidController.calculate(rightSim.getAngularVelocityRPM() / 60.0, velocityRotPerSecondRight);
-        appliedVoltageFeeder = 12.0
-                * feederPidController.calculate(leftSim.getAngularVelocityRPM() / 60.0, velocityRotPerSecondFeeder);
+        if (closedLoopShooter) {
+            appliedVoltageLeft = 12.0
+                    * leftPidController.calculate(leftSim.getAngularVelocityRPM() / 60.0, velocityRotPerSecondLeft);
+            appliedVoltageRight = 12.0
+                    * rightPidController.calculate(rightSim.getAngularVelocityRPM() / 60.0, velocityRotPerSecondRight);
+        }
+        if (closedLoopFeeder) {
+            appliedVoltageFeeder = 12.0
+                    * feederPidController.calculate(feederSim.getAngularVelocityRPM() / 60.0,
+                            velocityRotPerSecondFeeder);
+        }
+
         leftSim.setInputVoltage(appliedVoltageLeft);
         rightSim.setInputVoltage(appliedVoltageRight);
-        feederSim.setInputVoltage(appliedVoltageRight);
+        feederSim.setInputVoltage(appliedVoltageFeeder);
 
         leftSim.update(0.02); // 20 ms is the standard periodic loop time
         rightSim.update(0.02);
@@ -54,21 +63,29 @@ public class ShooterIOSim implements ShooterIO {
     }
 
     @Override
-    public void setVelocity(double velocityRotPerSecondLeft, double velocityRotPerSecondRight,
-            double velocityRotPerSecondFeeder) {
-        this.velocityRotPerSecondLeft = velocityRotPerSecondLeft;
-        this.velocityRotPerSecondRight = velocityRotPerSecondRight;
+    public void setVelocityFeeder(double velocityRotPerSecondFeeder) {
+        closedLoopFeeder = true;
         this.velocityRotPerSecondFeeder = velocityRotPerSecondFeeder;
     }
 
     @Override
-    public void stopShooter() {
-        leftSim.setInputVoltage(0);
-        rightSim.setInputVoltage(0);
+    public void setVelocityShooter(
+            double velocityRotPerSecondLeft,
+            double velocityRotPerSecondRight) {
+        closedLoopShooter = false;
+        this.velocityRotPerSecondLeft = velocityRotPerSecondLeft;
+        this.velocityRotPerSecondRight = velocityRotPerSecondRight;
     }
 
     @Override
-    public void stopFeeder() {
-        feederSim.setInputVoltage(0);
+    public void setVoltage(
+            double voltageLeft,
+            double voltageRight,
+            double voltageFeeder) {
+        closedLoopFeeder = false;
+        closedLoopShooter = false;
+        this.appliedVoltageLeft = voltageLeft;
+        this.appliedVoltageRight = voltageRight;
+        this.appliedVoltageFeeder = voltageFeeder;
     }
 }

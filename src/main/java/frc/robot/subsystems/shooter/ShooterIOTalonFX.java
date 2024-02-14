@@ -98,21 +98,23 @@ public class ShooterIOTalonFX implements ShooterIO {
     }
 
     @Override
-    public void setVelocity(double velocityRotPerSecondLeft, double velocityRotPerSecondRight,
-            double velocityRotPerSecondFeeder) {
+    public void setVelocityShooter(double velocityRotPerSecondLeft, double velocityRotPerSecondRight) {
         left.setControl(velocity.withVelocity(velocityRotPerSecondLeft));
         right.setControl(velocity.withVelocity(velocityRotPerSecondRight));
+    }
+
+    @Override
+    public void setVelocityFeeder(double velocityRotPerSecondFeeder) {
         feeder.setControl(velocity.withVelocity(velocityRotPerSecondFeeder));
     }
 
     @Override
-    public void stopShooter() {
-        left.setVoltage(0);
-        right.setVoltage(0);
-    }
-
-    @Override
-    public void stopFeeder() {
-        feeder.setControl(velocity.withVelocity(0));
+    public void setVoltage(
+            double voltageLeft,
+            double voltageRight,
+            double voltageFeeder) {
+        left.setVoltage(voltageLeft);
+        right.setVoltage(voltageRight);
+        feeder.setVoltage(voltageFeeder);
     }
 }

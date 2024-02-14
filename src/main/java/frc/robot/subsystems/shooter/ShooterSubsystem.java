@@ -56,37 +56,51 @@ public class ShooterSubsystem extends SubsystemBase {
         Logger.processInputs("Shooter/BeamBreak", this.beambreakInputs);
 
         if (DriverStation.isDisabled()) {
-            io.stop();
+            io.setVelocityShooter(0, 0);
+            io.setVelocityFeeder(0);
         }
     }
 
-    private void setVelocity(double velocityRotPerSecondLeft, double velocityRotPerSecondRight,
-            double velocityRotPerSecondFeeder) {
-        io.setVelocity(velocityRotPerSecondLeft, velocityRotPerSecondRight, velocityRotPerSecondFeeder);
-    }
-
-    public Command setVelocityCommand(double velocityRotPerSecondLeft, double velocityRotPerSecondRight,
-            double velocityRotPerSecondFeeder) {
+    public Command setVelocityFeederCommand(double velocityRotPerSecondFeeder) {
         return new InstantCommand(
-                () -> setVelocity(velocityRotPerSecondLeft, velocityRotPerSecondRight, velocityRotPerSecondFeeder),
-                this);
+                () -> this.io.setVelocityFeeder(velocityRotPerSecondFeeder), this);
     }
 
-    public void stop() {
-        io.stop();
+    public Command setVelocityShooterCommand(double velocityRotPerSecondLeft, double velocityRotPerSecondRight) {
+        return new InstantCommand(
+                () -> this.io.setVelocityShooter(velocityRotPerSecondLeft, velocityRotPerSecondRight), this);
     }
 
     public Command stopCommand() {
-        return new InstantCommand(() -> stop(), this);
+        return new InstantCommand(() -> {
+            this.io.setVelocityFeeder(0);
+            this.io.setVelocityShooter(0, 0);
+        }, this);
     }
 
-    public Command overrideBeamBreakActivatedCommand(boolean value) {
+    public Command stopFeederCommand() {
+        return new InstantCommand(() -> this.io.setVelocityFeeder(0), this);
+    }
+
+    public Command stopShooterCommand() {
+        return new InstantCommand(() -> this.io.setVelocityShooter(0, 0), this);
+    }
+
+    // For testing and sim
+    public Command setBeamBreakActivatedCommand(boolean value) {
         return new InstantCommand(() -> {
             this.beambreak.overrideActivated(value);
         });
     }
 
-    public Trigger beambreakActivated() {
+    // For testing and sim
+    public Command toggleBeamBrakeActivatedCommand() {
+        return new InstantCommand(() -> {
+            this.beambreak.overrideActivated(!this.beambreakIsActivated().getAsBoolean());
+        });
+    }
+
+    public Trigger beambreakIsActivated() {
         return new Trigger(() -> this.beambreakInputs.isActivated);
     }
 }

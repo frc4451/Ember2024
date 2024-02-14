@@ -25,18 +25,18 @@ public interface ShooterIO {
     public default void updateInputs(ShooterIOInputs inputs) {
     }
 
-    public default void setVelocity(double velocityRotPerSecondLeft, double velocityRotPerSecondRight,
+    public default void setVelocityShooter(
+            double velocityRotPerSecondLeft,
+            double velocityRotPerSecondRight) {
+    }
+
+    public default void setVelocityFeeder(
             double velocityRotPerSecondFeeder) {
     }
 
-    public default void stop() {
-
-    }
-
-    public default void stopShooter() {
-    }
-
-    public default void stopFeeder() {
-
+    public default void setVoltage(
+            double voltageLeft,
+            double voltageRight,
+            double voltageFeeder) {
     }
 }

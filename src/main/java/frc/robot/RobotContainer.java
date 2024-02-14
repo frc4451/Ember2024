@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.PathfindToTarget;
@@ -213,37 +212,46 @@ public class RobotContainer {
         SmartDashboard.putData("Run Chosen Path", Commands.deferredProxy(
                 () -> m_pathChooser.get()));
 
-        m_driverController.rightBumper()
-                .whileTrue(new RunCommand(
-                        () -> m_robotDrive.setCross(),
-                        m_robotDrive));
+        m_driverController
+                .rightBumper()
+                .whileTrue(
+                        Commands.defer(
+                                () -> new PathfindToTarget(
+                                        m_vision::getClosestObject,
+                                        m_robotDrive),
+                                Set.of(m_robotDrive)));
         m_driverController.povUp()
                 .whileTrue(
                         Commands.deferredProxy(
                                 () -> m_pathChooser.get()));
         m_driverController.x()
-                .onTrue(m_intake.setVelocityCommand(20, 20))
+                .onTrue(m_intake.setVelocityCommand(20))
                 .onFalse(m_intake.stopCommand());
         m_driverController.y()
-                .onTrue(m_intake.setVelocityCommand(50, 50))
+                .onTrue(m_intake.setVelocityCommand(50))
                 .onFalse(m_intake.stopCommand());
         m_driverController.a()
-                .and(m_shooter.beambreakActivated().negate())
-                .onTrue(m_intake.setVelocityCommand(20, 20))
+                .and(m_shooter.beambreakIsActivated().negate())
+                .onTrue(m_intake.setVelocityCommand(20))
                 .onFalse(m_intake.stopCommand());
+
+        m_driverController.povUp().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_RED));
+        m_driverController.povRight().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_GREEN));
+        m_driverController.povDown().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_BLUE));
+        m_driverController.povLeft().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_YELLOW));
 
         // 60 rps shot, 10 feet out, 40 degrees shooter angle ()
         m_operatorController.x() /* 65rps 10ft 36degrees */
-                .onTrue(m_shooter.setVelocityCommand(65.0, 65.0, 0))
+                .onTrue(m_shooter.setVelocityShooterCommand(65.0, 65.0))
                 .onFalse(m_shooter.stopCommand());
         m_operatorController.y() /* 10rps amp */
-                .onTrue(m_shooter.setVelocityCommand(10.0, 10.0, 0))
+                .onTrue(m_shooter.setVelocityShooterCommand(10.0, 10.0))
                 .onFalse(m_shooter.stopCommand());
         m_operatorController.a() /* 21ft shot and preferably use for other distances */
-                .onTrue(m_shooter.setVelocityCommand(85.0, 70.0, 0))
+                .onTrue(m_shooter.setVelocityShooterCommand(85.0, 70.0))
                 .onFalse(m_shooter.stopCommand());
         m_operatorController.b()
-                .onTrue(m_shooter.setVelocityCommand(60.0, 60.0, 0))
+                .onTrue(m_shooter.setVelocityShooterCommand(60.0, 60.0))
                 .onFalse(m_shooter.stopCommand());
         m_operatorController.rightY()
                 .whileTrue(m_pivot.runPercentCommand(() -> -m_operatorController.getRightY() / 2.0))
@@ -254,34 +262,16 @@ public class RobotContainer {
         m_operatorController.povDown().onTrue(m_pivot.setSetpointCommand(PivotLocation.k26.angle));
 
         // TEST CONTROLLER
-        m_programmerController.a()
-                .onTrue(m_ampTrap.runVelocityCommand(1.0));
-        m_programmerController.b()
-                .onTrue(m_ampTrap.stopCommand());
-
-        m_driverController
-                .rightBumper()
-                .whileTrue(
-                        Commands.defer(
-                                () -> new PathfindToTarget(
-                                        m_vision::getClosestObject,
-                                        m_robotDrive),
-                                Set.of(m_robotDrive)));
-
-        m_driverController.y()
-                .onTrue(m_intake.setVelocityCommand(50, 50))
+        m_programmerController.x()
+                .whileTrue(m_intake.setVelocityCommand(20.0))
                 .onFalse(m_intake.stopCommand());
-        m_driverController.x()
-                .onTrue(m_intake.setVelocityCommand(20, 20))
-                .onFalse(m_intake.stopCommand());
-        m_driverController.a()
-                .and(m_shooter.beambreakActivated())
-                .onTrue(m_intake.setVelocityCommand(20, 20))
-                .onFalse(m_intake.stopCommand());
+        m_programmerController.x()
+                .and(m_intake.beambreakIsActivated().negate())
+                .whileTrue(m_shooter.setVelocityFeederCommand(20.0))
+                .whileFalse(m_shooter.stopFeederCommand());
 
-        m_driverController.povUp().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_RED));
-        m_driverController.povRight().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_GREEN));
-        m_driverController.povDown().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_BLUE));
-        m_driverController.povLeft().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_YELLOW));
+        m_programmerController.povUp()
+                .onTrue(m_intake.toggleBeamBrakeActivatedCommand());
+
     }
 }
