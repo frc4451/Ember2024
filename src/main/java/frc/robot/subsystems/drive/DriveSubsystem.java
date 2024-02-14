@@ -162,6 +162,7 @@ public class DriveSubsystem extends SubsystemBase {
         addVisionMeasurements();
 
         Logger.recordOutput("Odometry/Robot", getPose());
+        Logger.recordOutput("Odometry/RotationDeg", getPose().getRotation().getDegrees());
     }
 
     private void addVisionMeasurements() {
