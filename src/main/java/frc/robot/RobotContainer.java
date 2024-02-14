@@ -266,7 +266,7 @@ public class RobotContainer {
                 .whileTrue(m_intake.setVelocityCommand(20.0))
                 .onFalse(m_intake.stopCommand());
         m_programmerController.x()
-                .and(m_intake.beambreakIsActivated().negate())
+                .and(m_intake.beambreakIsActivated())
                 .whileTrue(m_shooter.setVelocityFeederCommand(20.0))
                 .whileFalse(m_shooter.stopFeederCommand());
 

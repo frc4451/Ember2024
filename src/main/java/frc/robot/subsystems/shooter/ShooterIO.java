@@ -34,9 +34,25 @@ public interface ShooterIO {
             double velocityRotPerSecondFeeder) {
     }
 
-    public default void setVoltage(
+    public default void setVoltageShooter(
             double voltageLeft,
-            double voltageRight,
+            double voltageRight) {
+    }
+
+    public default void setVoltageFeeder(
             double voltageFeeder) {
+    }
+
+    public default void stop() {
+        setVoltageShooter(0.0, 0.0);
+        setVoltageFeeder(0.0);
+    }
+
+    public default void stopShooter() {
+        setVoltageShooter(0.0, 0.0);
+    }
+
+    public default void stopFeeder() {
+        setVoltageFeeder(0.0);
     }
 }

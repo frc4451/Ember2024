@@ -78,14 +78,18 @@ public class ShooterIOSim implements ShooterIO {
     }
 
     @Override
-    public void setVoltage(
+    public void setVoltageShooter(
             double voltageLeft,
-            double voltageRight,
-            double voltageFeeder) {
-        closedLoopFeeder = false;
+            double voltageRight) {
         closedLoopShooter = false;
         this.appliedVoltageLeft = voltageLeft;
         this.appliedVoltageRight = voltageRight;
+    }
+
+    @Override
+    public void setVoltageFeeder(
+            double voltageFeeder) {
+        closedLoopFeeder = false;
         this.appliedVoltageFeeder = voltageFeeder;
     }
 }

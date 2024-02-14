@@ -52,7 +52,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         // Make sure the motor actually stops when the robot disabled
         if (DriverStation.isDisabled()) {
-            this.io.setVelocity(0.0);
+            this.io.stop();
         }
     }
 
@@ -61,7 +61,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public Command stopCommand() {
-        return setVelocityCommand(0);
+        return new InstantCommand(this.io::stop, this);
     }
 
     // For testing and sim
@@ -74,7 +74,7 @@ public class IntakeSubsystem extends SubsystemBase {
     // For testing and sim
     public Command toggleBeamBrakeActivatedCommand() {
         return new InstantCommand(() -> {
-            this.beambreak.overrideActivated(!this.beambreakIsActivated().getAsBoolean());
+            this.beambreak.overrideActivated(!this.beambreakInputs.isActivated);
         });
     }
 

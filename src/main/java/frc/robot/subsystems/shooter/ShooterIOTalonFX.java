@@ -109,12 +109,15 @@ public class ShooterIOTalonFX implements ShooterIO {
     }
 
     @Override
-    public void setVoltage(
+    public void setVoltageShooter(
             double voltageLeft,
-            double voltageRight,
-            double voltageFeeder) {
+            double voltageRight) {
         left.setVoltage(voltageLeft);
         right.setVoltage(voltageRight);
-        feeder.setVoltage(voltageFeeder);
+    }
+
+    @Override
+    public void setVoltageFeeder(double voltageFeeder) {
+        this.feeder.setVoltage(voltageFeeder);
     }
 }

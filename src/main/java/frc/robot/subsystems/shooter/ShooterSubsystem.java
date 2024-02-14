@@ -56,8 +56,8 @@ public class ShooterSubsystem extends SubsystemBase {
         Logger.processInputs("Shooter/BeamBreak", this.beambreakInputs);
 
         if (DriverStation.isDisabled()) {
-            io.setVelocityShooter(0, 0);
-            io.setVelocityFeeder(0);
+            io.stopShooter();
+            io.stopFeeder();
         }
     }
 
@@ -72,18 +72,15 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public Command stopCommand() {
-        return new InstantCommand(() -> {
-            this.io.setVelocityFeeder(0);
-            this.io.setVelocityShooter(0, 0);
-        }, this);
+        return new InstantCommand(this.io::stop, this);
     }
 
     public Command stopFeederCommand() {
-        return new InstantCommand(() -> this.io.setVelocityFeeder(0), this);
+        return new InstantCommand(this.io::stopFeeder, this);
     }
 
     public Command stopShooterCommand() {
-        return new InstantCommand(() -> this.io.setVelocityShooter(0, 0), this);
+        return new InstantCommand(this.io::stopShooter, this);
     }
 
     // For testing and sim
@@ -96,7 +93,7 @@ public class ShooterSubsystem extends SubsystemBase {
     // For testing and sim
     public Command toggleBeamBrakeActivatedCommand() {
         return new InstantCommand(() -> {
-            this.beambreak.overrideActivated(!this.beambreakIsActivated().getAsBoolean());
+            this.beambreak.overrideActivated(!this.beambreakInputs.isActivated);
         });
     }
 
