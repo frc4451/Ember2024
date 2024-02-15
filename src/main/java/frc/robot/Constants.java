@@ -222,4 +222,11 @@ public final class Constants {
         public static final int kBeamBreakCanID = 0;
 
     }
+
+    public static final class ClimberConstants {
+        public static final double kClimberP = 0.3;
+        public static final double kClimberI = 0.0;
+        public static final double kClimberD = 0.0;
+        public static final int kClimberCanId = 5;
+    }
 }

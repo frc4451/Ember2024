@@ -31,6 +31,7 @@ import frc.robot.pathplanner.paths.PathPlannerPaths;
 import frc.robot.subsystems.amptrap.AmpTrapSubsystem;
 import frc.robot.subsystems.blinkin.BlinkinColors;
 import frc.robot.subsystems.blinkin.BlinkinSubsystem;
+import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.pivot.PivotLocation;
@@ -60,6 +61,8 @@ public class RobotContainer {
     public final ShooterSubsystem m_shooter = new ShooterSubsystem();
 
     public final AmpTrapSubsystem m_ampTrap = new AmpTrapSubsystem();
+
+    public final ClimberSubsystem m_climber = new ClimberSubsystem();
 
     // public final MiscSubsystem m_misc = new MiscSubsystem();
 
@@ -269,7 +272,8 @@ public class RobotContainer {
                 .and(m_intake.beambreakIsActivated())
                 .whileTrue(m_shooter.setVelocityFeederCommand(20.0))
                 .whileFalse(m_shooter.stopFeederCommand());
-
+        m_programmerController.y()
+                .whileTrue(m_climber.up(1000));
         m_programmerController.povUp()
                 .onTrue(m_intake.toggleBeamBrakeActivatedCommand());
 

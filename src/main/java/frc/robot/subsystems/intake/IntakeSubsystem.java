@@ -47,7 +47,7 @@ public class IntakeSubsystem extends SubsystemBase {
         this.io.updateInputs(this.inputs);
         this.beambreak.updateInputs(this.beambreakInputs);
 
-        Logger.processInputs("Intake/Motor", this.inputs);
+        Logger.processInputs("Intake", this.inputs);
         Logger.processInputs("Intake/BeamBreak", this.beambreakInputs);
 
         // Make sure the motor actually stops when the robot disabled

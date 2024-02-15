@@ -30,7 +30,7 @@ public class PivotSubsystem extends SubsystemBase {
     public PivotSubsystem() {
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
-                io = new PivotIOSparkMax();
+                io = new PivotIOTalonFX();
                 break;
             case SIM:
                 io = new PivotIOSim();
@@ -42,8 +42,8 @@ public class PivotSubsystem extends SubsystemBase {
                 break;
         }
 
-        setAngle(PivotLocation.INITIAL.angle);
-        setSetpoint(PivotLocation.INITIAL.angle);
+        this.setAngle(PivotLocation.INITIAL.angle);
+        this.setSetpoint(PivotLocation.INITIAL.angle);
     }
 
     @Override

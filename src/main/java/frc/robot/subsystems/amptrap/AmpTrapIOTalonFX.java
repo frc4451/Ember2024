@@ -16,7 +16,7 @@ public class AmpTrapIOTalonFX implements AmpTrapIO {
     private final StatusSignal<Double> appliedVoltage = roller.getMotorVoltage();
     private final StatusSignal<Double> temperatureCelsius = roller.getDeviceTemp();
     private final StatusSignal<Double> currentAmperage = roller.getSupplyCurrent();
-    private final StatusSignal<Double> velocityRotPerSecond = roller.getSupplyCurrent();
+    private final StatusSignal<Double> velocityRotPerSecond = roller.getVelocity();
 
     private final VelocityVoltage velocity = new VelocityVoltage(0);
 
