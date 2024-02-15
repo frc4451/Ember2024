@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.PathfindToTarget;
 import frc.robot.commands.PositionWithAmp;
@@ -54,17 +55,17 @@ public class RobotContainer {
     // ROBOT SUBSYSTEMS
     public final DriveSubsystem m_robotDrive = new DriveSubsystem(m_vision::pollLatestVisionMeasurement);
 
-    public final IntakeSubsystem m_intake = new IntakeSubsystem();
+    // public final IntakeSubsystem m_intake = new IntakeSubsystem();
 
-    public final PivotSubsystem m_pivot = new PivotSubsystem();
+    // public final PivotSubsystem m_pivot = new PivotSubsystem();
 
-    public final ShooterSubsystem m_shooter = new ShooterSubsystem();
+    // public final ShooterSubsystem m_shooter = new ShooterSubsystem();
 
-    public final AmpTrapSubsystem m_ampTrap = new AmpTrapSubsystem();
+    // public final AmpTrapSubsystem m_ampTrap = new AmpTrapSubsystem();
 
     // public final MiscSubsystem m_misc = new MiscSubsystem();
 
-    public final BlinkinSubsystem m_blinkin = new BlinkinSubsystem();
+    // public final BlinkinSubsystem m_blinkin = new BlinkinSubsystem();
 
     final CommandCustomController m_driverController = new CommandCustomController(
             OIConstants.kDriverControllerPort);
@@ -110,10 +111,24 @@ public class RobotContainer {
                         () -> -m_driverController.getRightX(),
                         true,
                         true));
-        m_pivot.setDefaultCommand(m_pivot.pivotPIDCommand());
+        // m_pivot.setDefaultCommand(m_pivot.pivotPIDCommand());
 
         // Build an auto chooser. You can make a default auto by passing in their name
         m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
+
+        // SysID Routines
+        m_autoChooser.addOption(
+                "Drive SysId (Quasistatic Forward)",
+                m_robotDrive.sysId.quasistatic(SysIdRoutine.Direction.kForward));
+        m_autoChooser.addOption(
+                "Drive SysId (Quasistatic Reverse)",
+                m_robotDrive.sysId.quasistatic(SysIdRoutine.Direction.kReverse));
+        m_autoChooser.addOption(
+                "Drive SysId (Dynamic Forward)",
+                m_robotDrive.sysId.dynamic(SysIdRoutine.Direction.kForward));
+        m_autoChooser.addOption(
+                "Drive SysId (Dynamic Reverse)",
+                m_robotDrive.sysId.dynamic(SysIdRoutine.Direction.kReverse));
     }
 
     /**
@@ -221,43 +236,45 @@ public class RobotContainer {
                 .whileTrue(
                         Commands.deferredProxy(
                                 () -> m_pathChooser.get()));
-        m_driverController.x()
-                .onTrue(m_intake.setVelocityCommand(20, 20))
-                .onFalse(m_intake.stopCommand());
-        m_driverController.y()
-                .onTrue(m_intake.setVelocityCommand(50, 50))
-                .onFalse(m_intake.stopCommand());
-        m_driverController.a()
-                .and(m_shooter.beambreakActivated().negate())
-                .onTrue(m_intake.setVelocityCommand(20, 20))
-                .onFalse(m_intake.stopCommand());
+        // m_driverController.x()
+        // .onTrue(m_intake.setVelocityCommand(20, 20))
+        // .onFalse(m_intake.stopCommand());
+        // m_driverController.y()
+        // .onTrue(m_intake.setVelocityCommand(50, 50))
+        // .onFalse(m_intake.stopCommand());
+        // m_driverController.a()
+        // .and(m_shooter.beambreakActivated().negate())
+        // .onTrue(m_intake.setVelocityCommand(20, 20))
+        // .onFalse(m_intake.stopCommand());
 
         // 60 rps shot, 10 feet out, 40 degrees shooter angle ()
-        m_operatorController.x() /* 65rps 10ft 36degrees */
-                .onTrue(m_shooter.setVelocityCommand(65.0, 65.0, 0))
-                .onFalse(m_shooter.stopCommand());
-        m_operatorController.y() /* 10rps amp */
-                .onTrue(m_shooter.setVelocityCommand(10.0, 10.0, 0))
-                .onFalse(m_shooter.stopCommand());
-        m_operatorController.a() /* 21ft shot and preferably use for other distances */
-                .onTrue(m_shooter.setVelocityCommand(85.0, 70.0, 0))
-                .onFalse(m_shooter.stopCommand());
-        m_operatorController.b()
-                .onTrue(m_shooter.setVelocityCommand(60.0, 60.0, 0))
-                .onFalse(m_shooter.stopCommand());
-        m_operatorController.rightY()
-                .whileTrue(m_pivot.runPercentCommand(() -> -m_operatorController.getRightY() / 2.0))
-                .onFalse(m_pivot.setSetpointCurrentCommand());
-        m_operatorController.povLeft().onTrue(m_pivot.setSetpointCommand(PivotLocation.k85.angle));
-        m_operatorController.povUp().onTrue(m_pivot.setSetpointCommand(PivotLocation.k55.angle));
-        m_operatorController.povRight().onTrue(m_pivot.setSetpointCommand(PivotLocation.k36.angle));
-        m_operatorController.povDown().onTrue(m_pivot.setSetpointCommand(PivotLocation.k26.angle));
+        // m_operatorController.x() /* 65rps 10ft 36degrees */
+        // .onTrue(m_shooter.setVelocityCommand(65.0, 65.0, 0))
+        // .onFalse(m_shooter.stopCommand());
+        // m_operatorController.y() /* 10rps amp */
+        // .onTrue(m_shooter.setVelocityCommand(10.0, 10.0, 0))
+        // .onFalse(m_shooter.stopCommand());
+        // m_operatorController.a() /* 21ft shot and preferably use for other distances
+        // */
+        // .onTrue(m_shooter.setVelocityCommand(85.0, 70.0, 0))
+        // .onFalse(m_shooter.stopCommand());
+        // m_operatorController.b()
+        // .onTrue(m_shooter.setVelocityCommand(60.0, 60.0, 0))
+        // .onFalse(m_shooter.stopCommand());
+        // m_operatorController.rightY()
+        // .whileTrue(m_pivot.runPercentCommand(() -> -m_operatorController.getRightY()
+        // / 2.0))
+        // .onFalse(m_pivot.setSetpointCurrentCommand());
+        // m_operatorController.povLeft().onTrue(m_pivot.setSetpointCommand(PivotLocation.k85.angle));
+        // m_operatorController.povUp().onTrue(m_pivot.setSetpointCommand(PivotLocation.k55.angle));
+        // m_operatorController.povRight().onTrue(m_pivot.setSetpointCommand(PivotLocation.k36.angle));
+        // m_operatorController.povDown().onTrue(m_pivot.setSetpointCommand(PivotLocation.k26.angle));
 
         // TEST CONTROLLER
-        m_programmerController.a()
-                .onTrue(m_ampTrap.runVelocityCommand(1.0));
-        m_programmerController.b()
-                .onTrue(m_ampTrap.stopCommand());
+        // m_programmerController.a()
+        // .onTrue(m_ampTrap.runVelocityCommand(1.0));
+        // m_programmerController.b()
+        // .onTrue(m_ampTrap.stopCommand());
 
         m_driverController
                 .rightBumper()
@@ -268,20 +285,20 @@ public class RobotContainer {
                                         m_robotDrive),
                                 Set.of(m_robotDrive)));
 
-        m_driverController.y()
-                .onTrue(m_intake.setVelocityCommand(50, 50))
-                .onFalse(m_intake.stopCommand());
-        m_driverController.x()
-                .onTrue(m_intake.setVelocityCommand(20, 20))
-                .onFalse(m_intake.stopCommand());
-        m_driverController.a()
-                .and(m_shooter.beambreakActivated())
-                .onTrue(m_intake.setVelocityCommand(20, 20))
-                .onFalse(m_intake.stopCommand());
+        // m_driverController.y()
+        // .onTrue(m_intake.setVelocityCommand(50, 50))
+        // .onFalse(m_intake.stopCommand());
+        // m_driverController.x()
+        // .onTrue(m_intake.setVelocityCommand(20, 20))
+        // .onFalse(m_intake.stopCommand());
+        // m_driverController.a()
+        // .and(m_shooter.beambreakActivated())
+        // .onTrue(m_intake.setVelocityCommand(20, 20))
+        // .onFalse(m_intake.stopCommand());
 
-        m_driverController.povUp().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_RED));
-        m_driverController.povRight().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_GREEN));
-        m_driverController.povDown().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_BLUE));
-        m_driverController.povLeft().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_YELLOW));
+        // m_driverController.povUp().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_RED));
+        // m_driverController.povRight().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_GREEN));
+        // m_driverController.povDown().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_BLUE));
+        // m_driverController.povLeft().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_YELLOW));
     }
 }

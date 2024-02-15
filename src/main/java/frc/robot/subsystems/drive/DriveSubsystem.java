@@ -7,6 +7,7 @@ package frc.robot.subsystems.drive;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -19,7 +20,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.vision.VisionSubsystem.VisionMeasurement;
@@ -46,6 +51,8 @@ public class DriveSubsystem extends SubsystemBase {
             m_trackedRotation,
             getModulePositions(),
             new Pose2d());
+
+    public final SysIdRoutine sysId;
 
     private final Supplier<VisionMeasurement> m_visionSupplier;
 
@@ -113,6 +120,21 @@ public class DriveSubsystem extends SubsystemBase {
                 };
                 break;
         }
+
+        sysId = new SysIdRoutine(
+                new SysIdRoutine.Config(
+                        null,
+                        null,
+                        null,
+                        (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
+                new SysIdRoutine.Mechanism(
+                        (voltage) -> {
+                            for (int i = 0; i < m_modules.length; i++) {
+                                m_modules[i].runCharacterization(voltage.in(Units.Volts));
+                            }
+                        },
+                        null,
+                        this));
     }
 
     public SwerveModuleState[] getModuleStates() {
@@ -133,6 +155,12 @@ public class DriveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        if (DriverStation.isDisabled()) {
+            for (int i = 0; i < m_modules.length; i++) {
+                m_modules[i].stop();
+            }
+        }
+
         m_gyro.updateInputs(m_gyroInputs);
         Logger.processInputs("Drive/Gyro", m_gyroInputs);
 

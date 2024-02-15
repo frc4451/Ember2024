@@ -116,14 +116,34 @@ public class SwerveModuleSparks implements SwerveModuleIO {
     public void updateInputs(SwerveModuleIOInputs inputs) {
         inputs.drivePositionMeters = m_drivingEncoder.getPosition();
         inputs.driveVelocityMetersPerSec = m_drivingEncoder.getVelocity();
+        inputs.driveAppliedVoltage = m_drivingSparkFlex.getAppliedOutput() * m_drivingSparkFlex.getBusVoltage();
+        inputs.driveCurrentAmperage = m_drivingSparkFlex.getOutputCurrent();
 
         inputs.turnAbsolutePositionRad = m_turningEncoder.getPosition();
         inputs.turnAngularOffsetPositionRad = m_turningEncoder.getPosition() - m_chassisAngularOffset;
+        inputs.turnAppliedVoltage = m_turningSparkMax.getAppliedOutput() * m_turningSparkMax.getBusVoltage();
+        inputs.turnCurrentAmperage = m_turningSparkMax.getOutputCurrent();
         // inputs.turnVelocityRadPerSec = m_turningEncoder.getVelocity();
 
         Rotation2d angle = new Rotation2d(inputs.turnAngularOffsetPositionRad);
         inputs.state = new SwerveModuleState(inputs.driveVelocityMetersPerSec, angle);
         inputs.position = new SwerveModulePosition(inputs.drivePositionMeters, angle);
+    }
+
+    public void setDriveVoltage(double voltage) {
+        m_drivingSparkFlex.setVoltage(voltage);
+    }
+
+    public void setTurnVoltage(double voltage) {
+        m_turningSparkMax.setVoltage(voltage);
+    }
+
+    public void runCharacterization(double driveVoltage) {
+        m_turningPIDController.setReference(
+                m_chassisAngularOffset,
+                CANSparkFlex.ControlType.kPosition);
+
+        m_drivingSparkFlex.setVoltage(driveVoltage);
     }
 
     /**

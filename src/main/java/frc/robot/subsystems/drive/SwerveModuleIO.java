@@ -14,9 +14,13 @@ public interface SwerveModuleIO {
     public static class SwerveModuleIOInputs {
         public double drivePositionMeters = 0.0;
         public double driveVelocityMetersPerSec = 0.0;
+        public double driveAppliedVoltage = 0.0;
+        public double driveCurrentAmperage = 0.0;
 
         public double turnAbsolutePositionRad = 0.0;
         public double turnAngularOffsetPositionRad = 0.0;
+        public double turnAppliedVoltage = 0.0;
+        public double turnCurrentAmperage = 0.0;
         // public double turnVelocityRadPerSec = 0.0;
 
         public SwerveModuleState state = new SwerveModuleState();
@@ -24,6 +28,20 @@ public interface SwerveModuleIO {
     }
 
     public default void updateInputs(SwerveModuleIOInputs inputs) {
+    }
+
+    public default void setDriveVoltage(double voltage) {
+    }
+
+    public default void setTurnVoltage(double voltage) {
+    }
+
+    public default void runCharacterization(double driveVoltage) {
+    }
+
+    public default void stop() {
+        setDriveVoltage(0);
+        setTurnVoltage(0);
     }
 
     /**
