@@ -12,7 +12,7 @@ import frc.robot.Constants.IntakeConstants;
 // Won't be doing that right now but that might work.
 public class PivotIOSim implements PivotIO {
     private final SingleJointedArmSim armSim = new SingleJointedArmSim(
-            DCMotor.getNEO(1),
+            DCMotor.getFalcon500(1),
             IntakeConstants.kPivotReduction,
             0.3, // moment of intertia (I think this is in kg * m^2) (number is wrong)
             0.8, // arm length (m) (number is wrong)

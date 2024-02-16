@@ -19,6 +19,7 @@ public class ClimberIOTalonFX implements ClimberIO {
     private final StatusSignal<Double> velocityRotPerSecond = io.getVelocity();
     private final StatusSignal<Double> currentAmperage = io.getSupplyCurrent();
     private final StatusSignal<Double> temperatureCelsius = io.getDeviceTemp();
+    private final StatusSignal<Double> positionRotations = io.getPosition();
 
     private final VelocityVoltage velocityVoltage = new VelocityVoltage(0);
 
@@ -45,11 +46,13 @@ public class ClimberIOTalonFX implements ClimberIO {
                 appliedVoltage,
                 velocityRotPerSecond,
                 temperatureCelsius,
-                currentAmperage);
+                currentAmperage,
+                positionRotations);
         inputs.appliedVoltage = appliedVoltage.getValueAsDouble();
         inputs.velocityRotPerSecond = velocityRotPerSecond.getValueAsDouble();
         inputs.currentAmperage = currentAmperage.getValueAsDouble();
         inputs.temperatureCelsius = temperatureCelsius.getValueAsDouble();
+        inputs.positionRotations = positionRotations.getValueAsDouble();
     }
 
     @Override
@@ -66,7 +69,7 @@ public class ClimberIOTalonFX implements ClimberIO {
         this.io.setPosition(position);
     }
 
-    public void getposition() {
-        this.io.getPosition();
+    public double getposition() {
+        return positionRotations.getValueAsDouble();
     }
 }

@@ -273,7 +273,13 @@ public class RobotContainer {
                 .whileTrue(m_shooter.setVelocityFeederCommand(20.0))
                 .whileFalse(m_shooter.stopFeederCommand());
         m_programmerController.y()
-                .whileTrue(m_climber.up(1000));
+                .onTrue(m_climber.setSetpointCommand(1000.0))
+                .whileTrue(new InstantCommand(() -> {
+                    m_climber.runPID();
+                }))
+                .onFalse(m_climber.setSetpointCurrentCommand());
+        m_programmerController.rightY()
+                .whileTrue(m_climber.runPercentCommand(() -> m_programmerController.getRightY()));
         m_programmerController.povUp()
                 .onTrue(m_intake.toggleBeamBrakeActivatedCommand());
 
