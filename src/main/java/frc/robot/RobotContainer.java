@@ -173,7 +173,7 @@ public class RobotContainer {
                 Set.of(m_robotDrive));
 
         Command otherAmpCommand = Commands.defer(() -> new PositionWithAmp(
-                () -> -m_driverController.getLeftX(),
+                () -> -m_driverController.getLeftY(),
                 m_vision::getVisibleAprilTags,
                 m_robotDrive,
                 true),
@@ -206,13 +206,17 @@ public class RobotContainer {
         // proxy the deferred command to run while the button is held.
         m_laneAssistChooser = new LoggedDashboardChooser<>("LaneAssist", new SendableChooser<>());
 
+        m_laneAssistCommands.put("Amp",
+                new LaneAssist(PathPlannerPoses.AMP.getDeferredCommand(), ampCommand));
+        m_laneAssistCommands.put("Other Amp",
+                new LaneAssist(PathPlannerPoses.OTHER_AMP.getDeferredCommand(), otherAmpCommand));
         m_laneAssistCommands.put("Human Player",
                 new LaneAssist(PathPlannerPoses.HUMAN_PLAYER.getDeferredCommand(),
                         new InstantCommand()));
-        m_laneAssistCommands.put("Speaker Center",
-                new LaneAssist(PathPlannerPoses.SPEAKER_CENTER.getDeferredCommand(), speakerStrafeAndAimCommand));
         m_laneAssistCommands.put("Speaker Left",
                 new LaneAssist(PathPlannerPoses.SPEAKER_LEFT.getDeferredCommand(), speakerStrafeAndAimCommand));
+        m_laneAssistCommands.put("Speaker Center",
+                new LaneAssist(PathPlannerPoses.SPEAKER_CENTER.getDeferredCommand(), speakerStrafeAndAimCommand));
         m_laneAssistCommands.put("Speaker Right",
                 new LaneAssist(PathPlannerPoses.SPEAKER_RIGHT.getDeferredCommand(), speakerStrafeAndAimCommand));
         m_laneAssistCommands.put("Amp",
@@ -229,6 +233,11 @@ public class RobotContainer {
                 new LaneAssist(StageTags.SPEAKER_10FT.getDeferredCommand(), speakerPosition10Command));
         m_laneAssistCommands.put("Speaker (15 ft)",
                 new LaneAssist(StageTags.SPEAKER_15FT.getDeferredCommand(), speakerPosition15Command));
+
+        {
+            String defaultLaneAssist = "Amp";
+            m_laneAssistChooser.addDefaultOption(defaultLaneAssist, m_laneAssistCommands.get(defaultLaneAssist));
+        }
 
         m_laneAssistCommands.forEach((String key, LaneAssist laneAssist) -> {
             m_laneAssistChooser.addOption(key, laneAssist);
