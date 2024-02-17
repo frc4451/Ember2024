@@ -19,12 +19,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.PathfindToTarget;
 import frc.robot.commands.PositionWithAmp;
+import frc.robot.commands.PositionWithSpeaker;
 import frc.robot.commands.PositionWithStageSingleClimb;
 import frc.robot.commands.StrafeAndAimToSpeaker;
 import frc.robot.commands.TeleopDrive;
@@ -138,22 +140,40 @@ public class RobotContainer {
      * </p>
      */
     private void configureLaneAssistBindings() {
-        Command speakerCommand = Commands.defer(() -> new StrafeAndAimToSpeaker(
+        Command speakerStrafeAndAimCommand = Commands.defer(() -> new StrafeAndAimToSpeaker(
                 () -> -m_driverController.getLeftY(),
                 () -> -m_driverController.getLeftX(),
                 m_vision::getVisibleAprilTags,
                 m_robotDrive),
                 Set.of(m_robotDrive));
 
+        Command speakerPosition10Command = new ParallelCommandGroup(
+                m_pivot.setSetpointCommand(PivotLocation.k36.angle),
+                Commands.defer(() -> new PositionWithSpeaker(
+                        () -> -m_driverController.getLeftX(),
+                        m_vision::getVisibleAprilTags,
+                        m_robotDrive,
+                        StageTags.SPEAKER_10FT),
+                        Set.of(m_robotDrive)));
+
+        Command speakerPosition15Command = new ParallelCommandGroup(
+                m_pivot.setSetpointCommand(PivotLocation.k26.angle),
+                Commands.defer(() -> new PositionWithSpeaker(
+                        () -> -m_driverController.getLeftX(),
+                        m_vision::getVisibleAprilTags,
+                        m_robotDrive,
+                        StageTags.SPEAKER_15FT),
+                        Set.of(m_robotDrive)));
+
         Command ampCommand = Commands.defer(() -> new PositionWithAmp(
-                () -> -m_driverController.getLeftY(),
+                () -> -m_driverController.getLeftX(),
                 m_vision::getVisibleAprilTags,
                 m_robotDrive,
                 false),
                 Set.of(m_robotDrive));
 
         Command otherAmpCommand = Commands.defer(() -> new PositionWithAmp(
-                () -> -m_driverController.getLeftY(),
+                () -> -m_driverController.getLeftX(),
                 m_vision::getVisibleAprilTags,
                 m_robotDrive,
                 true),
@@ -190,11 +210,11 @@ public class RobotContainer {
                 new LaneAssist(PathPlannerPoses.HUMAN_PLAYER.getDeferredCommand(),
                         new InstantCommand()));
         m_laneAssistCommands.put("Speaker Center",
-                new LaneAssist(PathPlannerPoses.SPEAKER_CENTER.getDeferredCommand(), speakerCommand));
+                new LaneAssist(PathPlannerPoses.SPEAKER_CENTER.getDeferredCommand(), speakerStrafeAndAimCommand));
         m_laneAssistCommands.put("Speaker Left",
-                new LaneAssist(PathPlannerPoses.SPEAKER_LEFT.getDeferredCommand(), speakerCommand));
+                new LaneAssist(PathPlannerPoses.SPEAKER_LEFT.getDeferredCommand(), speakerStrafeAndAimCommand));
         m_laneAssistCommands.put("Speaker Right",
-                new LaneAssist(PathPlannerPoses.SPEAKER_RIGHT.getDeferredCommand(), speakerCommand));
+                new LaneAssist(PathPlannerPoses.SPEAKER_RIGHT.getDeferredCommand(), speakerStrafeAndAimCommand));
         m_laneAssistCommands.put("Amp",
                 new LaneAssist(PathPlannerPoses.AMP.getDeferredCommand(), ampCommand));
         m_laneAssistCommands.put("Other Amp",
@@ -205,6 +225,10 @@ public class RobotContainer {
                 new LaneAssist(StageTags.HUMAN.getDeferredCommand(), stageHumanCommand));
         m_laneAssistCommands.put("Stage Amp",
                 new LaneAssist(StageTags.AMP.getDeferredCommand(), stageAmpCommand));
+        m_laneAssistCommands.put("Speaker (10 ft)",
+                new LaneAssist(StageTags.SPEAKER_10FT.getDeferredCommand(), speakerPosition10Command));
+        m_laneAssistCommands.put("Speaker (15 ft)",
+                new LaneAssist(StageTags.SPEAKER_15FT.getDeferredCommand(), speakerPosition15Command));
 
         m_laneAssistCommands.forEach((String key, LaneAssist laneAssist) -> {
             m_laneAssistChooser.addOption(key, laneAssist);

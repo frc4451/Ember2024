@@ -54,8 +54,8 @@ public class PositionWithStageSingleClimb extends Command {
         this.drive = drive;
 
         this.stageTag = stageTag;
-        targetPose = new Pose3d(stageTag.getPathfindingPose());
-        // targetPose = VisionConstants.FIELD_LAYOUT.getTagPose(targetFiducialId).get();
+
+        targetPose = stageTag.getOffsetPose();
 
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
     }
@@ -133,7 +133,7 @@ public class PositionWithStageSingleClimb extends Command {
     private ChassisSpeeds aimCenterFieldFacingSide() {
         double rotationSpeedRad = thetaController.calculate(
                 drive.getPose().getRotation().getRadians(),
-                stageTag.getPathfindingPose().getRotation().getRadians());
+                stageTag.getOffsetPose().getRotation().getAngle());
 
         double yErrorMeters = targetPose.getY() - drive.getPose().getY();
 
@@ -146,7 +146,7 @@ public class PositionWithStageSingleClimb extends Command {
     private ChassisSpeeds aimAngledFacingSide() {
         double rotationSpeedRad = thetaController.calculate(
                 drive.getPose().getRotation().getRadians(),
-                stageTag.getPathfindingPose().getRotation().getRadians());
+                stageTag.getOffsetPose().getRotation().getAngle());
 
         double threshold = 0.4;
 
@@ -157,8 +157,8 @@ public class PositionWithStageSingleClimb extends Command {
         double ySpeedMeters = 0.0;
 
         if (Math.abs(x) > threshold && Math.abs(y) > threshold) {
-            xSpeedMeters = x * stageTag.getPathfindingPose().getRotation().getCos();
-            ySpeedMeters = -y * stageTag.getPathfindingPose().getRotation().getSin();
+            xSpeedMeters = x * Math.cos(stageTag.getOffsetPose().getRotation().getAngle());
+            ySpeedMeters = -y * Math.sin(stageTag.getOffsetPose().getRotation().getAngle());
         }
 
         return new ChassisSpeeds(-xSpeedMeters, ySpeedMeters, rotationSpeedRad);
