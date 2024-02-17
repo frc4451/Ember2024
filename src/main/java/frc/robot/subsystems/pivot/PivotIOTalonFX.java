@@ -20,10 +20,12 @@ public class PivotIOTalonFX implements PivotIO {
     private final StatusSignal<Double> appliedVoltageLeader = pivotLeader.getMotorVoltage();
     private final StatusSignal<Double> temperatureCelsiusLeader = pivotLeader.getDeviceTemp();
     private final StatusSignal<Double> currentAmperageLeader = pivotLeader.getSupplyCurrent();
+    private final StatusSignal<Double> positionRotationsLeader = pivotLeader.getPosition();
 
     private final StatusSignal<Double> appliedVoltageFollower = pivotFollower.getMotorVoltage();
     private final StatusSignal<Double> temperatureCelsiusFollower = pivotFollower.getDeviceTemp();
     private final StatusSignal<Double> currentAmperageFollower = pivotFollower.getSupplyCurrent();
+    private final StatusSignal<Double> positionRotationsFollower = pivotFollower.getPosition();
 
     public PivotIOTalonFX() {
         this.pivotLeader.getConfigurator().apply(
@@ -37,27 +39,30 @@ public class PivotIOTalonFX implements PivotIO {
                         .withMotorOutput(new MotorOutputConfigs()
                                 .withNeutralMode(NeutralModeValue.Brake))
                         .withClosedLoopRamps(new ClosedLoopRampsConfigs()
-                                .withDutyCycleClosedLoopRampPeriod(1.0)));    
+                                .withDutyCycleClosedLoopRampPeriod(1.0)));
         this.pivotFollower.setControl(new Follower(pivotLeader.getDeviceID(), true));
     }
 
     @Override
     public void updateInputs(PivotIOInputs inputs) {
         StatusSignal.refreshAll(
-            appliedVoltageLeader,
-            temperatureCelsiusLeader,
-            currentAmperageLeader,
-            appliedVoltageFollower,
-            temperatureCelsiusFollower,
-            currentAmperageFollower
-        );
+                appliedVoltageLeader,
+                temperatureCelsiusLeader,
+                currentAmperageLeader,
+                positionRotationsLeader,
+                appliedVoltageFollower,
+                temperatureCelsiusFollower,
+                currentAmperageFollower,
+                positionRotationsFollower);
         inputs.appliedVoltageLeader = appliedVoltageLeader.getValueAsDouble();
         inputs.temperatureCelsiusLeader = temperatureCelsiusLeader.getValueAsDouble();
         inputs.currentAmperageLeader = currentAmperageLeader.getValueAsDouble();
+        inputs.positionRadLeader = positionRotationsLeader.getValueAsDouble() * kPositionConversionFactor;
 
         inputs.appliedVoltageFollower = appliedVoltageFollower.getValueAsDouble();
         inputs.temperatureCelsiusFollower = temperatureCelsiusFollower.getValueAsDouble();
         inputs.currentAmperageFollower = currentAmperageFollower.getValueAsDouble();
+        inputs.positionRadFollower = positionRotationsFollower.getValueAsDouble() * kPositionConversionFactor;
     }
 
     @Override
@@ -73,6 +78,7 @@ public class PivotIOTalonFX implements PivotIO {
     @Override
     public void setAngle(Rotation2d angle) {
         this.pivotLeader.setPosition(angle.getRadians() / kPositionConversionFactor);
+        // TODO: See if we need to set follower as well
     }
 
     @Override

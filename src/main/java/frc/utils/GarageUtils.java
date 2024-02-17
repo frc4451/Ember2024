@@ -25,4 +25,22 @@ public class GarageUtils {
     public static double getFlipped() {
         return GarageUtils.isRedAlliance() ? -1 : 1;
     }
+
+    /**
+     *
+     * @param percent  Percent -1.0 to 1.0
+     * @param position Current position in units
+     * @param min      Min position
+     * @param max      Max position
+     * @return
+     */
+    public static double percentSmoothBetweenValues(double percent, double position, double min, double max) {
+        double x = position;
+        double y = percent;
+        return y * (x > min && 0 > Math.signum(y)
+                ? (Math.pow(x - min, 2) - 1) / (Math.pow(x - min, 2) + 1)
+                : max > x && Math.signum(y) > 0
+                        ? (Math.pow(max - x, 2) - 1) / (Math.pow(max - x - x, 2) + 1)
+                        : 1.0);
+    }
 }

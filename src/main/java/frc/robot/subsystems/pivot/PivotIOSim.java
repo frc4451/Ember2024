@@ -31,8 +31,8 @@ public class PivotIOSim implements PivotIO {
         inputs.currentAmperageLeader = armSim.getCurrentDrawAmps();
         inputs.currentAmperageFollower = armSim.getCurrentDrawAmps();
 
-        inputs.relativeAngleRadLeader = armSim.getAngleRads();
-        inputs.relativeAngleRadFollower = armSim.getAngleRads();
+        inputs.positionRadLeader = armSim.getAngleRads();
+        inputs.positionRadFollower = armSim.getAngleRads();
     }
 
     @Override

@@ -12,6 +12,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.Constants.ClimberConstants;
 
 public class ClimberIOTalonFX implements ClimberIO {
+    private static final double kPositionConversionFactor = 1.0 / ClimberConstants.kClimberReduction;
 
     private final TalonFX io = new TalonFX(ClimberConstants.kClimberCanId);
 
@@ -49,15 +50,10 @@ public class ClimberIOTalonFX implements ClimberIO {
                 currentAmperage,
                 positionRotations);
         inputs.appliedVoltage = appliedVoltage.getValueAsDouble();
-        inputs.velocityRotPerSecond = velocityRotPerSecond.getValueAsDouble();
+        inputs.velocityRotPerSecond = velocityRotPerSecond.getValueAsDouble() * kPositionConversionFactor;
         inputs.currentAmperage = currentAmperage.getValueAsDouble();
         inputs.temperatureCelsius = temperatureCelsius.getValueAsDouble();
-        inputs.positionRotations = positionRotations.getValueAsDouble();
-    }
-
-    @Override
-    public void setVelocity(double velocityRotPerSecond) {
-        this.io.setControl(velocityVoltage.withVelocity(velocityRotPerSecond));
+        inputs.positionRot = positionRotations.getValueAsDouble() * kPositionConversionFactor;
     }
 
     @Override
@@ -65,11 +61,8 @@ public class ClimberIOTalonFX implements ClimberIO {
         this.io.setVoltage(voltage);
     }
 
+    @Override
     public void setPosition(double position) {
-        this.io.setPosition(position);
-    }
-
-    public double getposition() {
-        return positionRotations.getValueAsDouble();
+        this.io.setPosition(position / kPositionConversionFactor);
     }
 }

@@ -11,7 +11,8 @@ import frc.robot.Constants.IntakeConstants;
 
 public class PivotIOSparkMax implements PivotIO {
     private final CANSparkMax pivotLeader = new CANSparkMax(IntakeConstants.kPivotLeaderCanId, MotorType.kBrushless);
-    private final CANSparkMax pivotFollower = new CANSparkMax(IntakeConstants.kPivotFollowerCanId, MotorType.kBrushless);
+    private final CANSparkMax pivotFollower = new CANSparkMax(IntakeConstants.kPivotFollowerCanId,
+            MotorType.kBrushless);
 
     private final RelativeEncoder leaderEncoder = pivotLeader.getEncoder();
     private final RelativeEncoder followerEncoder = pivotFollower.getEncoder();
@@ -28,7 +29,6 @@ public class PivotIOSparkMax implements PivotIO {
         this.leaderEncoder.setPosition(0);
         this.followerEncoder.setPosition(0);
 
-        
     }
 
     @Override
@@ -36,12 +36,12 @@ public class PivotIOSparkMax implements PivotIO {
         inputs.appliedVoltageLeader = this.pivotLeader.getAppliedOutput() * this.pivotLeader.getBusVoltage();
         inputs.temperatureCelsiusLeader = this.pivotLeader.getMotorTemperature();
         inputs.currentAmperageLeader = this.pivotLeader.getOutputCurrent();
-        inputs.relativeAngleRadLeader = this.leaderEncoder.getPosition();
-        
+        inputs.positionRadLeader = this.leaderEncoder.getPosition();
+
         inputs.appliedVoltageLeader = this.pivotFollower.getAppliedOutput() * this.pivotLeader.getBusVoltage();
         inputs.temperatureCelsiusLeader = this.pivotFollower.getMotorTemperature();
         inputs.currentAmperageLeader = this.pivotFollower.getOutputCurrent();
-        inputs.relativeAngleRadLeader = this.followerEncoder.getPosition();
+        inputs.positionRadLeader = this.followerEncoder.getPosition();
 
     }
 

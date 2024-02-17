@@ -113,7 +113,7 @@ public class RobotContainer {
                         true,
                         true));
         m_pivot.setDefaultCommand(m_pivot.pivotPIDCommand());
-
+        m_climber.setDefaultCommand(m_climber.pidCommand());
         // Build an auto chooser. You can make a default auto by passing in their name
         m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
     }
@@ -273,13 +273,13 @@ public class RobotContainer {
                 .whileTrue(m_shooter.setVelocityFeederCommand(20.0))
                 .whileFalse(m_shooter.stopFeederCommand());
         m_programmerController.y()
-                .onTrue(m_climber.setSetpointCommand(1000.0))
-                .whileTrue(new InstantCommand(() -> {
-                    m_climber.runPID();
-                }))
-                .onFalse(m_climber.setSetpointCurrentCommand());
+                .onTrue(m_climber.setSetpointCommand(5.0));
+        m_programmerController.a()
+                .onTrue(m_climber.setSetpointCommand(0.0));
         m_programmerController.rightY()
-                .whileTrue(m_climber.runPercentCommand(() -> m_programmerController.getRightY()));
+                .whileTrue(m_climber.runPercentCommand(() -> -m_programmerController.getRightY()))
+                .onFalse(m_climber.setSetpointCurrentCommand());
+
         m_programmerController.povUp()
                 .onTrue(m_intake.toggleBeamBrakeActivatedCommand());
 

@@ -10,12 +10,12 @@ public interface PivotIO {
         public double appliedVoltageLeader = 0.0;
         public double currentAmperageLeader = 0.0;
         public double temperatureCelsiusLeader = 0.0;
-        public double relativeAngleRadLeader = 0.0;
+        public double positionRadLeader = 0.0;
 
         public double appliedVoltageFollower = 0.0;
         public double currentAmperageFollower = 0.0;
         public double temperatureCelsiusFollower = 0.0;
-        public double relativeAngleRadFollower = 0.0;
+        public double positionRadFollower = 0.0;
     }
 
     public default void updateInputs(PivotIOInputs inputs) {
