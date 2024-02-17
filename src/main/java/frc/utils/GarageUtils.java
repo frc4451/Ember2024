@@ -28,6 +28,8 @@ public class GarageUtils {
 
     /**
      *
+     * Desmos graph https://www.desmos.com/calculator/xaycuzfhbd
+     *
      * @param percent  Percent -1.0 to 1.0
      * @param position Current position in units
      * @param min      Min position
