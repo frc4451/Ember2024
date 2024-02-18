@@ -62,7 +62,7 @@ public class RobotContainer {
 
     // public final RollerSubsystem m_rollers = new RollerSubsystem();
 
-    public final PivotSubsystem m_pivot = new PivotSubsystem();
+    public final PivotSubsystem m_pivot = new PivotSubsystem(m_robotDrive::getPose);
 
     public final ShooterSubsystem m_shooter = new ShooterSubsystem();
 

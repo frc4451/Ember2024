@@ -1,12 +1,16 @@
 package frc.robot.subsystems.pivot;
 
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -27,7 +31,21 @@ public class PivotSubsystem extends SubsystemBase {
             Constants.IntakeConstants.kPivotI,
             Constants.IntakeConstants.kPivotD);
 
-    public PivotSubsystem() {
+    private PivotAimingParameters pivotAimingParameters = null;
+    private final Supplier<Pose2d> drivePoseSupplier;
+
+    /**
+     * <p>
+     * Lookup table for finding known good shots and guessing the angle we need
+     * between those shots.
+     * </p>
+     * <p>
+     * key: meters, values: degrees
+     * </p>
+     */
+    private final InterpolatingDoubleTreeMap armAngleMap = new InterpolatingDoubleTreeMap();
+
+    public PivotSubsystem(Supplier<Pose2d> drivePoseSupplier) {
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
                 io = new PivotIOSparkMax();
@@ -44,6 +62,12 @@ public class PivotSubsystem extends SubsystemBase {
 
         setAngle(PivotLocation.INITIAL.angle);
         setSetpoint(PivotLocation.INITIAL.angle);
+
+        this.drivePoseSupplier = drivePoseSupplier;
+
+        armAngleMap.put(Units.feetToMeters(10), PivotLocation.k36.angle.getDegrees());
+        armAngleMap.put(Units.feetToMeters(15), PivotLocation.k26.angle.getDegrees());
+
     }
 
     @Override
@@ -61,6 +85,8 @@ public class PivotSubsystem extends SubsystemBase {
 
         Logger.recordOutput("Pivot/Angle", getAngle().getDegrees());
         Logger.recordOutput("Pivot/SetpointAngle", getSetpoint().getDegrees());
+
+        Logger.recordOutput("Pivot/EstimatedNeededAngle", armAngleMap.get(Units.feetToMeters(12.5)));
     }
 
     public void setAngle(Rotation2d angle) {
@@ -101,5 +127,13 @@ public class PivotSubsystem extends SubsystemBase {
 
     public Command runPercentCommand(DoubleSupplier decimalPercent) {
         return new RunCommand(() -> this.io.setPercentOutput(decimalPercent.getAsDouble()), this);
+    }
+
+    public PivotAimingParameters getPivotAimingParameters() {
+        if (pivotAimingParameters != null) {
+            return pivotAimingParameters;
+        }
+
+        return pivotAimingParameters;
     }
 }
