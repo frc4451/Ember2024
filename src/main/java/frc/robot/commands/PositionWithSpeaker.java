@@ -12,58 +12,55 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.VisionConstants;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
 import frc.robot.subsystems.vision.apriltag.AprilTagAlgorithms;
+import frc.robot.subsystems.vision.apriltag.StageTags;
 import frc.utils.GarageUtils;
 
-public class PositionWithAmp extends Command {
+public class PositionWithSpeaker extends Command {
     private static double yawMeasurementOffset = Math.PI; // To aim from the back
-    private final PIDController thetaController = new PIDController(6, 0, 0.1);
-    private final PIDController xController = new PIDController(5, 0, 0);
+    private final PIDController xController = new PIDController(1, 0, 0);
+    private final PIDController thetaController = new PIDController(5, 0, 0.1);
     private final String logRoot;
 
     private final DriveSubsystem drive;
-    private final int targetFiducialId;
+    private final StageTags tag;
     private final Supplier<Set<TargetWithSource>> visibleAprilTagsSupplier;
     // private final DoubleSupplier xSupplier;
     private final DoubleSupplier ySupplier;
 
+    private Pose3d tagPose = new Pose3d();
     private Pose3d targetPose = new Pose3d();
     private boolean hasSeenTag = false;
 
-    public PositionWithAmp(
+    public PositionWithSpeaker(
             DoubleSupplier ySupplier,
             Supplier<Set<TargetWithSource>> visibleAprilTagsSupplier,
             DriveSubsystem drive,
-            boolean isCoopertition) {
+            StageTags tag) {
         addRequirements(drive);
-        setName("PositionWithAmp");
+        setName("PositionWithSpeaker");
 
         logRoot = "Commands/" + getName() + "/";
 
         this.ySupplier = ySupplier;
 
-        this.targetFiducialId = !isCoopertition
-                ? GarageUtils.isBlueAlliance()
-                        ? VisionConstants.BLUE_AMP_TAG
-                        : VisionConstants.RED_AMP_TAG
-                : GarageUtils.isRedAlliance()
-                        ? VisionConstants.BLUE_AMP_TAG
-                        : VisionConstants.RED_AMP_TAG;
+        this.tag = tag;
 
         this.visibleAprilTagsSupplier = visibleAprilTagsSupplier;
         this.drive = drive;
 
-        targetPose = VisionConstants.FIELD_LAYOUT.getTagPose(targetFiducialId).get();
-
+        xController.setTolerance(0.1);
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
     }
 
     @Override
     public void initialize() {
         drive.runVelocity(new ChassisSpeeds());
+
+        tagPose = tag.getPose();
+        targetPose = tag.getOffsetPose();
 
         Logger.recordOutput(logRoot + "IsRunning", true);
     }
@@ -73,7 +70,7 @@ public class PositionWithAmp extends Command {
         Pose3d robotPose = new Pose3d(drive.getPose());
 
         Set<TargetWithSource> targets = this.visibleAprilTagsSupplier.get();
-        AprilTagAlgorithms.filterTags(targets.stream(), targetFiducialId)
+        AprilTagAlgorithms.filterTags(targets.stream(), tag.getId())
                 .reduce((targetWithSourceA,
                         targetWithSourceB) -> targetWithSourceA.target().getPoseAmbiguity() <= targetWithSourceB
                                 .target().getPoseAmbiguity()
@@ -82,31 +79,27 @@ public class PositionWithAmp extends Command {
                 .ifPresent(
                         targetWithSource -> {
                             hasSeenTag = true;
-                            targetPose = targetWithSource.getTargetPoseFrom(robotPose);
+                            tagPose = targetWithSource.getTargetPoseFrom(robotPose);
+                            targetPose = tag.getOffsetPoseFrom(tagPose);
                         });
 
-        double xErrorMeters = targetPose.getX() - robotPose.getX();
-        double rotationSpeedRad;
-        if (Math.abs(xErrorMeters) < 1.0) {
-            double yawErrorRad = targetPose.relativeTo(robotPose)
-                    .getTranslation()
-                    .toTranslation2d()
-                    .getAngle()
-                    .getRadians();
-            rotationSpeedRad = thetaController.calculate(yawMeasurementOffset, yawErrorRad);
-        } else {
-            rotationSpeedRad = thetaController.calculate(
-                    drive.getPose().getRotation().getRadians(),
-                    -Math.PI / 2);
-        }
+        double yawErrorRad = tagPose.relativeTo(robotPose)
+                .getTranslation()
+                .toTranslation2d()
+                .getAngle()
+                .getRadians();
+        double rotationSpeedRad = thetaController.calculate(yawMeasurementOffset, yawErrorRad);
 
         double xSpeedMeters = MathUtil.clamp(
-                xController.calculate(0, xErrorMeters),
+                xController.calculate(robotPose.getX(), targetPose.getX()),
                 -DriveConstants.kMaxSpeedMetersPerSecond,
                 DriveConstants.kMaxSpeedMetersPerSecond);
 
-        Logger.recordOutput(logRoot + "TargetID", targetFiducialId);
+        Logger.recordOutput(logRoot + "TargetID", tag.getId());
+        Logger.recordOutput(logRoot + "TagPose", tagPose);
+        Logger.recordOutput(logRoot + "TagPose2d", tagPose.toPose2d());
         Logger.recordOutput(logRoot + "TargetPose", targetPose);
+        Logger.recordOutput(logRoot + "TargetPose2d", targetPose.toPose2d());
         Logger.recordOutput(logRoot + "HasSeenTarget", hasSeenTag);
         Logger.recordOutput(logRoot + "RotationSpeed", rotationSpeedRad);
 

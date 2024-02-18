@@ -42,6 +42,20 @@ public class TeleopDrive {
 
     public static void drive(
             DriveSubsystem driveSubsystem,
+            ChassisSpeeds speeds,
+            boolean rateLimit,
+            boolean fieldRelative) {
+        drive(
+                driveSubsystem,
+                speeds.vxMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond,
+                speeds.vyMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond,
+                speeds.omegaRadiansPerSecond / DriveConstants.kMaxAngularSpeed,
+                rateLimit,
+                fieldRelative);
+    }
+
+    public static void drive(
+            DriveSubsystem driveSubsystem,
             double xSpeed,
             double ySpeed,
             double rot,

@@ -16,20 +16,22 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.PathfindToTarget;
 import frc.robot.commands.PositionWithAmp;
-import frc.robot.commands.StrafeAndAimToAprilTag;
+import frc.robot.commands.PositionWithSpeaker;
+import frc.robot.commands.PositionWithStageSingleClimb;
 import frc.robot.commands.StrafeAndAimToSpeaker;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.pathplanner.PathPlannerUtils;
-import frc.robot.pathplanner.paths.PathPlannerPaths;
+import frc.robot.pathplanner.paths.PathPlannerPoses;
 import frc.robot.subsystems.blinkin.BlinkinColors;
 import frc.robot.subsystems.blinkin.BlinkinSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -38,7 +40,9 @@ import frc.robot.subsystems.pivot.PivotLocation;
 import frc.robot.subsystems.pivot.PivotSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
+import frc.robot.subsystems.vision.apriltag.StageTags;
 import frc.utils.CommandCustomController;
+import frc.utils.LaneAssist;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -72,14 +76,11 @@ public class RobotContainer {
     final CommandCustomController m_operatorController = new CommandCustomController(
             OIConstants.kOperatorControllerPort);
 
-    // private final SendableChooser<Command> autoChooser;
     public final LoggedDashboardChooser<Command> m_autoChooser;
 
-    public LoggedDashboardChooser<Command> m_pathChooser;
+    public final Map<String, LaneAssist> m_laneAssistCommands = new LinkedHashMap<>();
 
-    public final Map<String, Command> laneAssistCommands = new LinkedHashMap<>();
-
-    public LoggedDashboardChooser<Command> m_laneAssistChooser;
+    public LoggedDashboardChooser<LaneAssist> m_laneAssistChooser;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -90,7 +91,6 @@ public class RobotContainer {
 
         // Configure the button bindings
         configureNamedCommands();
-        configurePathChooser();
         configureButtonBindings();
         configureLaneAssistBindings();
 
@@ -127,22 +127,6 @@ public class RobotContainer {
     }
 
     /**
-     * Creates a state machine of paths and adds them all to it
-     */
-    private void configurePathChooser() {
-        m_pathChooser = new LoggedDashboardChooser<>("Path Chooser", new SendableChooser<>());
-
-        if (PathPlannerPaths.values().length != 0) {
-            PathPlannerPaths defaultPath = PathPlannerPaths.values()[0];
-            m_pathChooser.addDefaultOption(defaultPath.label, defaultPath.getCommand());
-
-            for (PathPlannerPaths path : PathPlannerPaths.values()) {
-                m_pathChooser.addOption(path.label, path.getCommand());
-            }
-        }
-    }
-
-    /**
      * Configure all commands that are used for 'Lane Assist'.
      *
      * <p>
@@ -156,49 +140,115 @@ public class RobotContainer {
      * </p>
      */
     private void configureLaneAssistBindings() {
-        Command speakerLaneAssistCommand = Commands.defer(() -> new StrafeAndAimToSpeaker(
+        Command speakerStrafeAndAimCommand = Commands.defer(() -> new StrafeAndAimToSpeaker(
                 () -> -m_driverController.getLeftY(),
                 () -> -m_driverController.getLeftX(),
                 m_vision::getVisibleAprilTags,
                 m_robotDrive),
                 Set.of(m_robotDrive));
 
-        Command ampLaneAssistCommand = Commands.defer(() -> new PositionWithAmp(
+        Command speakerPosition10Command = new ParallelCommandGroup(
+                m_pivot.setSetpointCommand(PivotLocation.k36.angle),
+                Commands.defer(() -> new PositionWithSpeaker(
+                        () -> -m_driverController.getLeftX(),
+                        m_vision::getVisibleAprilTags,
+                        m_robotDrive,
+                        StageTags.SPEAKER_10FT),
+                        Set.of(m_robotDrive)));
+
+        Command speakerPosition15Command = new ParallelCommandGroup(
+                m_pivot.setSetpointCommand(PivotLocation.k26.angle),
+                Commands.defer(() -> new PositionWithSpeaker(
+                        () -> -m_driverController.getLeftX(),
+                        m_vision::getVisibleAprilTags,
+                        m_robotDrive,
+                        StageTags.SPEAKER_15FT),
+                        Set.of(m_robotDrive)));
+
+        Command ampCommand = Commands.defer(() -> new PositionWithAmp(
                 () -> -m_driverController.getLeftX(),
                 m_vision::getVisibleAprilTags,
                 m_robotDrive,
                 false),
                 Set.of(m_robotDrive));
 
-        Command coopertitionLaneAssistCommand = Commands.defer(() -> new PositionWithAmp(
-                () -> -m_driverController.getLeftX(),
+        Command otherAmpCommand = Commands.defer(() -> new PositionWithAmp(
+                () -> -m_driverController.getLeftY(),
                 m_vision::getVisibleAprilTags,
                 m_robotDrive,
                 true),
                 Set.of(m_robotDrive));
 
-        String defaultKey = "Speaker Center";
+        Command stageHumanCommand = Commands.defer(() -> new SequentialCommandGroup(
+                new PositionWithStageSingleClimb(
+                        () -> -m_driverController.getLeftY(),
+                        m_vision::getVisibleAprilTags,
+                        StageTags.HUMAN,
+                        m_robotDrive)),
+                Set.of(m_robotDrive));
 
-        laneAssistCommands.put("Speaker Center", speakerLaneAssistCommand);
-        laneAssistCommands.put("Speaker Left", speakerLaneAssistCommand);
-        laneAssistCommands.put("Speaker Right", speakerLaneAssistCommand);
+        Command stageAmpCommand = Commands.defer(() -> new PositionWithStageSingleClimb(
+                () -> -m_driverController.getLeftY(),
+                m_vision::getVisibleAprilTags,
+                StageTags.AMP,
+                m_robotDrive),
+                Set.of(m_robotDrive));
 
-        laneAssistCommands.put("Amp", ampLaneAssistCommand);
-        laneAssistCommands.put("Other Amp", coopertitionLaneAssistCommand);
-
-        m_laneAssistChooser = new LoggedDashboardChooser<>("LaneAssist", new SendableChooser<>());
-        laneAssistCommands.forEach((String key, Command command) -> {
-            m_laneAssistChooser.addOption(key, command);
-        });
-
-        m_laneAssistChooser.addDefaultOption(defaultKey,
-                laneAssistCommands.get(defaultKey));
+        Command stageCenterCommand = Commands.defer(() -> new PositionWithStageSingleClimb(
+                () -> -m_driverController.getLeftY(),
+                m_vision::getVisibleAprilTags,
+                StageTags.CENTER,
+                m_robotDrive),
+                Set.of(m_robotDrive));
 
         // Each command that we plan to use for 'Lane Assist' should be deferred
         // with their respective subsystems. Once they're deferred, we can then
         // proxy the deferred command to run while the button is held.
+        m_laneAssistChooser = new LoggedDashboardChooser<>("LaneAssist", new SendableChooser<>());
+
+        m_laneAssistCommands.put("Amp",
+                new LaneAssist(PathPlannerPoses.AMP.getDeferredCommand(), ampCommand));
+        m_laneAssistCommands.put("Other Amp",
+                new LaneAssist(PathPlannerPoses.OTHER_AMP.getDeferredCommand(), otherAmpCommand));
+        m_laneAssistCommands.put("Human Player",
+                new LaneAssist(PathPlannerPoses.HUMAN_PLAYER.getDeferredCommand(),
+                        new InstantCommand()));
+        m_laneAssistCommands.put("Speaker Left",
+                new LaneAssist(PathPlannerPoses.SPEAKER_LEFT.getDeferredCommand(), speakerStrafeAndAimCommand));
+        m_laneAssistCommands.put("Speaker Center",
+                new LaneAssist(PathPlannerPoses.SPEAKER_CENTER.getDeferredCommand(), speakerStrafeAndAimCommand));
+        m_laneAssistCommands.put("Speaker Right",
+                new LaneAssist(PathPlannerPoses.SPEAKER_RIGHT.getDeferredCommand(), speakerStrafeAndAimCommand));
+        m_laneAssistCommands.put("Amp",
+                new LaneAssist(PathPlannerPoses.AMP.getDeferredCommand(), ampCommand));
+        m_laneAssistCommands.put("Other Amp",
+                new LaneAssist(PathPlannerPoses.OTHER_AMP.getDeferredCommand(), otherAmpCommand));
+        m_laneAssistCommands.put("Stage Center",
+                new LaneAssist(StageTags.CENTER.getDeferredCommand(), stageCenterCommand));
+        m_laneAssistCommands.put("Stage Human",
+                new LaneAssist(StageTags.HUMAN.getDeferredCommand(), stageHumanCommand));
+        m_laneAssistCommands.put("Stage Amp",
+                new LaneAssist(StageTags.AMP.getDeferredCommand(), stageAmpCommand));
+        m_laneAssistCommands.put("Speaker (10 ft)",
+                new LaneAssist(StageTags.SPEAKER_10FT.getDeferredCommand(), speakerPosition10Command));
+        m_laneAssistCommands.put("Speaker (15 ft)",
+                new LaneAssist(StageTags.SPEAKER_15FT.getDeferredCommand(), speakerPosition15Command));
+
+        {
+            String defaultLaneAssist = "Amp";
+            m_laneAssistChooser.addDefaultOption(defaultLaneAssist, m_laneAssistCommands.get(defaultLaneAssist));
+        }
+
+        m_laneAssistCommands.forEach((String key, LaneAssist laneAssist) -> {
+            m_laneAssistChooser.addOption(key, laneAssist);
+        });
+
+        m_laneAssistChooser.addDefaultOption("Human Player", m_laneAssistCommands.get("Human Player"));
+
+        m_driverController.leftTrigger()
+                .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get().pathfindCommand()));
         m_driverController.rightTrigger()
-                .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get()));
+                .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get().aimingCommand()));
     }
 
     /**
@@ -249,13 +299,10 @@ public class RobotContainer {
         m_operatorController.povRight().onTrue(m_pivot.setSetpointCommand(PivotLocation.k160.angle));
         m_operatorController.povDown().onTrue(m_pivot.setSetpointCommand(PivotLocation.k45.angle));
         m_operatorController.povLeft().onTrue(m_pivot.setSetpointCommand(PivotLocation.k90.angle));
-        m_driverController.povUp()
-                .whileTrue(
-                        Commands.deferredProxy(
-                                () -> m_pathChooser.get()));
-
-        SmartDashboard.putData("Run Chosen Path", Commands.deferredProxy(
-                () -> m_pathChooser.get()));
+        // m_driverController.leftTrigger()
+        // .whileTrue(
+        // Commands.deferredProxy(
+        // () -> m_pathChooser.get()));
 
         m_driverController
                 .rightBumper()
@@ -265,15 +312,15 @@ public class RobotContainer {
                                         m_vision::getClosestObject,
                                         m_robotDrive),
                                 Set.of(m_robotDrive)));
-        m_driverController.leftBumper()
-                .whileTrue(
-                        Commands.defer(() -> new StrafeAndAimToAprilTag(
-                                () -> -m_driverController.getLeftY(),
-                                () -> -m_driverController.getLeftX(),
-                                m_vision::getVisibleAprilTags,
-                                3,
-                                m_robotDrive),
-                                Set.of(m_robotDrive)));
+        // m_driverController.leftBumper()
+        // .whileTrue(
+        // Commands.defer(() -> new StrafeAndAimToAprilTag(
+        // () -> -m_driverController.getLeftY(),
+        // () -> -m_driverController.getLeftX(),
+        // m_vision::getVisibleAprilTags,
+        // 3,
+        // m_robotDrive),
+        // Set.of(m_robotDrive)));
         // m_driverController.leftTrigger()
         // .whileTrue(
         // Commands.defer(() -> new StrafeAndAimToSpeaker(
