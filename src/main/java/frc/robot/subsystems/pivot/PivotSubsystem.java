@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.AdvantageKitConstants;
+import frc.robot.subsystems.vision.apriltag.StageTags;
+import frc.utils.GeomUtils;
 
 public class PivotSubsystem extends SubsystemBase {
     private final PivotIO io;
@@ -65,9 +67,13 @@ public class PivotSubsystem extends SubsystemBase {
 
         this.drivePoseSupplier = drivePoseSupplier;
 
+        // Angle collected from spreadsheet, distance from tag calculated from
+        // PathPlanner. Update this if this is not correct.
+        armAngleMap.put(1.35, 55.0);
+        // These are straight from the data collected
         armAngleMap.put(Units.feetToMeters(10), PivotLocation.k36.angle.getDegrees());
+        armAngleMap.put(Units.feetToMeters(13), 31.0);
         armAngleMap.put(Units.feetToMeters(15), PivotLocation.k26.angle.getDegrees());
-
     }
 
     @Override
@@ -86,7 +92,9 @@ public class PivotSubsystem extends SubsystemBase {
         Logger.recordOutput("Pivot/Angle", getAngle().getDegrees());
         Logger.recordOutput("Pivot/SetpointAngle", getSetpoint().getDegrees());
 
-        Logger.recordOutput("Pivot/EstimatedNeededAngle", armAngleMap.get(Units.feetToMeters(12.5)));
+        double distanceToTarget = GeomUtils.getDistanceFromTag(this.drivePoseSupplier.get(), StageTags.SPEAKER_AIM);
+        Logger.recordOutput("Pivot/EstimatedDistanceToTarget", distanceToTarget);
+        Logger.recordOutput("Pivot/EstimatedNeededAngle", armAngleMap.get(distanceToTarget));
     }
 
     public void setAngle(Rotation2d angle) {

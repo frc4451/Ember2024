@@ -1,6 +1,5 @@
 package frc.utils;
 
-import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -44,16 +43,18 @@ public class GeomUtils {
     }
 
     /**
-     * Using the robot's known pose, find the hypotenuse of how far away the robot
-     * is
-     * from the `StageTag`
+     * Using the robot's known pose, find the distance of how far away the robot
+     * is from the `StageTag`.
      *
      * @param tag       - Stage Tag to aim
      * @param robotPose - Current Robot Pose
-     * @return hypotenuse of distance from robot to target
+     * @return distance from robot to target
      */
-    public static double getRobotDistanceFromStageTag(StageTags tag, Pose2d robotPose) {
-        return 0.0;
+    public static double getDistanceFromTag(Pose2d robotPose, StageTags tag) {
+        Translation2d robotTranslation = robotPose.getTranslation();
+        Translation2d targetTranslation = tag.getPose().toPose2d().getTranslation();
+        double distanceToTarget = robotTranslation.getDistance(targetTranslation);
+        return distanceToTarget;
     }
 
 }
