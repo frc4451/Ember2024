@@ -6,7 +6,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 
 public class AmpTrapIOSim implements AmpTrapIO {
-    private static double momentOfInertiaKgMSquared = 1.0;
+    private static final double momentOfInertiaKgMSquared = 1.0;
 
     private final FlywheelSim rollerSim = new FlywheelSim(DCMotor.getFalcon500(1), 1, momentOfInertiaKgMSquared);
 

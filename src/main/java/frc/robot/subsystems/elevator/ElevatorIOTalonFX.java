@@ -12,15 +12,17 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.Constants.ElevatorConstants;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
-    private static final double kPositionConversionFactor = 1.0 / ElevatorConstants.kElevatorReduction
-            * ElevatorConstants.kElevatorSpoolDiameter * Math.PI;
+    private static final double kRotationsToInches = ElevatorConstants.kElevatorSpoolDiameter
+            * Math.PI
+            / ElevatorConstants.kElevatorReduction;
+
     private final TalonFX io = new TalonFX(ElevatorConstants.kElevatorCanID);
 
     private final StatusSignal<Double> appliedVoltage = io.getMotorVoltage();
-    private final StatusSignal<Double> velocityInchesPerSecond = io.getVelocity();
+    private final StatusSignal<Double> velocityRotPerSec = io.getVelocity();
     private final StatusSignal<Double> currentAmperage = io.getSupplyCurrent();
     private final StatusSignal<Double> temperatureCelsius = io.getDeviceTemp();
-    private final StatusSignal<Double> positionInches = io.getPosition();
+    private final StatusSignal<Double> positionRotations = io.getPosition();
 
     private final VelocityVoltage velocityVoltage = new VelocityVoltage(0);
 
@@ -45,15 +47,15 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     public void updateInputs(ElevatorIOInputs inputs) {
         StatusSignal.refreshAll(
                 appliedVoltage,
-                velocityInchesPerSecond,
+                velocityRotPerSec,
                 temperatureCelsius,
                 currentAmperage,
-                positionInches);
+                positionRotations);
         inputs.appliedVoltage = appliedVoltage.getValueAsDouble();
-        inputs.velocityInchesPerSecond = velocityInchesPerSecond.getValueAsDouble() * kPositionConversionFactor;
+        inputs.velocityInchesPerSecond = velocityRotPerSec.getValueAsDouble() * kRotationsToInches;
         inputs.currentAmperage = currentAmperage.getValueAsDouble();
         inputs.temperatureCelsius = temperatureCelsius.getValueAsDouble();
-        inputs.positionInches = positionInches.getValueAsDouble() * kPositionConversionFactor;
+        inputs.positionInches = positionRotations.getValueAsDouble() * kRotationsToInches;
     }
 
     @Override
@@ -62,7 +64,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     }
 
     @Override
-    public void setPosition(double position) {
-        this.io.setPosition(position / kPositionConversionFactor);
+    public void setPosition(double positionInches) {
+        this.io.setPosition(positionInches / kRotationsToInches);
     }
 }

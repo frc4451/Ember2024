@@ -14,7 +14,7 @@ public interface AmpTrapIO {
     public default void updateInputs(AmpTrapIOInputs inputs) {
     }
 
-    public default void setVelocity(double velocity) {
+    public default void setVelocity(double velocityRotPerSec) {
     }
 
     public default void setVoltage(double voltage) {
