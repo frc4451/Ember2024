@@ -33,6 +33,7 @@ import frc.robot.subsystems.blinkin.BlinkinColors;
 import frc.robot.subsystems.blinkin.BlinkinSubsystem;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.elevator.ElevatorSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.pivot.PivotLocation;
 import frc.robot.subsystems.pivot.PivotSubsystem;
@@ -63,6 +64,8 @@ public class RobotContainer {
     public final AmpTrapSubsystem m_ampTrap = new AmpTrapSubsystem();
 
     public final ClimberSubsystem m_climber = new ClimberSubsystem();
+
+    public final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
 
     // public final MiscSubsystem m_misc = new MiscSubsystem();
 
@@ -114,6 +117,7 @@ public class RobotContainer {
                         true));
         m_pivot.setDefaultCommand(m_pivot.pivotPIDCommand());
         m_climber.setDefaultCommand(m_climber.pidCommand());
+        m_elevator.setDefaultCommand(m_elevator.pidCommand());
         // Build an auto chooser. You can make a default auto by passing in their name
         m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
     }
@@ -273,7 +277,7 @@ public class RobotContainer {
                 .whileTrue(m_shooter.setVelocityFeederCommand(20.0))
                 .whileFalse(m_shooter.stopFeederCommand());
         m_programmerController.y()
-                .onTrue(m_climber.setSetpointCommand(5.0));
+                .onTrue(m_climber.setSetpointCommand(100.0));
         m_programmerController.a()
                 .onTrue(m_climber.setSetpointCommand(0.0));
         m_programmerController.rightY()
@@ -282,6 +286,5 @@ public class RobotContainer {
 
         m_programmerController.povUp()
                 .onTrue(m_intake.toggleBeamBrakeActivatedCommand());
-
     }
 }

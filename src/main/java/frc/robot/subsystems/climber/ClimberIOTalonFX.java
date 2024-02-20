@@ -17,10 +17,10 @@ public class ClimberIOTalonFX implements ClimberIO {
     private final TalonFX io = new TalonFX(ClimberConstants.kClimberCanId);
 
     private final StatusSignal<Double> appliedVoltage = io.getMotorVoltage();
-    private final StatusSignal<Double> velocityRotPerSecond = io.getVelocity();
+    private final StatusSignal<Double> velocityInchesPerSecond = io.getVelocity();
     private final StatusSignal<Double> currentAmperage = io.getSupplyCurrent();
     private final StatusSignal<Double> temperatureCelsius = io.getDeviceTemp();
-    private final StatusSignal<Double> positionRotations = io.getPosition();
+    private final StatusSignal<Double> positionInches = io.getPosition();
 
     private final VelocityVoltage velocityVoltage = new VelocityVoltage(0);
 
@@ -45,15 +45,15 @@ public class ClimberIOTalonFX implements ClimberIO {
     public void updateInputs(ClimberIOInputs inputs) {
         StatusSignal.refreshAll(
                 appliedVoltage,
-                velocityRotPerSecond,
-                temperatureCelsius,
                 currentAmperage,
-                positionRotations);
+                temperatureCelsius,
+                velocityInchesPerSecond,
+                positionInches);
         inputs.appliedVoltage = appliedVoltage.getValueAsDouble();
-        inputs.velocityRotPerSecond = velocityRotPerSecond.getValueAsDouble() * kPositionConversionFactor;
         inputs.currentAmperage = currentAmperage.getValueAsDouble();
         inputs.temperatureCelsius = temperatureCelsius.getValueAsDouble();
-        inputs.positionRot = positionRotations.getValueAsDouble() * kPositionConversionFactor;
+        inputs.velocityInchesPerSecond = velocityInchesPerSecond.getValueAsDouble() * kPositionConversionFactor;
+        inputs.positionInches = positionInches.getValueAsDouble() * kPositionConversionFactor;
     }
 
     @Override

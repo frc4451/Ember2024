@@ -9,8 +9,8 @@ public interface ElevatorIO {
         public double currentAmperage = 0.0;
         public double temperatureCelsius = 0.0;
 
-        public double velocityRotPerSecond = 0.0;
-        public double positionRot = 0.0;
+        public double velocityInchesPerSecond = 0.0;
+        public double positionInches = 0.0;
     }
 
     public default void updateInputs(ElevatorIOInputs inputs) {
@@ -23,6 +23,6 @@ public interface ElevatorIO {
         setVoltage(0.0);
     }
 
-    public default void setPosition(double positionRot) {
+    public default void setPosition(double positionInches) {
     }
 }

@@ -20,11 +20,11 @@ public class ClimberSubsystem extends SubsystemBase {
     private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
 
     private final PIDController pidController = new PIDController(
-            ClimberConstants.kClimberP,
-            ClimberConstants.kClimberI,
-            ClimberConstants.kClimberD);
+            ClimberConstants.kP,
+            ClimberConstants.kI,
+            ClimberConstants.kD);
 
-    private double setpointRot = 0.0;
+    private double setpointInches = 0.0;
 
     public ClimberSubsystem() {
         switch (AdvantageKitConstants.getMode()) {
@@ -55,7 +55,7 @@ public class ClimberSubsystem extends SubsystemBase {
             this.io.stop();
         }
 
-        Logger.recordOutput("Climber/SetpointRot", setpointRot);
+        Logger.recordOutput("Climber/SetpointInches", setpointInches);
     }
 
     public void reset() {
@@ -63,21 +63,22 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     private void setSetpoint(double setpoint) {
-        this.setpointRot = MathUtil.clamp(setpoint, 0.0, ClimberConstants.kMaxHeightRotations);
-        this.pidController.setSetpoint(setpoint);
+        this.setpointInches = MathUtil.clamp(setpoint, ClimberConstants.kMinHeightInches,
+                ClimberConstants.kMaxHeightInches);
+        this.pidController.setSetpoint(this.setpointInches);
     }
 
-    public Command setSetpointCommand(double positionRot) {
-        return new InstantCommand(() -> this.setSetpoint(positionRot), this);
+    public Command setSetpointCommand(double positionInches) {
+        return new InstantCommand(() -> this.setSetpoint(positionInches), this);
     }
 
     public Command setSetpointCurrentCommand() {
-        return new InstantCommand(() -> this.setSetpoint(this.inputs.positionRot), this);
+        return new InstantCommand(() -> this.setSetpoint(this.inputs.positionInches), this);
     }
 
     public Command pidCommand() {
         return new RunCommand(() -> {
-            double output = this.pidController.calculate(this.inputs.positionRot);
+            double output = this.pidController.calculate(this.inputs.positionInches);
             setVoltage(output);
         }, this);
     }
@@ -90,9 +91,9 @@ public class ClimberSubsystem extends SubsystemBase {
         return new RunCommand(() -> this.io.setPercentOutput(
                 GarageUtils.percentSmoothBetweenValues(
                         decimalPercent.getAsDouble(),
-                        this.inputs.positionRot,
-                        ClimberConstants.kMinHeightRotations,
-                        ClimberConstants.kMaxHeightRotations)),
+                        this.inputs.positionInches,
+                        ClimberConstants.kMinHeightInches,
+                        ClimberConstants.kMaxHeightInches)),
                 this);
     }
 }

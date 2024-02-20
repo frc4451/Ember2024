@@ -225,15 +225,30 @@ public final class Constants {
 
     public static final class ClimberConstants {
         public static final double kMaxVelocityRotPerSecond = 10.0;
-        public static final double kMaxHeightRotations = 18.0;
-        public static final double kMinHeightRotations = 0.0;
+        public static final double kMaxHeightInches = 18.0;
+        public static final double kMinHeightInches = 0.0;
 
+        public static final double kClimberSpoolDiameter = 1.0;
         public static final double kClimberReduction = 25.0;
 
         public static final int kClimberCanId = 5;
 
-        public static final double kClimberP = 5.0;
-        public static final double kClimberI = 0.0;
-        public static final double kClimberD = 1.0;
+        public static final double kP = 1.0;
+        public static final double kI = 0.0;
+        public static final double kD = 1.0;
+    }
+
+    public static final class ElevatorConstants {
+        public static final double kMaxHeightInches = 20.0;
+        public static final double kMinHeightInches = 0.0;
+
+        public static final double kElevatorSpoolDiameter = 0.75;
+        public static final double kElevatorReduction = 5.0;
+
+        public static final int kElevatorCanID = 8;
+
+        public static final double kP = 5.0;
+        public static final double kI = 0.0;
+        public static final double kD = 1.0;
     }
 }

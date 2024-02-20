@@ -16,8 +16,9 @@ public class ClimberIOSim implements ClimberIO {
 
         inputs.appliedVoltage = appliedVoltage;
         inputs.currentAmperage = sim.getCurrentDrawAmps();
-        inputs.velocityRotPerSecond = sim.getAngularVelocityRPM() / 60;
-        inputs.positionRot = sim.getAngularPositionRotations();
+        inputs.velocityInchesPerSecond = sim.getAngularVelocityRPM() / 60 * ClimberConstants.kClimberSpoolDiameter
+                * Math.PI;
+        inputs.positionInches = sim.getAngularPositionRotations() * ClimberConstants.kClimberSpoolDiameter * Math.PI;
     }
 
     @Override
@@ -32,7 +33,8 @@ public class ClimberIOSim implements ClimberIO {
     }
 
     @Override
-    public void setPosition(double positionRot) {
-        sim.setState(positionRot, sim.getAngularVelocityRPM() / 60);
+    public void setPosition(double positionInches) {
+        sim.setState(positionInches,
+                sim.getAngularVelocityRPM() / 60 * ClimberConstants.kClimberSpoolDiameter * Math.PI);
     }
 }
