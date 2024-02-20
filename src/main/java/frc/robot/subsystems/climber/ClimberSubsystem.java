@@ -58,12 +58,18 @@ public class ClimberSubsystem extends SubsystemBase {
         Logger.recordOutput("Climber/SetpointInches", setpointInches);
     }
 
+    public void setVoltage(double voltage) {
+        this.io.setVoltage(MathUtil.clamp(voltage, -12.0, 12.0));
+    }
+
     public void reset() {
         io.setPosition(0.0);
     }
 
-    private void setSetpoint(double setpoint) {
-        this.setpointInches = MathUtil.clamp(setpoint, ClimberConstants.kMinHeightInches,
+    private void setSetpoint(double setpointInches) {
+        this.setpointInches = MathUtil.clamp(
+                setpointInches,
+                ClimberConstants.kMinHeightInches,
                 ClimberConstants.kMaxHeightInches);
         this.pidController.setSetpoint(this.setpointInches);
     }
@@ -83,14 +89,10 @@ public class ClimberSubsystem extends SubsystemBase {
         }, this);
     }
 
-    public void setVoltage(double voltage) {
-        this.io.setVoltage(MathUtil.clamp(voltage, -12.0, 12.0));
-    }
-
-    public Command runPercentCommand(DoubleSupplier decimalPercent) {
+    public Command runPercentCommand(DoubleSupplier percentDecimal) {
         return new RunCommand(() -> this.io.setPercentOutput(
                 GarageUtils.percentSmoothBetweenValues(
-                        decimalPercent.getAsDouble(),
+                        percentDecimal.getAsDouble(),
                         this.inputs.positionInches,
                         ClimberConstants.kMinHeightInches,
                         ClimberConstants.kMaxHeightInches)),

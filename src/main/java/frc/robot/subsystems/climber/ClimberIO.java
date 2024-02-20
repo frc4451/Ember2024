@@ -19,13 +19,13 @@ public interface ClimberIO {
     public default void setVoltage(double voltage) {
     }
 
+    public default void setPercentOutput(double percentDecimal) {
+    }
+
+    public default void setPosition(double positionInches) {
+    }
+
     public default void stop() {
         setVoltage(0.0);
-    }
-
-    public default void setPercentOutput(double decimalPercent) {
-    }
-
-    public default void setPosition(double positionRot) {
     }
 }
