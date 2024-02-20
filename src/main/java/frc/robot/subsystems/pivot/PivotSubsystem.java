@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -47,6 +48,11 @@ public class PivotSubsystem extends SubsystemBase {
      */
     private final InterpolatingDoubleTreeMap armAngleMap = new InterpolatingDoubleTreeMap();
 
+    // Mechanisms
+    private final PivotVisualizer measuredVisualizer = new PivotVisualizer("measured", Color.kBlack);
+    private final PivotVisualizer setpointVisualizer = new PivotVisualizer("setpoint", Color.kGreen);
+    private final PivotVisualizer goalVisualizer = new PivotVisualizer("goal", Color.kBlue);
+
     public PivotSubsystem(Supplier<Pose2d> drivePoseSupplier) {
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
@@ -67,6 +73,9 @@ public class PivotSubsystem extends SubsystemBase {
 
         this.drivePoseSupplier = drivePoseSupplier;
 
+        // Default Angle if it's in-line with the speaker tag
+        armAngleMap.put(0.0, 55.0);
+
         // Angle collected from spreadsheet, distance from tag calculated from
         // PathPlanner. Update this if this is not correct.
         armAngleMap.put(1.35, 55.0);
@@ -74,6 +83,9 @@ public class PivotSubsystem extends SubsystemBase {
         armAngleMap.put(Units.feetToMeters(10), PivotLocation.k36.angle.getDegrees());
         armAngleMap.put(Units.feetToMeters(13), 31.0);
         armAngleMap.put(Units.feetToMeters(15), PivotLocation.k26.angle.getDegrees());
+
+        // The "hard limit" of where we want our pivot moving.
+        armAngleMap.put(Double.MAX_VALUE, 25.0);
     }
 
     @Override
@@ -92,9 +104,16 @@ public class PivotSubsystem extends SubsystemBase {
         Logger.recordOutput("Pivot/Angle", getAngle().getDegrees());
         Logger.recordOutput("Pivot/SetpointAngle", getSetpoint().getDegrees());
 
-        double distanceToTarget = GeomUtils.getDistanceFromTag(this.drivePoseSupplier.get(), StageTags.SPEAKER_AIM);
+        // Log Aimed Pivot shooter
+        double distanceToTarget = getDistanceFromTag();
+        double estimatedNeededAngleDeg = armAngleMap.get(distanceToTarget);
         Logger.recordOutput("Pivot/EstimatedDistanceToTarget", distanceToTarget);
-        Logger.recordOutput("Pivot/EstimatedNeededAngle", armAngleMap.get(distanceToTarget));
+        Logger.recordOutput("Pivot/EstimatedNeededAngle", estimatedNeededAngleDeg);
+
+        // Log Mechanisms - This needs to be recorded in Radians
+        measuredVisualizer.update(getAngle().getRadians());
+        setpointVisualizer.update(getSetpoint().getRadians());
+        goalVisualizer.update(Rotation2d.fromDegrees(estimatedNeededAngleDeg).getRadians());
     }
 
     public void setAngle(Rotation2d angle) {
@@ -107,6 +126,10 @@ public class PivotSubsystem extends SubsystemBase {
 
     public Rotation2d getSetpoint() {
         return this.setpoint;
+    }
+
+    private double getDistanceFromTag() {
+        return GeomUtils.getDistanceFromTag(this.drivePoseSupplier.get(), StageTags.SPEAKER_AIM);
     }
 
     private void setSetpoint(Rotation2d angle) {
