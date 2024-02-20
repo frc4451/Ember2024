@@ -51,8 +51,8 @@ public class PivotIOSparkMax implements PivotIO {
     }
 
     @Override
-    public void setPercentOutput(double decimalPercent) {
-        this.pivotLeader.set(decimalPercent);
+    public void setPercentOutput(double percentDecimal) {
+        this.pivotLeader.set(percentDecimal);
     }
 
     @Override

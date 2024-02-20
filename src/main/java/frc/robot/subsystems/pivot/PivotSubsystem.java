@@ -101,7 +101,7 @@ public class PivotSubsystem extends SubsystemBase {
         this.io.setVoltage(MathUtil.clamp(voltage, -12.0, 12.0));
     }
 
-    public Command runPercentCommand(DoubleSupplier decimalPercent) {
-        return new RunCommand(() -> this.io.setPercentOutput(decimalPercent.getAsDouble()), this);
+    public Command runPercentCommand(DoubleSupplier percentDecimal) {
+        return new RunCommand(() -> this.io.setPercentOutput(percentDecimal.getAsDouble()), this);
     }
 }

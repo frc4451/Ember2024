@@ -42,7 +42,7 @@ public class AmpTrapIOSim implements AmpTrapIO {
     }
 
     @Override
-    public void setPercentOutput(double decimalPercent) {
-        setVoltage(12.0 * decimalPercent);
+    public void setPercentOutput(double percentDecimal) {
+        setVoltage(12.0 * percentDecimal);
     }
 }

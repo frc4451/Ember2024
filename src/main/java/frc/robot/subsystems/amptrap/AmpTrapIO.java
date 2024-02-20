@@ -20,7 +20,7 @@ public interface AmpTrapIO {
     public default void setVoltage(double voltage) {
     }
 
-    public default void setPercentOutput(double decimalPercent) {
+    public default void setPercentOutput(double percentDecimal) {
     }
 
     public default void stop() {
