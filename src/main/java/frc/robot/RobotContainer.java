@@ -20,6 +20,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.PathfindToTarget;
@@ -240,19 +242,23 @@ public class RobotContainer {
         m_driverController.povDown().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_BLUE));
         m_driverController.povLeft().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_YELLOW));
 
+        // Actual buttons Owen requested for the shooter
+        m_operatorController.leftTrigger() /* Rev up the shooter */
+                .whileTrue(m_shooter.setVelocityShooterCommand(65.0, 65.0))
+                .onFalse(m_shooter.stopCommand());
+        m_operatorController.rightTrigger() /* Feed the shooter */
+                .whileTrue(m_shooter.setVelocityFeederCommand(20.0))
+                .onFalse(m_shooter.stopCommand());
+
         // 60 rps shot, 10 feet out, 40 degrees shooter angle ()
         m_operatorController.x() /* 65rps 10ft 36degrees */
-                .onTrue(m_shooter.setVelocityShooterCommand(65.0, 65.0))
-                .onFalse(m_shooter.stopCommand());
+                .onTrue(m_shooter.setVelocityShooterCommand(65.0, 65.0));
         m_operatorController.y() /* 10rps amp */
-                .onTrue(m_shooter.setVelocityShooterCommand(10.0, 10.0))
-                .onFalse(m_shooter.stopCommand());
+                .onTrue(m_shooter.setVelocityShooterCommand(10.0, 10.0));
         m_operatorController.a() /* 21ft shot and preferably use for other distances */
-                .onTrue(m_shooter.setVelocityShooterCommand(85.0, 70.0))
-                .onFalse(m_shooter.stopCommand());
+                .onTrue(m_shooter.setVelocityShooterCommand(85.0, 70.0));
         m_operatorController.b()
-                .onTrue(m_shooter.setVelocityShooterCommand(60.0, 60.0))
-                .onFalse(m_shooter.stopCommand());
+                .onTrue(m_shooter.setVelocityShooterCommand(60.0, 60.0));
         m_operatorController.rightY()
                 .whileTrue(m_pivot.runPercentCommand(() -> -m_operatorController.getRightY() / 2.0))
                 .onFalse(m_pivot.setSetpointCurrentCommand());

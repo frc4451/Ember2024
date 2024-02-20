@@ -199,20 +199,8 @@ public final class Constants {
                 .withSupplyCurrentLimit(30.0)
                 .withSupplyCurrentThreshold(35.0)
                 .withSupplyTimeThreshold(0.5);
-
+        public static final int kAmpTrapCanID = 9;
         public static final int kBeamBreakCanID = 0;
-
-        // public static final double kPivotMinDegrees = 10.0;
-        // public static final double kPivotMaxDegrees = 167.25;
-
-        public static final double kPivotReduction = 5.0;
-
-        public static final int kPivotCanId = 22;
-        public static final double kPivotVelocityRadiansPerSecond = Units.degreesToRadians(15.0);
-
-        public static final double kPivotP = 0.3;
-        public static final double kPivotI = 0.0;
-        public static final double kPivotD = 0.0;
     }
 
     public static final class ShooterConstants {

@@ -11,7 +11,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.Constants.AmpTrapConstants;
 
 public class AmpTrapIOTalonFX implements AmpTrapIO {
-    private final TalonFX roller = new TalonFX(AmpTrapConstants.kPivotCanId);
+    private final TalonFX roller = new TalonFX(AmpTrapConstants.kAmpTrapCanID);
 
     private final StatusSignal<Double> appliedVoltage = roller.getMotorVoltage();
     private final StatusSignal<Double> temperatureCelsius = roller.getDeviceTemp();
