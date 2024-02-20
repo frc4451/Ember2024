@@ -12,15 +12,17 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.Constants.ClimberConstants;
 
 public class ClimberIOTalonFX implements ClimberIO {
-    private static final double kPositionConversionFactor = 1.0 / ClimberConstants.kClimberReduction;
+    private static final double kRotationsToInches = ClimberConstants.kClimberSpoolDiameter
+            * Math.PI
+            / ClimberConstants.kClimberReduction;
 
     private final TalonFX io = new TalonFX(ClimberConstants.kClimberCanId);
 
     private final StatusSignal<Double> appliedVoltage = io.getMotorVoltage();
-    private final StatusSignal<Double> velocityInchesPerSecond = io.getVelocity();
+    private final StatusSignal<Double> velocityRotPerSec = io.getVelocity();
     private final StatusSignal<Double> currentAmperage = io.getSupplyCurrent();
     private final StatusSignal<Double> temperatureCelsius = io.getDeviceTemp();
-    private final StatusSignal<Double> positionInches = io.getPosition();
+    private final StatusSignal<Double> positionRotations = io.getPosition();
 
     private final VelocityVoltage velocityVoltage = new VelocityVoltage(0);
 
@@ -47,13 +49,13 @@ public class ClimberIOTalonFX implements ClimberIO {
                 appliedVoltage,
                 currentAmperage,
                 temperatureCelsius,
-                velocityInchesPerSecond,
-                positionInches);
+                velocityRotPerSec,
+                positionRotations);
         inputs.appliedVoltage = appliedVoltage.getValueAsDouble();
         inputs.currentAmperage = currentAmperage.getValueAsDouble();
         inputs.temperatureCelsius = temperatureCelsius.getValueAsDouble();
-        inputs.velocityInchesPerSecond = velocityInchesPerSecond.getValueAsDouble() * kPositionConversionFactor;
-        inputs.positionInches = positionInches.getValueAsDouble() * kPositionConversionFactor;
+        inputs.velocityInchesPerSecond = velocityRotPerSec.getValueAsDouble() * kRotationsToInches;
+        inputs.positionInches = positionRotations.getValueAsDouble() * kRotationsToInches;
     }
 
     @Override
@@ -63,6 +65,6 @@ public class ClimberIOTalonFX implements ClimberIO {
 
     @Override
     public void setPosition(double position) {
-        this.io.setPosition(position / kPositionConversionFactor);
+        this.io.setPosition(position / kRotationsToInches);
     }
 }
