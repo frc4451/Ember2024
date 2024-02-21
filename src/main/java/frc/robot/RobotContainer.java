@@ -284,6 +284,10 @@ public class RobotContainer {
                 .whileTrue(m_climber.runPercentCommand(() -> -m_programmerController.getRightY()))
                 .onFalse(m_climber.setSetpointCurrentCommand());
 
+        m_programmerController.leftY()
+                .whileTrue(m_climber.runTrapezoidProfile(() -> -m_programmerController.getLeftY()))
+                .onFalse(m_climber.setSetpointCurrentCommand());
+
         m_programmerController.povUp()
                 .onTrue(m_intake.toggleBeamBrakeActivatedCommand());
     }

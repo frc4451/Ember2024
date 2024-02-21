@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -29,6 +30,11 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 public final class Constants {
 
     public static int pdp = 0;
+
+    /**
+     * Command Scheduler loopback
+     */
+    public static double loopback = 0.02;
 
     public static final class AdvantageKitConstants {
         public static enum Mode {
@@ -235,7 +241,12 @@ public final class Constants {
 
         public static final double kP = 1.0;
         public static final double kI = 0.0;
-        public static final double kD = 1.0;
+        public static final double kD = 0.1;
+        // public static final double kD = 1.0;
+
+        public static TrapezoidProfile.Constraints profileConstraints = new TrapezoidProfile.Constraints(
+                2 * Math.PI,
+                10);
     }
 
     public static final class ElevatorConstants {
