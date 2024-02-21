@@ -11,6 +11,9 @@ public interface ClimberIO {
 
         public double velocityInchesPerSecond = 0.0;
         public double positionInches = 0.0;
+
+        public double velocityRadPerSecond = 0.0;
+        public double positionRad = 0.0;
     }
 
     public default void updateInputs(ClimberIOInputs inputs) {

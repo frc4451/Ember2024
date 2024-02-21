@@ -6,17 +6,13 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.ClimberConstants;
-import frc.utils.GarageUtils;
 
 public class ClimberSubsystem extends SubsystemBase {
     private final ClimberIO io;
@@ -26,21 +22,6 @@ public class ClimberSubsystem extends SubsystemBase {
             ClimberConstants.kP,
             ClimberConstants.kI,
             ClimberConstants.kD);
-
-    private TrapezoidProfile profile = new TrapezoidProfile(
-            new TrapezoidProfile.Constraints(
-                    ClimberConstants.profileConstraints.maxVelocity,
-                    ClimberConstants.profileConstraints.maxAcceleration));
-
-    private TrapezoidProfile.State minState = new TrapezoidProfile.State(
-            Units.inchesToMeters(ClimberConstants.kMinHeightInches),
-            0);
-    private TrapezoidProfile.State maxState = new TrapezoidProfile.State(
-            Units.inchesToMeters(ClimberConstants.kMaxHeightInches),
-            0);
-
-    private TrapezoidProfile.State nextState = new TrapezoidProfile.State();
-    private TrapezoidProfile.State goalState = new TrapezoidProfile.State();
 
     private double setpointInches = 0.0;
 
@@ -74,9 +55,6 @@ public class ClimberSubsystem extends SubsystemBase {
         }
 
         Logger.recordOutput("Climber/SetpointInches", setpointInches);
-
-        Logger.recordOutput("Climber/GoalStatePosition", this.goalState.position);
-        Logger.recordOutput("Climber/GoalStateVelocity", this.goalState.velocity);
     }
 
     public void setVoltage(double voltage) {
@@ -110,16 +88,6 @@ public class ClimberSubsystem extends SubsystemBase {
         }, this);
     }
 
-    public Command runPercentCommand(DoubleSupplier percentDecimal) {
-        return new RunCommand(() -> this.io.setPercentOutput(
-                GarageUtils.percentSmoothBetweenValues(
-                        percentDecimal.getAsDouble(),
-                        this.inputs.positionInches,
-                        ClimberConstants.kMinHeightInches,
-                        ClimberConstants.kMaxHeightInches)),
-                this);
-    }
-
     /**
      * Runs the Climber in a TrapezoidProfile control loop to keep user input
      * between both the higher and lower bounds of our Subsystem. We feed
@@ -129,24 +97,17 @@ public class ClimberSubsystem extends SubsystemBase {
      * @param percentDecimal - Joystick input for variable control.
      * @return TrapezoidProfiled Open Loop Command
      */
-    public Command runTrapezoidProfile(DoubleSupplier percentDecimal) {
+    public Command runSetpointController(DoubleSupplier percentDecimal) {
         return new RunCommand(() -> {
             // Determine which direction we need the motors to spin
             double direction = Math.signum(percentDecimal.getAsDouble());
 
             // Determine which state we want to end up
-            this.goalState = direction == 1 ? maxState : minState;
+            double setpoint = direction == 1
+                    ? ClimberConstants.kMaxHeightInches
+                    : ClimberConstants.kMinHeightInches;
 
-            // Calculate the next step in the profile control loop
-            this.nextState = this.profile.calculate(
-                    Constants.loopback,
-                    new TrapezoidProfile.State(
-                            this.inputs.positionInches * direction,
-                            this.inputs.velocityInchesPerSecond * percentDecimal.getAsDouble()),
-                    this.goalState);
-
-            // Provide the TrapezoidProfile State to PID Controller to keep position.
-            this.setSetpoint(Units.metersToInches(this.nextState.position));
+            this.setSetpoint(setpoint);
         });
     }
 }

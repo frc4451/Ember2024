@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants.ClimberConstants;
 
 public class ClimberIOSim implements ClimberIO {
-    private static final double kRotationsToInches = ClimberConstants.kClimberSpoolDiameter * Math.PI;
+    private static final double kInchesPerRotation = ClimberConstants.kClimberSpoolDiameter * Math.PI;
 
     private static final double momentOfInertiaKgMSquared = 0.05; // Moment of intertia (totally wrong)
 
@@ -21,8 +21,10 @@ public class ClimberIOSim implements ClimberIO {
 
         inputs.appliedVoltage = appliedVoltage;
         inputs.currentAmperage = sim.getCurrentDrawAmps();
-        inputs.velocityInchesPerSecond = sim.getAngularVelocityRPM() / 60 * kRotationsToInches;
-        inputs.positionInches = sim.getAngularPositionRotations() * kRotationsToInches;
+        inputs.velocityInchesPerSecond = sim.getAngularVelocityRPM() / 60 * kInchesPerRotation;
+        inputs.positionInches = sim.getAngularPositionRotations() * kInchesPerRotation;
+        inputs.velocityRadPerSecond = sim.getAngularVelocityRPM() / 60;
+        inputs.positionRad = sim.getAngularPositionRotations();
     }
 
     @Override
@@ -38,6 +40,6 @@ public class ClimberIOSim implements ClimberIO {
 
     @Override
     public void setPosition(double positionInches) {
-        sim.setState(positionInches / kRotationsToInches, sim.getAngularVelocityRadPerSec());
+        sim.setState(positionInches / kInchesPerRotation, sim.getAngularVelocityRadPerSec());
     }
 }

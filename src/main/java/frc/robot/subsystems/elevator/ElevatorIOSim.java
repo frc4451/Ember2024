@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants.ElevatorConstants;
 
 public class ElevatorIOSim implements ElevatorIO {
-    private static final double kRotationsToInches = ElevatorConstants.kElevatorSpoolDiameter * Math.PI;
+    private static final double kInchesPerRotation = ElevatorConstants.kElevatorSpoolDiameter * Math.PI;
 
     private static final double momentOfInertiaKgMSquared = 0.05; // Moment of intertia (totally wrong)
 
@@ -21,8 +21,8 @@ public class ElevatorIOSim implements ElevatorIO {
 
         inputs.appliedVoltage = appliedVoltage;
         inputs.currentAmperage = sim.getCurrentDrawAmps();
-        inputs.velocityInchesPerSecond = sim.getAngularVelocityRPM() / 60 * kRotationsToInches;
-        inputs.positionInches = sim.getAngularPositionRotations() * kRotationsToInches;
+        inputs.velocityInchesPerSecond = sim.getAngularVelocityRPM() / 60 * kInchesPerRotation;
+        inputs.positionInches = sim.getAngularPositionRotations() * kInchesPerRotation;
     }
 
     @Override
@@ -33,6 +33,6 @@ public class ElevatorIOSim implements ElevatorIO {
 
     @Override
     public void setPosition(double positionInches) {
-        sim.setState(positionInches / kRotationsToInches, sim.getAngularVelocityRadPerSec());
+        sim.setState(positionInches / kInchesPerRotation, sim.getAngularVelocityRadPerSec());
     }
 }

@@ -12,7 +12,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.Constants.ClimberConstants;
 
 public class ClimberIOTalonFX implements ClimberIO {
-    private static final double kRotationsToInches = ClimberConstants.kClimberSpoolDiameter
+    private static final double kInchesPerRotation = ClimberConstants.kClimberSpoolDiameter
             * Math.PI
             / ClimberConstants.kClimberReduction;
 
@@ -54,8 +54,8 @@ public class ClimberIOTalonFX implements ClimberIO {
         inputs.appliedVoltage = appliedVoltage.getValueAsDouble();
         inputs.currentAmperage = currentAmperage.getValueAsDouble();
         inputs.temperatureCelsius = temperatureCelsius.getValueAsDouble();
-        inputs.velocityInchesPerSecond = velocityRotPerSec.getValueAsDouble() * kRotationsToInches;
-        inputs.positionInches = positionRotations.getValueAsDouble() * kRotationsToInches;
+        inputs.velocityInchesPerSecond = velocityRotPerSec.getValueAsDouble() * kInchesPerRotation;
+        inputs.positionInches = positionRotations.getValueAsDouble() * kInchesPerRotation;
     }
 
     @Override
@@ -70,6 +70,6 @@ public class ClimberIOTalonFX implements ClimberIO {
 
     @Override
     public void setPosition(double positionInches) {
-        this.io.setPosition(positionInches / kRotationsToInches);
+        this.io.setPosition(positionInches / kInchesPerRotation);
     }
 }
