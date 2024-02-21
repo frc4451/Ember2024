@@ -6,6 +6,8 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -13,16 +15,17 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.ClimberConstants;
-import frc.utils.GarageUtils;
 
 public class ClimberSubsystem extends SubsystemBase {
     private final ClimberIO io;
     private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
 
-    private final PIDController pidController = new PIDController(
-            ClimberConstants.kP,
-            ClimberConstants.kI,
-            ClimberConstants.kD);
+    private final SimpleMotorFeedforward ff = new SimpleMotorFeedforward(0.0, 0.0);
+
+    private final TrapezoidProfile motionProfile = new TrapezoidProfile(
+            new TrapezoidProfile.Constraints(
+                    ClimberConstants.kMaxVelocityInchesPerSecond,
+                    ClimberConstants.kMaxAccelerationInchesPerSecondSquared));
 
     private double setpointInches = 0.0;
 
@@ -41,7 +44,7 @@ public class ClimberSubsystem extends SubsystemBase {
                 break;
         }
 
-        this.pidController.setTolerance(0.05);
+        // this.pidController.setTolerance(0.05);
         this.reset();
     }
 
@@ -66,36 +69,37 @@ public class ClimberSubsystem extends SubsystemBase {
         io.setPosition(0.0);
     }
 
-    private void setSetpoint(double setpointInches) {
-        this.setpointInches = MathUtil.clamp(
-                setpointInches,
-                ClimberConstants.kMinHeightInches,
-                ClimberConstants.kMaxHeightInches);
-        this.pidController.setSetpoint(this.setpointInches);
+    private void setSetpoint(double setpoint) {
+        this.setpointInches = clampSetpoint(setpoint);
     }
 
     public Command setSetpointCommand(double positionInches) {
-        return new InstantCommand(() -> this.setSetpoint(positionInches), this);
+        return new InstantCommand(() -> this.setSetpoint(positionInches));
     }
 
     public Command setSetpointCurrentCommand() {
         return new InstantCommand(() -> this.setSetpoint(this.inputs.positionInches), this);
     }
 
+    private double clampSetpoint(double setpointInches) {
+        return MathUtil.clamp(
+                setpointInches,
+                ClimberConstants.kMinHeightInches,
+                ClimberConstants.kMaxHeightInches);
+    }
+
     public Command pidCommand() {
         return new RunCommand(() -> {
-            double output = this.pidController.calculate(this.inputs.positionInches);
-            setVoltage(output);
+            TrapezoidProfile.State output = motionProfile.calculate(
+                    0.02,
+                    new TrapezoidProfile.State(this.inputs.positionInches, this.inputs.velocityInchesPerSecond),
+                    new TrapezoidProfile.State(clampSetpoint(this.setpointInches), 0));
+            this.io.runSetpoint(output.position, ff.calculate(output.position, output.velocity));
         }, this);
     }
 
-    public Command runPercentCommand(DoubleSupplier percentDecimal) {
-        return new RunCommand(() -> this.io.setPercentOutput(
-                GarageUtils.percentSmoothBetweenValues(
-                        percentDecimal.getAsDouble(),
-                        this.inputs.positionInches,
-                        ClimberConstants.kMinHeightInches,
-                        ClimberConstants.kMaxHeightInches)),
-                this);
+    public Command runPercentCommand(DoubleSupplier decimalPercent) {
+        return new RunCommand(
+                () -> setSetpoint(clampSetpoint(decimalPercent.getAsDouble() * ClimberConstants.kMaxHeightInches)));
     }
 }

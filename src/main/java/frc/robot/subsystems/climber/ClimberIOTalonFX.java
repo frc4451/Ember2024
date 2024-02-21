@@ -4,6 +4,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -24,7 +25,7 @@ public class ClimberIOTalonFX implements ClimberIO {
     private final StatusSignal<Double> temperatureCelsius = io.getDeviceTemp();
     private final StatusSignal<Double> positionRotations = io.getPosition();
 
-    private final VelocityVoltage velocityVoltage = new VelocityVoltage(0);
+    private final PositionVoltage positionControl = new PositionVoltage(0);
 
     public ClimberIOTalonFX(int deviceId, boolean isInverted) {
         this.io.getConfigurator()
@@ -35,12 +36,13 @@ public class ClimberIOTalonFX implements ClimberIO {
                                         isInverted
                                                 ? InvertedValue.Clockwise_Positive
                                                 : InvertedValue.CounterClockwise_Positive))
-                        .withSlot0(new Slot0Configs()
-                                .withKV(0.12)
-                                .withKP(0.1)
-                                .withKI(0)
-                                .withKD(0)));
-        velocityVoltage.Slot = 0;
+                // .withSlot0(new Slot0Configs()
+                // .withKV(0.12)
+                // .withKP(0.1)
+                // .withKI(0)
+                // .withKD(0))
+                );
+        positionControl.Slot = 0;
     }
 
     @Override
@@ -61,6 +63,14 @@ public class ClimberIOTalonFX implements ClimberIO {
     @Override
     public void setVoltage(double voltage) {
         this.io.setVoltage(voltage);
+    }
+
+    @Override
+    public void runSetpoint(double setpointInches, double feedforward) {
+        this.io.setControl(
+                this.positionControl
+                        .withPosition(setpointInches / kRotationsToInches)
+                        .withFeedForward(feedforward));
     }
 
     @Override

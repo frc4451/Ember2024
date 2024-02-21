@@ -277,7 +277,7 @@ public class RobotContainer {
                 .whileTrue(m_shooter.setVelocityFeederCommand(20.0))
                 .whileFalse(m_shooter.stopFeederCommand());
         m_programmerController.y()
-                .onTrue(m_climber.setSetpointCommand(100.0));
+                .onTrue(m_climber.setSetpointCommand(10.0));
         m_programmerController.a()
                 .onTrue(m_climber.setSetpointCommand(0.0));
         m_programmerController.rightY()

@@ -224,7 +224,9 @@ public final class Constants {
     }
 
     public static final class ClimberConstants {
-        public static final double kMaxVelocityRotPerSecond = 10.0;
+        public static final double kMaxVelocityInchesPerSecond = 5.0;
+        public static final double kMaxAccelerationInchesPerSecondSquared = 5.0;
+
         public static final double kMaxHeightInches = 18.0;
         public static final double kMinHeightInches = 0.0;
 

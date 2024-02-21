@@ -32,15 +32,21 @@ public class GarageUtils {
      * @param position Current position in units
      * @param min      Min position
      * @param max      Max position
-     * @return
+     * @see {@link https://www.desmos.com/calculator/m49uyzuten}
      */
-    public static double percentSmoothBetweenValues(double percent, double position, double min, double max) {
-        double x = position;
-        double y = percent;
-        return y * (x > min && 0 > Math.signum(y)
-                ? (Math.pow(x - min, 2) - 1) / (Math.pow(x - min, 2) + 1)
-                : max > x && Math.signum(y) > 0
-                        ? (Math.pow(max - x, 2) - 1) / (Math.pow(max - x - x, 2) + 1)
-                        : 1.0);
+    public static double percentBoatCurve(double percent, double position, double min, double max) {
+        double boatCurveFactor;
+        if (position > min && Math.signum(percent) <= 0) {
+            double positionMinDeltaSquared = Math.pow(position - min, 2);
+            boatCurveFactor = (positionMinDeltaSquared - 1) / (positionMinDeltaSquared + 1);
+        } else {
+            if (position <= max && Math.signum(percent) > 0) {
+                double maxPositionDifferenceSquared = Math.pow(max - position, 2);
+                boatCurveFactor = (maxPositionDifferenceSquared - 1) / (maxPositionDifferenceSquared + 1);
+            } else {
+                boatCurveFactor = 1.0;
+            }
+        }
+        return percent * boatCurveFactor;
     }
 }
