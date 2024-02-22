@@ -46,12 +46,12 @@ public class PivotSubsystem extends SubsystemBase {
      * key: meters, values: degrees
      * </p>
      */
-    private final InterpolatingDoubleTreeMap armAngleMap = new InterpolatingDoubleTreeMap();
+    private final InterpolatingDoubleTreeMap angleInterpolator = new InterpolatingDoubleTreeMap();
 
     // Mechanisms
-    private final PivotVisualizer measuredVisualizer = new PivotVisualizer("measured", Color.kBlack);
-    private final PivotVisualizer setpointVisualizer = new PivotVisualizer("setpoint", Color.kGreen);
-    private final PivotVisualizer goalVisualizer = new PivotVisualizer("goal", Color.kBlue);
+    private final PivotVisualizer measuredVisualizer = new PivotVisualizer("Measured", Color.kBlack);
+    private final PivotVisualizer setpointVisualizer = new PivotVisualizer("Setpoint", Color.kGreen);
+    private final PivotVisualizer goalVisualizer = new PivotVisualizer("Goal", Color.kBlue);
 
     public PivotSubsystem(Supplier<Pose2d> drivePoseSupplier) {
         switch (AdvantageKitConstants.getMode()) {
@@ -74,18 +74,19 @@ public class PivotSubsystem extends SubsystemBase {
         this.drivePoseSupplier = drivePoseSupplier;
 
         // Default Angle if it's in-line with the speaker tag
-        armAngleMap.put(0.0, 55.0);
+        angleInterpolator.put(0.0, 55.0);
 
         // Angle collected from spreadsheet, distance from tag calculated from
         // PathPlanner. Update this if this is not correct.
-        armAngleMap.put(1.35, 55.0);
+        angleInterpolator.put(1.35, 55.0);
         // These are straight from the data collected
-        armAngleMap.put(Units.feetToMeters(10), PivotLocation.k36.angle.getDegrees());
-        armAngleMap.put(Units.feetToMeters(13), 31.0);
-        armAngleMap.put(Units.feetToMeters(15), PivotLocation.k26.angle.getDegrees());
+        angleInterpolator.put(Units.feetToMeters(10), PivotLocation.k36.angle.getDegrees());
+        angleInterpolator.put(Units.feetToMeters(13), 31.0);
+        angleInterpolator.put(Units.feetToMeters(15), PivotLocation.k26.angle.getDegrees());
 
-        // The "hard limit" of where we want our pivot moving.
-        armAngleMap.put(Double.MAX_VALUE, 25.0);
+        // The "hard limits" of where we want our pivot moving.
+        angleInterpolator.put(0.0, PivotLocation.kShootingMin.angle.getDegrees());
+        angleInterpolator.put(Double.MAX_VALUE, PivotLocation.kShootingMax.angle.getDegrees());
     }
 
     @Override
@@ -106,7 +107,7 @@ public class PivotSubsystem extends SubsystemBase {
 
         // Log Aimed Pivot shooter
         double distanceToTarget = getDistanceFromTag();
-        double estimatedNeededAngleDeg = armAngleMap.get(distanceToTarget);
+        double estimatedNeededAngleDeg = angleInterpolator.get(distanceToTarget);
         Logger.recordOutput("Pivot/EstimatedDistanceToTarget", distanceToTarget);
         Logger.recordOutput("Pivot/EstimatedNeededAngle", estimatedNeededAngleDeg);
 
@@ -166,5 +167,11 @@ public class PivotSubsystem extends SubsystemBase {
         }
 
         return pivotAimingParameters;
+    }
+
+    public Command pivotToAprilTagCommand() {
+        return new RunCommand(() -> {
+            setSetpoint(Rotation2d.fromDegrees(angleInterpolator.get(getDistanceFromTag())));
+        });
     }
 }

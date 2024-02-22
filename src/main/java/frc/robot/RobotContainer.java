@@ -279,9 +279,9 @@ public class RobotContainer {
                 .onFalse(m_shooter.stopCommand());
 
         //
-        m_driverController.a()
-                .onTrue(m_shooter.setVelocityCommand(85.0, 70.0))
-                .onFalse(m_shooter.stopCommand());
+        // m_driverController.a()
+        // .onTrue(m_shooter.setVelocityCommand(85.0, 70.0))
+        // .onFalse(m_shooter.stopCommand());
 
         // m_driverController.rightBumper()
         // .onTrue(m_misc.setVelocityCommand(20.0))
@@ -299,6 +299,7 @@ public class RobotContainer {
         m_operatorController.povRight().onTrue(m_pivot.setSetpointCommand(PivotLocation.k160.angle));
         m_operatorController.povDown().onTrue(m_pivot.setSetpointCommand(PivotLocation.k45.angle));
         m_operatorController.povLeft().onTrue(m_pivot.setSetpointCommand(PivotLocation.k90.angle));
+        m_driverController.a().whileTrue(m_pivot.pivotToAprilTagCommand());
         // m_driverController.leftTrigger()
         // .whileTrue(
         // Commands.deferredProxy(
@@ -342,10 +343,10 @@ public class RobotContainer {
         m_driverController.x()
                 .onTrue(m_intake.setVelocityCommand(20, 20))
                 .onFalse(m_intake.stopCommand());
-        m_driverController.a()
-                .and(m_intake.beambreakIsActivated())
-                .onTrue(m_intake.setVelocityCommand(20, 20))
-                .onFalse(m_intake.stopCommand());
+        // m_driverController.a()
+        // .and(m_intake.beambreakIsActivated())
+        // .onTrue(m_intake.setVelocityCommand(20, 20))
+        // .onFalse(m_intake.stopCommand());
 
         m_driverController.povUp().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_RED));
         m_driverController.povRight().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_GREEN));

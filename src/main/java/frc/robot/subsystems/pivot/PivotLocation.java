@@ -10,6 +10,8 @@ public enum PivotLocation {
     k45(Rotation2d.fromDegrees(45.0)),
     k90(Rotation2d.fromDegrees(90.0)),
     k160(Rotation2d.fromDegrees(160.0)),
+    kShootingMin(Rotation2d.fromDegrees(25.0)),
+    kShootingMax(Rotation2d.fromDegrees(87.0)),
     ;
 
     public Rotation2d angle;
