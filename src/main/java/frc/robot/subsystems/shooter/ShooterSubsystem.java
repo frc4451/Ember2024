@@ -9,8 +9,11 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AdvantageKitConstants;
+import frc.robot.bobot_state.BobotState;
+import frc.robot.bobot_state.ShootingInterpolator;
 
 public class ShooterSubsystem extends SubsystemBase {
     private final ShooterIO io;
@@ -62,5 +65,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public Command stopCommand() {
         return new InstantCommand(() -> stop(), this);
+    }
+
+    public Command shootAtSpeakerCommand() {
+        return new RunCommand(() -> {
+            ShootingInterpolator.InterpolatedCalculation shootingCalculation = BobotState.getShootingCalculation();
+            setVelocity(shootingCalculation.leftSpeedRotPerSec(), shootingCalculation.rightSpeedRotPerSec());
+        }, this).andThen(stopCommand());
     }
 }

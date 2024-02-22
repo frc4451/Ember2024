@@ -2,7 +2,9 @@ package frc.robot.subsystems.vision.apriltag;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -85,5 +87,20 @@ public enum StageTags {
 
     public int getBlueId() {
         return blueId;
+    }
+
+    /**
+     * Using the robot's known pose, find the distance of how far away the robot is
+     * from the {@link #StageTag}.
+     *
+     * @param pose - Current Robot Pose
+     * @return Distance from robot to target (meters)
+     */
+    public double getDistanceFrom(Pose2d pose) {
+        Translation2d poseTranslation = pose.getTranslation();
+        Translation2d targetTranslation = getPose().toPose2d().getTranslation();
+        double distanceToTarget = poseTranslation.getDistance(targetTranslation);
+
+        return distanceToTarget;
     }
 }

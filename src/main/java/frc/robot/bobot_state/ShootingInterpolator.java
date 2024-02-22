@@ -1,16 +1,19 @@
-package frc.robot.subsystems.pivot;
+package frc.robot.bobot_state;
 
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
-import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 
-public class PivotInterpolator {
-    public static record InterpolatedCalculation(
+public class ShootingInterpolator {
+    public record InterpolatedCalculation(
             double angleDegrees,
             double leftSpeedRotPerSec,
             double rightSpeedRotPerSec) {
     }
 
-    public PivotInterpolator() {
+    public record DistanceAngleSpeedEntry(
+            double distanceMeters,
+            double angleDegrees,
+            double leftSpeedRotPerSec,
+            double rightSpeedRotPerSec) {
     }
 
     /**
@@ -34,15 +37,27 @@ public class PivotInterpolator {
      */
     private final InterpolatingDoubleTreeMap rightAngleSpeedMap = new InterpolatingDoubleTreeMap();
 
-    public void addDistanceAngleEntry(double distanceMeters, double angleDegrees) {
+    public void addEntries(DistanceAngleSpeedEntry... entries) {
+        for (DistanceAngleSpeedEntry entry : entries) {
+            addEntry(entry);
+        }
+    }
+
+    public void addEntry(DistanceAngleSpeedEntry entry) {
+        addDistanceAngleEntry(entry.distanceMeters, entry.angleDegrees);
+        addLeftAngleSpeedEntry(entry.angleDegrees, entry.leftSpeedRotPerSec);
+        addRightAngleSpeedEntry(entry.angleDegrees, entry.rightSpeedRotPerSec);
+    }
+
+    private void addDistanceAngleEntry(double distanceMeters, double angleDegrees) {
         distanceAngleMap.put(distanceMeters, angleDegrees);
     }
 
-    public void addLeftAngleSpeedEntry(double angleDegrees, double leftSpeedRotPerSec) {
+    private void addLeftAngleSpeedEntry(double angleDegrees, double leftSpeedRotPerSec) {
         leftAngleSpeedMap.put(angleDegrees, leftSpeedRotPerSec);
     }
 
-    public void addRightAngleSpeedEntry(double angleDegrees, double rightSpeedRotPerSec) {
+    private void addRightAngleSpeedEntry(double angleDegrees, double rightSpeedRotPerSec) {
         rightAngleSpeedMap.put(angleDegrees, rightSpeedRotPerSec);
     }
 

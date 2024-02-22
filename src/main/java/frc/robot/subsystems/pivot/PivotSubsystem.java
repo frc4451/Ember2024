@@ -1,16 +1,12 @@
 package frc.robot.subsystems.pivot;
 
 import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -19,8 +15,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.AdvantageKitConstants;
-import frc.robot.subsystems.vision.apriltag.StageTags;
-import frc.utils.GeomUtils;
+import frc.robot.bobot_state.BobotState;
 
 public class PivotSubsystem extends SubsystemBase {
     private final PivotIO io;
@@ -34,26 +29,11 @@ public class PivotSubsystem extends SubsystemBase {
             Constants.IntakeConstants.kPivotI,
             Constants.IntakeConstants.kPivotD);
 
-    private PivotAimingParameters pivotAimingParameters = null;
-    private final Supplier<Pose2d> drivePoseSupplier;
-
-    /**
-     * <p>
-     * Lookup table for finding known good shots and guessing the angle we need
-     * between those shots.
-     * </p>
-     * <p>
-     * key: meters, values: degrees
-     * </p>
-     */
-    private final InterpolatingDoubleTreeMap angleInterpolator = new InterpolatingDoubleTreeMap();
-
     // Mechanisms
     private final PivotVisualizer measuredVisualizer = new PivotVisualizer("Measured", Color.kBlack);
     private final PivotVisualizer setpointVisualizer = new PivotVisualizer("Setpoint", Color.kGreen);
-    private final PivotVisualizer goalVisualizer = new PivotVisualizer("Goal", Color.kBlue);
 
-    public PivotSubsystem(Supplier<Pose2d> drivePoseSupplier) {
+    public PivotSubsystem() {
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
                 io = new PivotIOSparkMax();
@@ -70,23 +50,6 @@ public class PivotSubsystem extends SubsystemBase {
 
         setAngle(PivotLocation.INITIAL.angle);
         setSetpoint(PivotLocation.INITIAL.angle);
-
-        this.drivePoseSupplier = drivePoseSupplier;
-
-        // Default Angle if it's in-line with the speaker tag
-        angleInterpolator.put(0.0, 55.0);
-
-        // Angle collected from spreadsheet, distance from tag calculated from
-        // PathPlanner. Update this if this is not correct.
-        angleInterpolator.put(1.35, 55.0);
-        // These are straight from the data collected
-        angleInterpolator.put(Units.feetToMeters(10), PivotLocation.k36.angle.getDegrees());
-        angleInterpolator.put(Units.feetToMeters(13), 31.0);
-        angleInterpolator.put(Units.feetToMeters(15), PivotLocation.k26.angle.getDegrees());
-
-        // The "hard limits" of where we want our pivot moving.
-        angleInterpolator.put(0.0, PivotLocation.kShootingMin.angle.getDegrees());
-        angleInterpolator.put(Double.MAX_VALUE, PivotLocation.kShootingMax.angle.getDegrees());
     }
 
     @Override
@@ -105,16 +68,9 @@ public class PivotSubsystem extends SubsystemBase {
         Logger.recordOutput("Pivot/Angle", getAngle().getDegrees());
         Logger.recordOutput("Pivot/SetpointAngle", getSetpoint().getDegrees());
 
-        // Log Aimed Pivot shooter
-        double distanceToTarget = getDistanceFromTag();
-        double estimatedNeededAngleDeg = angleInterpolator.get(distanceToTarget);
-        Logger.recordOutput("Pivot/EstimatedDistanceToTarget", distanceToTarget);
-        Logger.recordOutput("Pivot/EstimatedNeededAngle", estimatedNeededAngleDeg);
-
         // Log Mechanisms - This needs to be recorded in Radians
         measuredVisualizer.update(getAngle().getRadians());
         setpointVisualizer.update(getSetpoint().getRadians());
-        goalVisualizer.update(Rotation2d.fromDegrees(estimatedNeededAngleDeg).getRadians());
     }
 
     public void setAngle(Rotation2d angle) {
@@ -127,10 +83,6 @@ public class PivotSubsystem extends SubsystemBase {
 
     public Rotation2d getSetpoint() {
         return this.setpoint;
-    }
-
-    private double getDistanceFromTag() {
-        return GeomUtils.getDistanceFromTag(this.drivePoseSupplier.get(), StageTags.SPEAKER_AIM);
     }
 
     private void setSetpoint(Rotation2d angle) {
@@ -161,17 +113,8 @@ public class PivotSubsystem extends SubsystemBase {
         return new RunCommand(() -> this.io.setPercentOutput(decimalPercent.getAsDouble()), this);
     }
 
-    public PivotAimingParameters getPivotAimingParameters() {
-        if (pivotAimingParameters != null) {
-            return pivotAimingParameters;
-        }
-
-        return pivotAimingParameters;
-    }
-
-    public Command pivotToAprilTagCommand() {
-        return new RunCommand(() -> {
-            setSetpoint(Rotation2d.fromDegrees(angleInterpolator.get(getDistanceFromTag())));
-        });
+    public Command pivotToSpeakerCommand() {
+        return new RunCommand(
+                () -> setSetpoint(Rotation2d.fromDegrees(BobotState.getShootingCalculation().angleDegrees())));
     }
 }

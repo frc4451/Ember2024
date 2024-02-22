@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
+import frc.robot.bobot_state.BobotState;
 import frc.robot.commands.PathfindToTarget;
 import frc.robot.commands.PositionWithAmp;
 import frc.robot.commands.PositionWithSpeaker;
@@ -62,7 +63,7 @@ public class RobotContainer {
 
     // public final RollerSubsystem m_rollers = new RollerSubsystem();
 
-    public final PivotSubsystem m_pivot = new PivotSubsystem(m_robotDrive::getPose);
+    public final PivotSubsystem m_pivot = new PivotSubsystem();
 
     public final ShooterSubsystem m_shooter = new ShooterSubsystem();
 
@@ -86,6 +87,8 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
+        new BobotState(); // this is a no-op but is required for it to be registered as a VirtualSubsystem
+
         // Configure PathPlanner logging with AdvantageKit
         PathPlannerUtils.configureLogging();
 
@@ -299,7 +302,10 @@ public class RobotContainer {
         m_operatorController.povRight().onTrue(m_pivot.setSetpointCommand(PivotLocation.k160.angle));
         m_operatorController.povDown().onTrue(m_pivot.setSetpointCommand(PivotLocation.k45.angle));
         m_operatorController.povLeft().onTrue(m_pivot.setSetpointCommand(PivotLocation.k90.angle));
-        m_driverController.a().whileTrue(m_pivot.pivotToAprilTagCommand());
+        m_driverController.a().whileTrue(
+                new ParallelCommandGroup(
+                        m_pivot.pivotToSpeakerCommand(),
+                        m_shooter.shootAtSpeakerCommand()));
         // m_driverController.leftTrigger()
         // .whileTrue(
         // Commands.deferredProxy(
