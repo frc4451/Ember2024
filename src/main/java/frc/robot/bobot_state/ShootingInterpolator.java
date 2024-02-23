@@ -3,13 +3,13 @@ package frc.robot.bobot_state;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 
 public class ShootingInterpolator {
-    public record InterpolatedCalculation(
+    public static record InterpolatedCalculation(
             double angleDegrees,
             double leftSpeedRotPerSec,
             double rightSpeedRotPerSec) {
     }
 
-    public record DistanceAngleSpeedEntry(
+    public static record DistanceAngleSpeedEntry(
             double distanceMeters,
             double angleDegrees,
             double leftSpeedRotPerSec,
