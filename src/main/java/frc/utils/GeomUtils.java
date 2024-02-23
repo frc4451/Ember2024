@@ -42,7 +42,8 @@ public class GeomUtils {
     }
 
     /**
-     * Converts a Pose2d to a Transform2d to be used in a kinematic chain
+     * Converts a {@link Pose2d} to a {@link Transform2d} to be used in a kinematic
+     * chain
      *
      * @param pose The pose that will represent the transform
      * @return The resulting transform
@@ -51,6 +52,12 @@ public class GeomUtils {
         return new Transform2d(pose.getTranslation(), pose.getRotation());
     }
 
+    /**
+     * Takes a {@link Pose2d} and returns a inverted version of itself
+     *
+     * @param pose The pose that we want to inverse
+     * @return resulting pose
+     */
     public static Pose2d inverse(Pose2d pose) {
         Rotation2d rotationInverse = pose.getRotation().unaryMinus();
         return new Pose2d(
@@ -58,9 +65,8 @@ public class GeomUtils {
     }
 
     /**
-     * Converts a Transform2d to a Pose2d to be used as a position or as the start
-     * of a kinematic
-     * chain
+     * Converts a {@link Transform2d} to a {@link Pose2d} to be used as a position
+     * or as the start of a kinematic chain
      *
      * @param transform The transform that will represent the pose
      * @return The resulting pose
@@ -112,8 +118,7 @@ public class GeomUtils {
 
     /**
      * Converts a Transform3d to a Pose3d to be used as a position or as the start
-     * of a kinematic
-     * chain
+     * of a kinematic chain
      *
      * @param transform The transform that will represent the pose
      * @return The resulting pose
