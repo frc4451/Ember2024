@@ -11,7 +11,6 @@ public class BeambreakIOSim implements BeambreakIO {
 
     @Override
     public void updateInputs(BeambreakIOInputs inputs) {
-        inputs.isConnected = beambreakSim.getInitialized();
         inputs.isObstructed = !beambreakSim.getValue();
     }
 

@@ -25,7 +25,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public IntakeSubsystem() {
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
-                io = new IntakeIOTalonFX(1, false);
+                io = new IntakeIOTalonFX(IntakeConstants.kIntakeCanId, false);
                 beambreak = new BeambreakDigitalInput(IntakeConstants.kBeamBreakChannel);
                 break;
             case SIM:
@@ -49,7 +49,7 @@ public class IntakeSubsystem extends SubsystemBase {
         this.beambreak.updateInputs(this.beambreakInputs);
 
         Logger.processInputs("Intake", this.inputs);
-        Logger.processInputs("Intake/BeamBreak", this.beambreakInputs);
+        Logger.processInputs("Intake/Beambreak", this.beambreakInputs);
 
         // Make sure the motor actually stops when the robot disabled
         if (DriverStation.isDisabled()) {
@@ -59,6 +59,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public Command setVelocityCommand(double velocityRotPerSecond) {
         return new InstantCommand(() -> this.io.setVelocity(velocityRotPerSecond), this);
+    }
+
+    public Command setVelocityThenStopCommand(double velocityRotPerSecond) {
+        return new RunCommand(() -> this.io.setVelocity(velocityRotPerSecond), this).finallyDo(io::stop);
     }
 
     public Command setVelocityBeambreakCommand(double velocityRotPerSecond) {

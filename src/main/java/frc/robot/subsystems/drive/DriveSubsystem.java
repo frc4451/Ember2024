@@ -162,10 +162,12 @@ public class DriveSubsystem extends SubsystemBase {
         m_poseEstimator.update(m_trackedRotation, positions);
         addVisionMeasurements();
 
-        BobotState.updateRobotPose(getPose());
+        Pose2d pose = getPose();
 
-        Logger.recordOutput("Odometry/Robot", getPose());
-        Logger.recordOutput("Odometry/RotationDeg", getPose().getRotation().getDegrees());
+        BobotState.updateRobotPose(pose);
+
+        Logger.recordOutput("Odometry/Robot", pose);
+        Logger.recordOutput("Odometry/RotationDeg", pose.getRotation().getDegrees());
     }
 
     private void addVisionMeasurements() {

@@ -73,6 +73,13 @@ public class ShooterSubsystem extends SubsystemBase {
                 () -> setVelocityFeeder(velocityRotPerSecondFeeder), this);
     }
 
+    public Command setVelocityFeederBeambreakCommand(double velocityRotPerSecondFeeder) {
+        return new RunCommand(() -> this.io.setVelocityFeeder(velocityRotPerSecondFeeder), this)
+                .unless(beambreakIsObstructed())
+                .until(beambreakIsObstructed())
+                .finallyDo(io::stopFeeder);
+    }
+
     public void setVelocityShooter(double velocityRotPerSecondLeft, double velocityRotPerSecondRight) {
         this.io.setVelocityShooter(velocityRotPerSecondLeft, velocityRotPerSecondRight);
     }

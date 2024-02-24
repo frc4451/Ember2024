@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.AdvantageKitConstants;
+import frc.robot.subsystems.pivot.PivotLocation;
 import frc.utils.VirtualSubsystem;
 
 /**
@@ -141,7 +142,7 @@ public class Robot extends LoggedRobot {
         if (m_robotContainer.m_driverController.getHID().getBButtonPressed()) {
             m_robotContainer.m_robotDrive.zeroHeading();
             m_robotContainer.m_robotDrive.resetPose(new Pose2d());
-            // m_robotContainer.m_pivot.setAngle(PivotLocation.INITIAL.angle);
+            m_robotContainer.m_pivot.setAngle(PivotLocation.INITIAL.angle);
         }
     }
 

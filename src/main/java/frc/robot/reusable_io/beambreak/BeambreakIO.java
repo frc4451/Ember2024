@@ -5,7 +5,6 @@ import org.littletonrobotics.junction.AutoLog;
 public interface BeambreakIO {
     @AutoLog
     public static class BeambreakIOInputs {
-        public boolean isConnected = false;
         public boolean isObstructed = false;
     }
 

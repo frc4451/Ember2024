@@ -11,7 +11,6 @@ public class BeambreakDigitalInput implements BeambreakIO {
 
     @Override
     public void updateInputs(BeambreakIOInputs inputs) {
-        inputs.isConnected = true;
-        inputs.isObstructed = !beambreak.get();
+        inputs.isObstructed = beambreak.get();
     }
 }

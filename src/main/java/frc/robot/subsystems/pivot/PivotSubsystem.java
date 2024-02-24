@@ -89,7 +89,7 @@ public class PivotSubsystem extends SubsystemBase {
 
     private void setSetpoint(Rotation2d angle) {
         this.setpoint = angle;
-        this.pidController.setSetpoint(angle.getDegrees());
+        this.pidController.setSetpoint(setpoint.getDegrees());
     }
 
     public Command setSetpointCommand(Rotation2d angle) {
@@ -112,7 +112,14 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public Command runPercentCommand(DoubleSupplier percentDecimal) {
-        return new RunCommand(() -> this.io.setPercentOutput(percentDecimal.getAsDouble()), this);
+        return new RunCommand(() -> {
+            double input = percentDecimal.getAsDouble();
+            boolean canMoveUp = (input > 0.0
+                    && getAngle().getDegrees() < PivotLocation.kSoftMax.angle.getDegrees());
+            boolean canMoveDown = (input < 0.0
+                    && getAngle().getDegrees() > PivotLocation.kSoftMin.angle.getDegrees());
+            io.setPercentOutput((canMoveUp || canMoveDown) ? input : 0.0);
+        }, this);
     }
 
     public Command pivotToSpeakerCommand() {
