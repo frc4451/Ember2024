@@ -21,6 +21,8 @@ public class BobotState extends VirtualSubsystem {
 
     private static Pose2d robotPose = new Pose2d();
 
+    private static BobotDriveMode driveMode = BobotDriveMode.TELEOP;
+
     static {
         shootingInterpolator.addEntries(
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
@@ -48,6 +50,14 @@ public class BobotState extends VirtualSubsystem {
         return robotPose;
     }
 
+    public static void updateDriveMode(BobotDriveMode mode) {
+        driveMode = mode;
+    }
+
+    public static BobotDriveMode getBobotDriveMode() {
+        return driveMode;
+    }
+
     public static ShootingInterpolator.InterpolatedCalculation getShootingCalculation() {
         return shootingCalculation;
     }
@@ -64,6 +74,8 @@ public class BobotState extends VirtualSubsystem {
             Logger.recordOutput(calcLogRoot + "AngleDegrees", shootingCalculation.angleDegrees());
             Logger.recordOutput(calcLogRoot + "LeftSpeedRotPerSec", shootingCalculation.leftSpeedRotPerSec());
             Logger.recordOutput(calcLogRoot + "RightSpeedRotPerSec", shootingCalculation.rightSpeedRotPerSec());
+
+            Logger.recordOutput(logRoot + "DriveMode", driveMode);
         }
     }
 

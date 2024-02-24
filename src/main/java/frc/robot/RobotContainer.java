@@ -181,7 +181,7 @@ public class RobotContainer {
                 Set.of(m_robotDrive));
 
         Command otherAmpCommand = Commands.defer(() -> new PositionWithAmp(
-                () -> -m_driverController.getLeftY(),
+                () -> -m_driverController.getLeftX(),
                 m_vision::getVisibleAprilTags,
                 m_robotDrive,
                 true),
@@ -245,22 +245,20 @@ public class RobotContainer {
         m_laneAssistCommands.put("Speaker (15 ft)",
                 new LaneAssist(StageTags.SPEAKER_15FT.getDeferredCommand(), speakerPosition15Command));
 
+        m_laneAssistCommands.forEach((String key, LaneAssist laneAssist) -> {
+            m_laneAssistChooser.addOption(key, laneAssist);
+        });
+
         {
             String defaultLaneAssist = "Amp";
             m_laneAssistChooser.addDefaultOption(defaultLaneAssist,
                     m_laneAssistCommands.get(defaultLaneAssist));
         }
 
-        m_laneAssistCommands.forEach((String key, LaneAssist laneAssist) -> {
-            m_laneAssistChooser.addOption(key, laneAssist);
-        });
-
-        m_laneAssistChooser.addDefaultOption("Human Player", m_laneAssistCommands.get("Human Player"));
-
         m_driverController.leftTrigger()
-                .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get().pathfindCommand()));
+                .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get().getPathfindCommand()));
         m_driverController.rightTrigger()
-                .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get().aimingCommand()));
+                .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get().getAimingCommand()));
     }
 
     /**
