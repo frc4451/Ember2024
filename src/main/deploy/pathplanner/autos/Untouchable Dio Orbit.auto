@@ -64,6 +64,66 @@
           "data": {
             "pathName": "seinfeld"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PickUpNote"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "afton"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "lightning mcqueen"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PickUpNote"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "kuromi"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "shocking"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PickUpNote"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "kamikazi"
+          }
         }
       ]
     }
