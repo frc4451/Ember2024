@@ -122,7 +122,11 @@ public class RobotContainer {
      */
     private void configureNamedCommands() {
         NamedCommands.registerCommand("Shoot", new InstantCommand());
-        NamedCommands.registerCommand("PickUpNote", new InstantCommand());
+        NamedCommands.registerCommand("AimAtSpeaker", new InstantCommand());
+        NamedCommands.registerCommand("Intake", new RunCommand(
+                () -> m_shooter.beambreakIsActivated()
+                        .onTrue(m_intake.setVelocityCommand(20.0))
+                        .onFalse(m_intake.stopCommand())));
         NamedCommands.registerCommand("FindNote", new InstantCommand());
     }
 
@@ -261,31 +265,6 @@ public class RobotContainer {
      * {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-        // m_driverController.rightBumper()
-        // .whileTrue(new RunCommand(
-        // () -> m_robotDrive.setCross(),
-        // m_robotDrive));
-
-        m_driverController.b()
-                .onTrue(m_shooter.setVelocityCommand(60.0, 60.0))
-                .onFalse(m_shooter.stopCommand());
-        m_driverController.y()
-                .onTrue(m_shooter.setVelocityCommand(10.0, 10.0))
-                .onFalse(m_shooter.stopCommand());
-
-        // 60 rps shot, 10 feet out, 40 degrees shooter angle ()
-        m_driverController.x()
-                .onTrue(m_shooter.setVelocityCommand(65.0, 65.0))
-                .onFalse(m_shooter.stopCommand());
-
-        //
-        m_driverController.a()
-                .onTrue(m_shooter.setVelocityCommand(85.0, 70.0))
-                .onFalse(m_shooter.stopCommand());
-
-        // m_driverController.rightBumper()
-        // .onTrue(m_misc.setVelocityCommand(20.0))
-        // .onFalse(m_misc.stopCommand());
 
         m_driverController.rightBumper()
                 .whileTrue(new RunCommand(
@@ -295,14 +274,6 @@ public class RobotContainer {
         m_operatorController.rightY()
                 .whileTrue(m_pivot.runPercentCommand(() -> -m_operatorController.getRightY() / 2.0))
                 .onFalse(m_pivot.setSetpointCurrentCommand());
-        m_operatorController.povUp().onTrue(m_pivot.setSetpointCommand(PivotLocation.k0.angle));
-        m_operatorController.povRight().onTrue(m_pivot.setSetpointCommand(PivotLocation.k160.angle));
-        m_operatorController.povDown().onTrue(m_pivot.setSetpointCommand(PivotLocation.k45.angle));
-        m_operatorController.povLeft().onTrue(m_pivot.setSetpointCommand(PivotLocation.k90.angle));
-        // m_driverController.leftTrigger()
-        // .whileTrue(
-        // Commands.deferredProxy(
-        // () -> m_pathChooser.get()));
 
         m_driverController
                 .rightBumper()
@@ -312,40 +283,6 @@ public class RobotContainer {
                                         m_vision::getClosestObject,
                                         m_robotDrive),
                                 Set.of(m_robotDrive)));
-        // m_driverController.leftBumper()
-        // .whileTrue(
-        // Commands.defer(() -> new StrafeAndAimToAprilTag(
-        // () -> -m_driverController.getLeftY(),
-        // () -> -m_driverController.getLeftX(),
-        // m_vision::getVisibleAprilTags,
-        // 3,
-        // m_robotDrive),
-        // Set.of(m_robotDrive)));
-        // m_driverController.leftTrigger()
-        // .whileTrue(
-        // Commands.defer(() -> new StrafeAndAimToSpeaker(
-        // () -> -m_driverController.getLeftY(),
-        // () -> -m_driverController.getLeftX(),
-        // m_vision::getVisibleAprilTags,
-        // m_robotDrive),
-        // Set.of(m_robotDrive)));
-        // m_driverController.rightTrigger()
-        // .whileTrue(
-        // Commands.defer(() -> new PositionWithAmp(
-        // () -> -m_driverController.getLeftX(),
-        // m_vision::getVisibleAprilTags,
-        // m_robotDrive),
-        // Set.of(m_robotDrive)));
-        m_driverController.y()
-                .onTrue(m_intake.setVelocityCommand(50, 50))
-                .onFalse(m_intake.stopCommand());
-        m_driverController.x()
-                .onTrue(m_intake.setVelocityCommand(20, 20))
-                .onFalse(m_intake.stopCommand());
-        m_driverController.a()
-                .and(m_intake.beambreakIsActivated())
-                .onTrue(m_intake.setVelocityCommand(20, 20))
-                .onFalse(m_intake.stopCommand());
 
         m_driverController.povUp().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_RED));
         m_driverController.povRight().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_GREEN));

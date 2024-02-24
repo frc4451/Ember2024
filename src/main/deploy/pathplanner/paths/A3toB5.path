@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.61,
-        "y": 4.32
+        "x": 2.537562767433229,
+        "y": 4.25
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.61,
-        "y": 3.8200000000000003
+        "x": 2.537562767433229,
+        "y": 3.75
       },
       "isLocked": false,
-      "linkedName": "A3"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -66,6 +66,9 @@
   },
   "reversed": false,
   "folder": "Note2Note",
-  "previewStartingState": null,
+  "previewStartingState": {
+    "rotation": -25.0,
+    "velocity": 0
+  },
   "useDefaultConstraints": false
 }

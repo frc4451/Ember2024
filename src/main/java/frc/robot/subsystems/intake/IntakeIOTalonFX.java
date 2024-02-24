@@ -17,7 +17,7 @@ public class IntakeIOTalonFX implements IntakeIO {
 
     public IntakeIOTalonFX(int deviceId, boolean isInverted) {
         talon = new TalonFX(deviceId);
-        voltage = talon.getMotorVoltage();
+        voltage = talon.getSupplyVoltage();
         velocity = talon.getVelocity();
 
         talon.getConfigurator()
