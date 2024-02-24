@@ -32,9 +32,12 @@ import frc.robot.commands.StrafeAndAimToSpeaker;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.pathplanner.PathPlannerUtils;
 import frc.robot.pathplanner.paths.PathPlannerPoses;
+import frc.robot.subsystems.amptrap.AmpTrapSubsystem;
 import frc.robot.subsystems.blinkin.BlinkinColors;
 import frc.robot.subsystems.blinkin.BlinkinSubsystem;
+import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.elevator.ElevatorSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.pivot.PivotLocation;
 import frc.robot.subsystems.pivot.PivotSubsystem;
@@ -55,16 +58,20 @@ public class RobotContainer {
 
     public final VisionSubsystem m_vision = new VisionSubsystem();
 
-    // The robot's subsystems
+    // ROBOT SUBSYSTEMS
     public final DriveSubsystem m_robotDrive = new DriveSubsystem(m_vision::pollLatestVisionMeasurement);
 
     public final IntakeSubsystem m_intake = new IntakeSubsystem();
 
-    // public final RollerSubsystem m_rollers = new RollerSubsystem();
-
     public final PivotSubsystem m_pivot = new PivotSubsystem();
 
     public final ShooterSubsystem m_shooter = new ShooterSubsystem();
+
+    public final AmpTrapSubsystem m_ampTrap = new AmpTrapSubsystem();
+
+    public final ClimberSubsystem m_climber = new ClimberSubsystem();
+
+    public final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
 
     // public final MiscSubsystem m_misc = new MiscSubsystem();
 
@@ -76,6 +83,11 @@ public class RobotContainer {
     final CommandCustomController m_operatorController = new CommandCustomController(
             OIConstants.kOperatorControllerPort);
 
+    // For tests only
+    final CommandCustomController m_programmerController = new CommandCustomController(
+            OIConstants.kProgrammerControllerPort);
+
+    // private final SendableChooser<Command> autoChooser;
     public final LoggedDashboardChooser<Command> m_autoChooser;
 
     public final Map<String, LaneAssist> m_laneAssistCommands = new LinkedHashMap<>();
@@ -107,12 +119,8 @@ public class RobotContainer {
                         true,
                         true));
         m_pivot.setDefaultCommand(m_pivot.pivotPIDCommand());
-        // m_pivot.setDefaultCommand(new RunCommand(() -> {
-        // m_pivot.runAtPercent(m_operatorController.getRightY());
-        // }, m_pivot));
-
-        // m_pivot.setDefaultCommand(m_pivot.getPivotCommand());
-
+        m_climber.setDefaultCommand(m_climber.pidCommand());
+        m_elevator.setDefaultCommand(m_elevator.pidCommand());
         // Build an auto chooser. You can make a default auto by passing in their name
         m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
     }
@@ -214,11 +222,14 @@ public class RobotContainer {
                 new LaneAssist(PathPlannerPoses.HUMAN_PLAYER.getDeferredCommand(),
                         new InstantCommand()));
         m_laneAssistCommands.put("Speaker Left",
-                new LaneAssist(PathPlannerPoses.SPEAKER_LEFT.getDeferredCommand(), speakerStrafeAndAimCommand));
+                new LaneAssist(PathPlannerPoses.SPEAKER_LEFT.getDeferredCommand(),
+                        speakerStrafeAndAimCommand));
         m_laneAssistCommands.put("Speaker Center",
-                new LaneAssist(PathPlannerPoses.SPEAKER_CENTER.getDeferredCommand(), speakerStrafeAndAimCommand));
+                new LaneAssist(PathPlannerPoses.SPEAKER_CENTER.getDeferredCommand(),
+                        speakerStrafeAndAimCommand));
         m_laneAssistCommands.put("Speaker Right",
-                new LaneAssist(PathPlannerPoses.SPEAKER_RIGHT.getDeferredCommand(), speakerStrafeAndAimCommand));
+                new LaneAssist(PathPlannerPoses.SPEAKER_RIGHT.getDeferredCommand(),
+                        speakerStrafeAndAimCommand));
         m_laneAssistCommands.put("Amp",
                 new LaneAssist(PathPlannerPoses.AMP.getDeferredCommand(), ampCommand));
         m_laneAssistCommands.put("Other Amp",
@@ -236,7 +247,8 @@ public class RobotContainer {
 
         {
             String defaultLaneAssist = "Amp";
-            m_laneAssistChooser.addDefaultOption(defaultLaneAssist, m_laneAssistCommands.get(defaultLaneAssist));
+            m_laneAssistChooser.addDefaultOption(defaultLaneAssist,
+                    m_laneAssistCommands.get(defaultLaneAssist));
         }
 
         m_laneAssistCommands.forEach((String key, LaneAssist laneAssist) -> {
@@ -266,22 +278,7 @@ public class RobotContainer {
         // () -> m_robotDrive.setCross(),
         // m_robotDrive));
 
-        m_driverController.b()
-                .onTrue(m_shooter.setVelocityCommand(60.0, 60.0))
-                .onFalse(m_shooter.stopCommand());
-        m_driverController.y()
-                .onTrue(m_shooter.setVelocityCommand(10.0, 10.0))
-                .onFalse(m_shooter.stopCommand());
-
         // 60 rps shot, 10 feet out, 40 degrees shooter angle ()
-        m_driverController.x()
-                .onTrue(m_shooter.setVelocityCommand(65.0, 65.0))
-                .onFalse(m_shooter.stopCommand());
-
-        //
-        m_driverController.a()
-                .onTrue(m_shooter.setVelocityCommand(85.0, 70.0))
-                .onFalse(m_shooter.stopCommand());
 
         // m_driverController.rightBumper()
         // .onTrue(m_misc.setVelocityCommand(20.0))
@@ -295,10 +292,6 @@ public class RobotContainer {
         m_operatorController.rightY()
                 .whileTrue(m_pivot.runPercentCommand(() -> -m_operatorController.getRightY() / 2.0))
                 .onFalse(m_pivot.setSetpointCurrentCommand());
-        m_operatorController.povUp().onTrue(m_pivot.setSetpointCommand(PivotLocation.k0.angle));
-        m_operatorController.povRight().onTrue(m_pivot.setSetpointCommand(PivotLocation.k160.angle));
-        m_operatorController.povDown().onTrue(m_pivot.setSetpointCommand(PivotLocation.k45.angle));
-        m_operatorController.povLeft().onTrue(m_pivot.setSetpointCommand(PivotLocation.k90.angle));
         // m_driverController.leftTrigger()
         // .whileTrue(
         // Commands.deferredProxy(
@@ -337,19 +330,56 @@ public class RobotContainer {
         // m_robotDrive),
         // Set.of(m_robotDrive)));
         m_driverController.y()
-                .onTrue(m_intake.setVelocityCommand(50, 50))
-                .onFalse(m_intake.stopCommand());
-        m_driverController.x()
-                .onTrue(m_intake.setVelocityCommand(20, 20))
+                .onTrue(m_intake.setVelocityCommand(50))
                 .onFalse(m_intake.stopCommand());
         m_driverController.a()
-                .and(m_intake.beambreakIsActivated())
-                .onTrue(m_intake.setVelocityCommand(20, 20))
+                .and(m_shooter.beambreakIsActivated().negate())
+                .onTrue(m_intake.setVelocityCommand(20))
                 .onFalse(m_intake.stopCommand());
 
         m_driverController.povUp().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_RED));
         m_driverController.povRight().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_GREEN));
         m_driverController.povDown().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_BLUE));
         m_driverController.povLeft().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_YELLOW));
+
+        // 60 rps shot, 10 feet out, 40 degrees shooter angle ()
+        m_operatorController.x() /* 65rps 10ft 36degrees */
+                .onTrue(m_shooter.setVelocityShooterCommand(65.0, 65.0))
+                .onFalse(m_shooter.stopCommand());
+        m_operatorController.y() /* 10rps amp */
+                .onTrue(m_shooter.setVelocityShooterCommand(10.0, 10.0))
+                .onFalse(m_shooter.stopCommand());
+        m_operatorController.a() /* 21ft shot and preferably use for other distances */
+                .onTrue(m_shooter.setVelocityShooterCommand(85.0, 70.0))
+                .onFalse(m_shooter.stopCommand());
+        m_operatorController.b()
+                .onTrue(m_shooter.setVelocityShooterCommand(60.0, 60.0))
+                .onFalse(m_shooter.stopCommand());
+        m_operatorController.rightY()
+                .whileTrue(m_pivot.runPercentCommand(() -> -m_operatorController.getRightY() / 2.0))
+                .onFalse(m_pivot.setSetpointCurrentCommand());
+        m_operatorController.povLeft().onTrue(m_pivot.setSetpointCommand(PivotLocation.k85.angle));
+        m_operatorController.povUp().onTrue(m_pivot.setSetpointCommand(PivotLocation.k55.angle));
+        m_operatorController.povRight().onTrue(m_pivot.setSetpointCommand(PivotLocation.k36.angle));
+        m_operatorController.povDown().onTrue(m_pivot.setSetpointCommand(PivotLocation.k26.angle));
+
+        // TEST CONTROLLER
+        m_programmerController.x()
+                .whileTrue(m_intake.setVelocityCommand(20.0))
+                .onFalse(m_intake.stopCommand());
+        m_programmerController.x()
+                .and(m_intake.beambreakIsActivated())
+                .whileTrue(m_shooter.setVelocityFeederCommand(20.0))
+                .whileFalse(m_shooter.stopFeederCommand());
+        m_programmerController.y()
+                .onTrue(m_climber.setSetpointCommand(100.0));
+        m_programmerController.a()
+                .onTrue(m_climber.setSetpointCommand(0.0));
+        m_programmerController.rightY()
+                .whileTrue(m_climber.runSetpointController(() -> -m_programmerController.getRightY()))
+                .onFalse(m_climber.setSetpointCurrentCommand());
+
+        m_programmerController.povUp()
+                .onTrue(m_intake.toggleBeamBrakeActivatedCommand());
     }
 }
