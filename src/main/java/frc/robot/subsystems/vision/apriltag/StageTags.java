@@ -2,7 +2,9 @@ package frc.robot.subsystems.vision.apriltag;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,6 +17,7 @@ public enum StageTags {
     HUMAN(VisionConstants.RED_STAGE_HUMAN, VisionConstants.BLUE_STAGE_HUMAN, 1.0),
     AMP(VisionConstants.RED_STAGE_AMP, VisionConstants.BLUE_STAGE_AMP, 1.0),
     CENTER(VisionConstants.RED_STAGE_CENTER, VisionConstants.BLUE_STAGE_CENTER, 1.0),
+    SPEAKER_AIM(VisionConstants.RED_SPEAKER_CENTER, VisionConstants.BLUE_SPEAKER_CENTER, 0.0),
     SPEAKER_10FT(VisionConstants.RED_SPEAKER_CENTER, VisionConstants.BLUE_SPEAKER_CENTER, Units.feetToMeters(10)),
     SPEAKER_15FT(VisionConstants.RED_SPEAKER_CENTER, VisionConstants.BLUE_SPEAKER_CENTER, Units.feetToMeters(15)),
     ;
@@ -84,5 +87,20 @@ public enum StageTags {
 
     public int getBlueId() {
         return blueId;
+    }
+
+    /**
+     * Using the robot's known pose, find the distance of how far away the robot is
+     * from the {@link #StageTag}.
+     *
+     * @param pose - Current Robot Pose
+     * @return Distance from robot to target (meters)
+     */
+    public double getDistanceFrom(Pose2d pose) {
+        Translation2d poseTranslation = pose.getTranslation();
+        Translation2d targetTranslation = getPose().toPose2d().getTranslation();
+        double distanceToTarget = poseTranslation.getDistance(targetTranslation);
+
+        return distanceToTarget;
     }
 }

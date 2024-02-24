@@ -9,12 +9,14 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.bobot_state.BobotState;
 
 public class PivotSubsystem extends SubsystemBase {
     private final PivotIO io;
@@ -27,6 +29,10 @@ public class PivotSubsystem extends SubsystemBase {
             IntakeConstants.kPivotP,
             IntakeConstants.kPivotI,
             IntakeConstants.kPivotD);
+
+    // Mechanisms
+    private final PivotVisualizer measuredVisualizer = new PivotVisualizer("Measured", Color.kBlack);
+    private final PivotVisualizer setpointVisualizer = new PivotVisualizer("Setpoint", Color.kGreen);
 
     public PivotSubsystem() {
         switch (AdvantageKitConstants.getMode()) {
@@ -63,6 +69,10 @@ public class PivotSubsystem extends SubsystemBase {
 
         Logger.recordOutput("Pivot/Angle", getAngle().getDegrees());
         Logger.recordOutput("Pivot/SetpointAngle", getSetpoint().getDegrees());
+
+        // Log Mechanisms - This needs to be recorded in Radians
+        measuredVisualizer.update(getAngle().getRadians());
+        setpointVisualizer.update(getSetpoint().getRadians());
     }
 
     public void setAngle(Rotation2d angle) {
@@ -103,5 +113,10 @@ public class PivotSubsystem extends SubsystemBase {
 
     public Command runPercentCommand(DoubleSupplier percentDecimal) {
         return new RunCommand(() -> this.io.setPercentOutput(percentDecimal.getAsDouble()), this);
+    }
+
+    public Command pivotToSpeakerCommand() {
+        return new RunCommand(
+                () -> setSetpoint(Rotation2d.fromDegrees(BobotState.getShootingCalculation().angleDegrees())));
     }
 }

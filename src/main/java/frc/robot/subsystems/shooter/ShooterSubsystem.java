@@ -9,10 +9,13 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.bobot_state.BobotState;
+import frc.robot.bobot_state.ShootingInterpolator;
 import frc.robot.reusable_io.beambreak.BeambreakDigitalInput;
 import frc.robot.reusable_io.beambreak.BeambreakIO;
 import frc.robot.reusable_io.beambreak.BeambreakIOInputsAutoLogged;
@@ -61,14 +64,22 @@ public class ShooterSubsystem extends SubsystemBase {
         }
     }
 
+    public void setVelocityFeeder(double velocityRotPerSecondFeeder) {
+        this.io.setVelocityFeeder(velocityRotPerSecondFeeder);
+    }
+
     public Command setVelocityFeederCommand(double velocityRotPerSecondFeeder) {
         return new InstantCommand(
-                () -> this.io.setVelocityFeeder(velocityRotPerSecondFeeder), this);
+                () -> setVelocityFeeder(velocityRotPerSecondFeeder), this);
+    }
+
+    public void setVelocityShooter(double velocityRotPerSecondLeft, double velocityRotPerSecondRight) {
+        this.io.setVelocityShooter(velocityRotPerSecondLeft, velocityRotPerSecondRight);
     }
 
     public Command setVelocityShooterCommand(double velocityRotPerSecondLeft, double velocityRotPerSecondRight) {
         return new InstantCommand(
-                () -> this.io.setVelocityShooter(velocityRotPerSecondLeft, velocityRotPerSecondRight), this);
+                () -> setVelocityShooter(velocityRotPerSecondLeft, velocityRotPerSecondRight), this);
     }
 
     public Command stopCommand() {
@@ -99,5 +110,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public Trigger beambreakIsActivated() {
         return new Trigger(() -> this.beambreakInputs.isActivated);
+    }
+
+    public Command shootAtSpeakerCommand() {
+        return new RunCommand(() -> {
+            ShootingInterpolator.InterpolatedCalculation shootingCalculation = BobotState.getShootingCalculation();
+            setVelocityShooter(shootingCalculation.leftSpeedRotPerSec(), shootingCalculation.rightSpeedRotPerSec());
+        }, this).andThen(stopCommand());
     }
 }

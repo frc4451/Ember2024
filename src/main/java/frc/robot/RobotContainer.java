@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
+import frc.robot.bobot_state.BobotState;
 import frc.robot.commands.PathfindToTarget;
 import frc.robot.commands.PositionWithAmp;
 import frc.robot.commands.PositionWithSpeaker;
@@ -54,11 +55,20 @@ import frc.utils.LaneAssist;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+    final CommandCustomController m_driverController = new CommandCustomController(
+            OIConstants.kDriverControllerPort);
+
+    final CommandCustomController m_operatorController = new CommandCustomController(
+            OIConstants.kOperatorControllerPort);
+
+    // For tests only
+    final CommandCustomController m_programmerController = new CommandCustomController(
+            OIConstants.kProgrammerControllerPort);
+
     public final Field2d field = new Field2d();
 
     public final VisionSubsystem m_vision = new VisionSubsystem();
 
-    // ROBOT SUBSYSTEMS
     public final DriveSubsystem m_robotDrive = new DriveSubsystem(m_vision::pollLatestVisionMeasurement);
 
     public final IntakeSubsystem m_intake = new IntakeSubsystem();
@@ -73,19 +83,7 @@ public class RobotContainer {
 
     public final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
 
-    // public final MiscSubsystem m_misc = new MiscSubsystem();
-
     public final BlinkinSubsystem m_blinkin = new BlinkinSubsystem();
-
-    final CommandCustomController m_driverController = new CommandCustomController(
-            OIConstants.kDriverControllerPort);
-
-    final CommandCustomController m_operatorController = new CommandCustomController(
-            OIConstants.kOperatorControllerPort);
-
-    // For tests only
-    final CommandCustomController m_programmerController = new CommandCustomController(
-            OIConstants.kProgrammerControllerPort);
 
     // private final SendableChooser<Command> autoChooser;
     public final LoggedDashboardChooser<Command> m_autoChooser;
@@ -98,6 +96,8 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
+        new BobotState(); // this is a no-op but is required for it to be registered as a VirtualSubsystem
+
         // Configure PathPlanner logging with AdvantageKit
         PathPlannerUtils.configureLogging();
 
@@ -279,6 +279,14 @@ public class RobotContainer {
         // m_robotDrive));
 
         // 60 rps shot, 10 feet out, 40 degrees shooter angle ()
+        m_driverController.x()
+                .onTrue(m_shooter.setVelocityShooterCommand(65.0, 65.0))
+                .onFalse(m_shooter.stopCommand());
+
+        //
+        m_driverController.a()
+                .onTrue(m_shooter.setVelocityShooterCommand(85.0, 70.0))
+                .onFalse(m_shooter.stopCommand());
 
         // m_driverController.rightBumper()
         // .onTrue(m_misc.setVelocityCommand(20.0))
@@ -292,6 +300,13 @@ public class RobotContainer {
         m_operatorController.rightY()
                 .whileTrue(m_pivot.runPercentCommand(() -> -m_operatorController.getRightY() / 2.0))
                 .onFalse(m_pivot.setSetpointCurrentCommand());
+        m_operatorController.povUp().onTrue(m_pivot.setSetpointCommand(PivotLocation.k0.angle));
+        m_operatorController.povDown().onTrue(m_pivot.setSetpointCommand(PivotLocation.k45.angle));
+        m_operatorController.povLeft().onTrue(m_pivot.setSetpointCommand(PivotLocation.k90.angle));
+        m_driverController.a().whileTrue(
+                new ParallelCommandGroup(
+                        m_pivot.pivotToSpeakerCommand(),
+                        m_shooter.shootAtSpeakerCommand()));
         // m_driverController.leftTrigger()
         // .whileTrue(
         // Commands.deferredProxy(
@@ -358,8 +373,6 @@ public class RobotContainer {
         m_operatorController.rightY()
                 .whileTrue(m_pivot.runPercentCommand(() -> -m_operatorController.getRightY() / 2.0))
                 .onFalse(m_pivot.setSetpointCurrentCommand());
-        m_operatorController.povLeft().onTrue(m_pivot.setSetpointCommand(PivotLocation.k85.angle));
-        m_operatorController.povUp().onTrue(m_pivot.setSetpointCommand(PivotLocation.k55.angle));
         m_operatorController.povRight().onTrue(m_pivot.setSetpointCommand(PivotLocation.k36.angle));
         m_operatorController.povDown().onTrue(m_pivot.setSetpointCommand(PivotLocation.k26.angle));
 
