@@ -7,14 +7,15 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.AdvantageKitConstants;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.bobot_state.BobotState;
 
 public class PivotSubsystem extends SubsystemBase {
@@ -25,9 +26,9 @@ public class PivotSubsystem extends SubsystemBase {
     private Rotation2d setpoint = new Rotation2d();
 
     private final PIDController pidController = new PIDController(
-            Constants.IntakeConstants.kPivotP,
-            Constants.IntakeConstants.kPivotI,
-            Constants.IntakeConstants.kPivotD);
+            IntakeConstants.kPivotP,
+            IntakeConstants.kPivotI,
+            IntakeConstants.kPivotD);
 
     // Mechanisms
     private final PivotVisualizer measuredVisualizer = new PivotVisualizer("Measured", Color.kBlack);
@@ -36,7 +37,7 @@ public class PivotSubsystem extends SubsystemBase {
     public PivotSubsystem() {
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
-                io = new PivotIOSparkMax();
+                io = new PivotIOTalonFX();
                 break;
             case SIM:
                 io = new PivotIOSim();
@@ -48,8 +49,9 @@ public class PivotSubsystem extends SubsystemBase {
                 break;
         }
 
-        setAngle(PivotLocation.INITIAL.angle);
-        setSetpoint(PivotLocation.INITIAL.angle);
+        this.pidController.setTolerance(Units.degreesToRadians(2.0));
+        this.setAngle(PivotLocation.INITIAL.angle);
+        this.setSetpoint(PivotLocation.INITIAL.angle);
     }
 
     @Override
@@ -63,7 +65,7 @@ public class PivotSubsystem extends SubsystemBase {
             this.io.stop();
         }
 
-        this.angle = new Rotation2d(this.inputs.relativeAngleRad);
+        this.angle = new Rotation2d(this.inputs.positionRadLeader);
 
         Logger.recordOutput("Pivot/Angle", getAngle().getDegrees());
         Logger.recordOutput("Pivot/SetpointAngle", getSetpoint().getDegrees());
@@ -101,16 +103,16 @@ public class PivotSubsystem extends SubsystemBase {
     public Command pivotPIDCommand() {
         return new RunCommand(() -> {
             double output = this.pidController.calculate(this.getAngle().getDegrees());
-            useOutput(output);
+            setVoltage(output);
         }, this);
     }
 
-    public void useOutput(double output) {
-        this.io.setVoltage(MathUtil.clamp(output, -12, 12));
+    public void setVoltage(double voltage) {
+        this.io.setVoltage(MathUtil.clamp(voltage, -12.0, 12.0));
     }
 
-    public Command runPercentCommand(DoubleSupplier decimalPercent) {
-        return new RunCommand(() -> this.io.setPercentOutput(decimalPercent.getAsDouble()), this);
+    public Command runPercentCommand(DoubleSupplier percentDecimal) {
+        return new RunCommand(() -> this.io.setPercentOutput(percentDecimal.getAsDouble()), this);
     }
 
     public Command pivotToSpeakerCommand() {
