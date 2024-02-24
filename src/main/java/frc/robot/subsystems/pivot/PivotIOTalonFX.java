@@ -6,10 +6,12 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.PhoenixConstants;
 
 public class PivotIOTalonFX implements PivotIO {
     private static final double kRadiansPerRotation = 2.0 * Math.PI / IntakeConstants.kPivotReduction;
@@ -28,19 +30,29 @@ public class PivotIOTalonFX implements PivotIO {
     private final StatusSignal<Double> positionRotationsFollower = pivotFollower.getPosition();
 
     public PivotIOTalonFX() {
-        this.pivotLeader.getConfigurator().apply(
-                new TalonFXConfiguration()
-                        .withMotorOutput(new MotorOutputConfigs()
-                                .withNeutralMode(NeutralModeValue.Brake))
-                        .withClosedLoopRamps(new ClosedLoopRampsConfigs()
-                                .withDutyCycleClosedLoopRampPeriod(1.0)));
-        this.pivotFollower.getConfigurator().apply(
-                new TalonFXConfiguration()
-                        .withMotorOutput(new MotorOutputConfigs()
-                                .withNeutralMode(NeutralModeValue.Brake))
-                        .withClosedLoopRamps(new ClosedLoopRampsConfigs()
-                                .withDutyCycleClosedLoopRampPeriod(1.0)));
-        this.pivotFollower.setControl(new Follower(pivotLeader.getDeviceID(), true));
+        TalonFXConfiguration config = new TalonFXConfiguration()
+                .withMotorOutput(new MotorOutputConfigs()
+                        .withInverted(InvertedValue.Clockwise_Positive)
+                        .withNeutralMode(NeutralModeValue.Coast))
+                .withClosedLoopRamps(new ClosedLoopRampsConfigs()
+                        .withDutyCycleClosedLoopRampPeriod(1.0));
+        this.pivotLeader.getConfigurator().apply(config);
+        this.pivotFollower.getConfigurator().apply(config);
+
+        this.pivotFollower.setControl(new Follower(pivotLeader.getDeviceID(), false));
+
+        StatusSignal.setUpdateFrequencyForAll(
+                PhoenixConstants.defaultStatusSignalFrequencyHz,
+                appliedVoltageLeader,
+                temperatureCelsiusLeader,
+                currentAmperageLeader,
+                positionRotationsLeader,
+                appliedVoltageFollower,
+                temperatureCelsiusFollower,
+                currentAmperageFollower,
+                positionRotationsFollower);
+        this.pivotFollower.optimizeBusUtilization();
+        this.pivotLeader.optimizeBusUtilization();
     }
 
     @Override
@@ -78,7 +90,7 @@ public class PivotIOTalonFX implements PivotIO {
     @Override
     public void setAngle(Rotation2d angle) {
         this.pivotLeader.setPosition(angle.getRadians() / kRadiansPerRotation);
-        // TODO: See if we need to set follower as well
+        this.pivotFollower.setPosition(angle.getRadians() / kRadiansPerRotation);
     }
 
     @Override

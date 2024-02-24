@@ -8,6 +8,7 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 
+import frc.robot.Constants.PhoenixConstants;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterIOTalonFX implements ShooterIO {
@@ -62,6 +63,24 @@ public class ShooterIOTalonFX implements ShooterIO {
                                 .withKI(0.0)
                                 .withKD(0.0)));
         velocity.Slot = 0;
+
+        StatusSignal.setUpdateFrequencyForAll(
+                PhoenixConstants.defaultStatusSignalFrequencyHz,
+                leftVoltage,
+                rightVoltage,
+                feederVoltage,
+                leftAmperage,
+                rightAmperage,
+                feederAmperage,
+                leftTempCelsius,
+                rightTempCelsius,
+                feederTempCelsius,
+                leftVelocity,
+                rightVelocity,
+                feederVelocity);
+        left.optimizeBusUtilization();
+        right.optimizeBusUtilization();
+        feeder.optimizeBusUtilization();
     }
 
     @Override

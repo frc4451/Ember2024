@@ -10,6 +10,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.Constants.ClimberConstants;
+import frc.robot.Constants.PhoenixConstants;
 
 public class ClimberIOTalonFX implements ClimberIO {
     private static final double kInchesPerRotation = ClimberConstants.kClimberSpoolDiameter
@@ -41,6 +42,15 @@ public class ClimberIOTalonFX implements ClimberIO {
                                 .withKI(0)
                                 .withKD(0)));
         velocityVoltage.Slot = 0;
+
+        StatusSignal.setUpdateFrequencyForAll(
+                PhoenixConstants.defaultStatusSignalFrequencyHz,
+                appliedVoltage,
+                currentAmperage,
+                temperatureCelsius,
+                velocityRotPerSec,
+                positionRotations);
+        io.optimizeBusUtilization();
     }
 
     @Override

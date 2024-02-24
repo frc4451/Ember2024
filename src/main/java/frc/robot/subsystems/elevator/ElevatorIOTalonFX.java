@@ -10,6 +10,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.PhoenixConstants;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
     private static final double kInchesPerRotation = ElevatorConstants.kElevatorSpoolDiameter
@@ -41,6 +42,15 @@ public class ElevatorIOTalonFX implements ElevatorIO {
                                 .withKI(0)
                                 .withKD(0)));
         velocityVoltage.Slot = 0;
+
+        StatusSignal.setUpdateFrequencyForAll(
+                PhoenixConstants.defaultStatusSignalFrequencyHz,
+                appliedVoltage,
+                velocityRotPerSec,
+                temperatureCelsius,
+                currentAmperage,
+                positionRotations);
+        io.optimizeBusUtilization();
     }
 
     @Override

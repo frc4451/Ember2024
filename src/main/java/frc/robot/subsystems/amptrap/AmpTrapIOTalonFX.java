@@ -9,6 +9,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.Constants.AmpTrapConstants;
+import frc.robot.Constants.PhoenixConstants;
 
 public class AmpTrapIOTalonFX implements AmpTrapIO {
     private final TalonFX roller = new TalonFX(AmpTrapConstants.kPivotCanId);
@@ -29,6 +30,14 @@ public class AmpTrapIOTalonFX implements AmpTrapIO {
                                 .withDutyCycleClosedLoopRampPeriod(1.0)));
 
         velocity.Slot = 0;
+
+        StatusSignal.setUpdateFrequencyForAll(
+                PhoenixConstants.defaultStatusSignalFrequencyHz,
+                appliedVoltage,
+                temperatureCelsius,
+                currentAmperage,
+                velocityRotPerSecond);
+        roller.optimizeBusUtilization();
     }
 
     @Override

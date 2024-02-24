@@ -9,6 +9,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import frc.robot.Constants.PhoenixConstants;
+
 public class IntakeIOTalonFX implements IntakeIO {
     private final TalonFX talon;
     private final StatusSignal<Double> voltage;
@@ -34,6 +36,9 @@ public class IntakeIOTalonFX implements IntakeIO {
                                 .withKI(0)
                                 .withKD(0)));
         velocityVoltage.Slot = 0;
+
+        StatusSignal.setUpdateFrequencyForAll(PhoenixConstants.defaultStatusSignalFrequencyHz, voltage, velocity);
+        talon.optimizeBusUtilization();
     }
 
     public void updateInputs(IntakeIOInputs inputs) {

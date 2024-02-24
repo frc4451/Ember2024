@@ -257,4 +257,8 @@ public final class Constants {
         public static final double kI = 0.0;
         public static final double kD = 1.0;
     }
+
+    public static final class PhoenixConstants {
+        public static final int defaultStatusSignalFrequencyHz = 50;
+    }
 }
