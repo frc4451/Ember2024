@@ -12,7 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants.IntakeConstants;
 
 public class PivotIOTalonFX implements PivotIO {
-    private static final double kRotationsToRad = 2.0 * Math.PI / IntakeConstants.kPivotReduction;
+    private static final double kRadiansPerRotation = 2.0 * Math.PI / IntakeConstants.kPivotReduction;
 
     private final TalonFX pivotLeader = new TalonFX(IntakeConstants.kPivotLeaderCanId);
     private final TalonFX pivotFollower = new TalonFX(IntakeConstants.kPivotFollowerCanId);
@@ -57,12 +57,12 @@ public class PivotIOTalonFX implements PivotIO {
         inputs.appliedVoltageLeader = appliedVoltageLeader.getValueAsDouble();
         inputs.temperatureCelsiusLeader = temperatureCelsiusLeader.getValueAsDouble();
         inputs.currentAmperageLeader = currentAmperageLeader.getValueAsDouble();
-        inputs.positionRadLeader = positionRotationsLeader.getValueAsDouble() * kRotationsToRad;
+        inputs.positionRadLeader = positionRotationsLeader.getValueAsDouble() * kRadiansPerRotation;
 
         inputs.appliedVoltageFollower = appliedVoltageFollower.getValueAsDouble();
         inputs.temperatureCelsiusFollower = temperatureCelsiusFollower.getValueAsDouble();
         inputs.currentAmperageFollower = currentAmperageFollower.getValueAsDouble();
-        inputs.positionRadFollower = positionRotationsFollower.getValueAsDouble() * kRotationsToRad;
+        inputs.positionRadFollower = positionRotationsFollower.getValueAsDouble() * kRadiansPerRotation;
     }
 
     @Override
@@ -77,7 +77,7 @@ public class PivotIOTalonFX implements PivotIO {
 
     @Override
     public void setAngle(Rotation2d angle) {
-        this.pivotLeader.setPosition(angle.getRadians() / kRotationsToRad);
+        this.pivotLeader.setPosition(angle.getRadians() / kRadiansPerRotation);
         // TODO: See if we need to set follower as well
     }
 

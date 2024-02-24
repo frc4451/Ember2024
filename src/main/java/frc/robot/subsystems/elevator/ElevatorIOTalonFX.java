@@ -12,7 +12,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.Constants.ElevatorConstants;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
-    private static final double kRotationsToInches = ElevatorConstants.kElevatorSpoolDiameter
+    private static final double kInchesPerRotation = ElevatorConstants.kElevatorSpoolDiameter
             * Math.PI
             / ElevatorConstants.kElevatorReduction;
 
@@ -52,10 +52,10 @@ public class ElevatorIOTalonFX implements ElevatorIO {
                 currentAmperage,
                 positionRotations);
         inputs.appliedVoltage = appliedVoltage.getValueAsDouble();
-        inputs.velocityInchesPerSecond = velocityRotPerSec.getValueAsDouble() * kRotationsToInches;
+        inputs.velocityInchesPerSecond = velocityRotPerSec.getValueAsDouble() * kInchesPerRotation;
         inputs.currentAmperage = currentAmperage.getValueAsDouble();
         inputs.temperatureCelsius = temperatureCelsius.getValueAsDouble();
-        inputs.positionInches = positionRotations.getValueAsDouble() * kRotationsToInches;
+        inputs.positionInches = positionRotations.getValueAsDouble() * kInchesPerRotation;
     }
 
     @Override
@@ -65,6 +65,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     @Override
     public void setPosition(double positionInches) {
-        this.io.setPosition(positionInches / kRotationsToInches);
+        this.io.setPosition(positionInches / kInchesPerRotation);
     }
 }
