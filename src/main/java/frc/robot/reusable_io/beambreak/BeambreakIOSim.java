@@ -12,11 +12,11 @@ public class BeambreakIOSim implements BeambreakIO {
     @Override
     public void updateInputs(BeambreakIOInputs inputs) {
         inputs.isConnected = beambreakSim.getInitialized();
-        inputs.isActivated = !beambreakSim.getValue();
+        inputs.isObstructed = !beambreakSim.getValue();
     }
 
     @Override
-    public void overrideActivated(boolean isActivated) {
-        this.beambreakSim.setValue(!isActivated);
+    public void overrideObstructed(boolean isObstructed) {
+        this.beambreakSim.setValue(!isObstructed);
     }
 }

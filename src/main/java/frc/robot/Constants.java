@@ -183,7 +183,7 @@ public final class Constants {
 
         public static final int kTopRollerCanId = 20;
         public static final int kBottomRollerCanId = 21;
-        public static final int kBeamBreakChannel = 7;
+        public static final int kBeamBreakChannel = 0;
 
         // public static final double kPivotMinDegrees = 10.0;
         // public static final double kPivotMaxDegrees = 167.25;
@@ -224,8 +224,8 @@ public final class Constants {
         public static final int kLeftShooterCanID = 4;
         public static final int kRightShooterCanID = 3;
         public static final int kFeederCanID = -25;
-        public static final int kBeamBreakCanID = 0;
 
+        public static final int kBeamBreakChannel = 1;
     }
 
     public static final class ClimberConstants {

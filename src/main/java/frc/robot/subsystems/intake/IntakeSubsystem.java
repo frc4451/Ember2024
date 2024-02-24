@@ -5,6 +5,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AdvantageKitConstants;
@@ -60,25 +61,32 @@ public class IntakeSubsystem extends SubsystemBase {
         return new InstantCommand(() -> this.io.setVelocity(velocityRotPerSecond), this);
     }
 
+    public Command setVelocityBeambreakCommand(double velocityRotPerSecond) {
+        return new RunCommand(() -> this.io.setVelocity(velocityRotPerSecond), this)
+                .unless(beambreakIsObstructed())
+                .until(beambreakIsObstructed())
+                .andThen(stopCommand());
+    }
+
     public Command stopCommand() {
         return new InstantCommand(this.io::stop, this);
     }
 
     // For testing and sim
-    public Command setBeamBreakActivatedCommand(boolean value) {
+    public Command setBeambreakObstructedCommand(boolean value) {
         return new InstantCommand(() -> {
-            this.beambreak.overrideActivated(value);
+            this.beambreak.overrideObstructed(value);
         });
     }
 
     // For testing and sim
-    public Command toggleBeamBrakeActivatedCommand() {
+    public Command toggleBeambreakObstructedCommand() {
         return new InstantCommand(() -> {
-            this.beambreak.overrideActivated(!this.beambreakInputs.isActivated);
+            this.beambreak.overrideObstructed(!this.beambreakInputs.isObstructed);
         });
     }
 
-    public Trigger beambreakIsActivated() {
-        return new Trigger(() -> this.beambreakInputs.isActivated);
+    public Trigger beambreakIsObstructed() {
+        return new Trigger(() -> this.beambreakInputs.isObstructed);
     }
 }

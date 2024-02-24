@@ -82,13 +82,13 @@ public class AmpTrapSubsystem extends SubsystemBase {
     }
 
     /** This is specifically for sim testing, as beambreaks are not simulated */
-    public Command overrideBeamBreakActivatedCommand(boolean value) {
+    public Command overrideBeamBreakObstructedCommand(boolean value) {
         return new InstantCommand(() -> {
-            this.beambreak.overrideActivated(value);
+            this.beambreak.overrideObstructed(value);
         });
     }
 
-    public Trigger beambreakActivated() {
-        return new Trigger(() -> this.beambreakInputs.isActivated);
+    public Trigger beambreakIsObtructed() {
+        return new Trigger(() -> this.beambreakInputs.isObstructed);
     }
 }

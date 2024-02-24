@@ -344,13 +344,13 @@ public class RobotContainer {
         // m_vision::getVisibleAprilTags,
         // m_robotDrive),
         // Set.of(m_robotDrive)));
+        m_driverController.b().onTrue(m_intake.setBeamBreakActivatedCommand(true));
+        m_driverController.a().onTrue(m_intake.setBeamBreakActivatedCommand(false));
         m_driverController.y()
                 .onTrue(m_intake.setVelocityCommand(50))
                 .onFalse(m_intake.stopCommand());
-        m_driverController.a()
-                .and(m_shooter.beambreakIsActivated().negate())
-                .onTrue(m_intake.setVelocityCommand(20))
-                .onFalse(m_intake.stopCommand());
+        m_driverController.x()
+                .whileTrue(m_intake.setVelocityBeambreakCommand(20));
 
         m_driverController.povUp().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_RED));
         m_driverController.povRight().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_GREEN));
@@ -381,7 +381,7 @@ public class RobotContainer {
                 .whileTrue(m_intake.setVelocityCommand(20.0))
                 .onFalse(m_intake.stopCommand());
         m_programmerController.x()
-                .and(m_intake.beambreakIsActivated())
+                .and(m_intake.beambreakIsObstructed())
                 .whileTrue(m_shooter.setVelocityFeederCommand(20.0))
                 .whileFalse(m_shooter.stopFeederCommand());
         m_programmerController.y()
@@ -393,6 +393,6 @@ public class RobotContainer {
                 .onFalse(m_climber.setSetpointCurrentCommand());
 
         m_programmerController.povUp()
-                .onTrue(m_intake.toggleBeamBrakeActivatedCommand());
+                .onTrue(m_intake.toggleBeambreakObstructedCommand());
     }
 }
