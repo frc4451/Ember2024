@@ -83,11 +83,11 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public Command setSetpointCommand(Rotation2d angle) {
-        return new InstantCommand(() -> this.setSetpoint(angle), this);
+        return new InstantCommand(() -> this.setSetpoint(angle));
     }
 
     public Command setSetpointCurrentCommand() {
-        return new InstantCommand(() -> this.setSetpoint(this.angle), this);
+        return new InstantCommand(() -> this.setSetpoint(this.angle));
     }
 
     public Command pivotPIDCommand() {

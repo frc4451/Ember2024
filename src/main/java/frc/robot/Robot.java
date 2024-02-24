@@ -107,7 +107,7 @@ public class Robot extends LoggedRobot {
         // robot's periodic
         // block in order for anything in the Command-based framework to work.
         // m_robotContainer.field.setRobotPose(m_robotContainer.m_robotDrive.getPose());
-        // m_robotContainer.field.setRobotPose(m_robotContainer.m_robotDrive.getPose());
+        m_robotContainer.field.setRobotPose(m_robotContainer.m_robotDrive.getPose());
 
         SmartDashboard.putNumber("X", m_robotContainer.m_robotDrive.getPose().getX());
         SmartDashboard.putNumber("Y", m_robotContainer.m_robotDrive.getPose().getY());
