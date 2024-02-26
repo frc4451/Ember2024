@@ -40,32 +40,33 @@ public final class VisionConstants {
                     "Arducam_OV9281_USB_Camera",
                     new Transform3d(
                             new Translation3d(
-                                    Units.inchesToMeters(-2.75), // right+
-                                    Units.inchesToMeters(-12), // foward+
-                                    Units.inchesToMeters(8.5)), // up+
+                                    Units.inchesToMeters(-9), // right+
+                                    Units.inchesToMeters(-11.85), // forward+
+                                    Units.inchesToMeters(7.43)), // up+
                             new Rotation3d(
-                                    0, Units.degreesToRadians(-20),
-                                    Units.degreesToRadians(180 + 30)))),
+                                    0,
+                                    Units.degreesToRadians(-30),
+                                    Units.degreesToRadians(180 + 28)))),
             new VisionSource(
                     "RG_Camera_2",
                     new Transform3d(
                             new Translation3d(
-                                    Units.inchesToMeters(2.75), // right+
-                                    Units.inchesToMeters(-12), // foward+
-                                    Units.inchesToMeters(8.5)), // up+
+                                    Units.inchesToMeters(9), // right+
+                                    Units.inchesToMeters(-11.85), // forward+
+                                    Units.inchesToMeters(7.43)), // up+
                             new Rotation3d(
-                                    0, Units.degreesToRadians(-20),
-                                    Units.degreesToRadians(180 - 30)))));
+                                    0,
+                                    Units.degreesToRadians(-30),
+                                    Units.degreesToRadians(180 - 28)))));
 
-    public static final VisionSource OBJECT_DETECTION_SOURCE =
-            // This isn't going to be installed on the robot when we start, but this is the
-            // definition when we need it
-            new VisionSource("Arducam_OV9782_USB_Camera", new Transform3d(
+    public static final VisionSource OBJECT_DETECTION_SOURCE = new VisionSource(
+            "Arducam_OV9782_USB_Camera",
+            new Transform3d(
                     new Translation3d(
-                            Units.inchesToMeters(0),
-                            Units.inchesToMeters(-12),
-                            Units.inchesToMeters(8.5)),
-                    new Rotation3d(0, Units.degreesToRadians(10), Units.degreesToRadians(180))));
+                            Units.inchesToMeters(0), // right+
+                            Units.inchesToMeters(-13.205), // forward+
+                            Units.inchesToMeters(9.412)), // up+
+                    new Rotation3d(0, Units.degreesToRadians(10), 0)));
 
     // Review the Field layout for positions
     // https://firstfrc.blob.core.windows.net/frc2024/FieldAssets/2024LayoutMarkingDiagram.pdf
