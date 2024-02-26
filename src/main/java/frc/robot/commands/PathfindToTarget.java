@@ -90,7 +90,7 @@ public class PathfindToTarget extends Command {
 
         double x = xController.calculate(0, robotToTarget.getTranslation().getNorm());
         double theta = thetaController.calculate(
-                Math.PI,
+                0,
                 robotToTargetRadians);
 
         // Theta should be negative for real, positive for sim, dunno why
@@ -98,14 +98,14 @@ public class PathfindToTarget extends Command {
             theta = -theta;
         }
 
-        drive.runVelocity(new ChassisSpeeds(-x, 0, -theta));
+        drive.runVelocity(new ChassisSpeeds(x, 0, theta));
     }
 
     private void stepTwo() {
         driveExtraTimer.start();
 
         if (!driveExtraTimer.hasElapsed(0.25)) {
-            drive.runVelocity(new ChassisSpeeds(-0.5, 0, 0));
+            drive.runVelocity(new ChassisSpeeds(0.5, 0, 0));
         } else {
             step++;
         }

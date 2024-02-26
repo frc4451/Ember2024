@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -135,26 +136,35 @@ public class RobotContainer {
 
         m_driverController.rightTrigger()
                 .whileTrue(
-                        Commands.defer(
-                                () -> new PathfindToTarget(
-                                        m_vision::getClosestObject,
-                                        m_robotDrive),
-                                Set.of(m_robotDrive))
-                                .alongWith(m_intake.setVelocityCommand(20)));
+                        new ParallelDeadlineGroup(
+                                Commands.deferredProxy(
+                                        () -> new PathfindToTarget(
+                                                m_vision::getClosestObject,
+                                                m_robotDrive)),
+                                new ParallelCommandGroup(
+                                        m_intake.setVelocityCommand(20),
+                                        m_shooter.setVelocityFeederBeambreakCommand(20))));
 
         m_driverController.leftBumper()
                 .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get().pathfindCommand()));
         m_driverController.rightBumper()
                 .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get().aimingCommand()));
+
+        m_driverController.a()
+                .whileTrue(
+                        new ParallelCommandGroup(
+                                Commands.defer(
+                                        () -> new PathfindToTarget(
+                                                m_vision::getClosestObject,
+                                                m_robotDrive),
+                                        Set.of(m_robotDrive)),
+                                m_intake.setVelocityThenStopCommand(20)
+                                        .alongWith(m_shooter.setVelocityFeederBeambreakCommand(20))));
     }
 
     private void configureOperatorBindings() {
         m_operatorController.leftTrigger()
                 .whileTrue(m_shooter.setVelocityFeederCommand(50));
-
-        m_operatorController.rightTrigger()
-                .onTrue(m_shooter.setVelocityShooterCommand(85.0, 70.0))
-                .onFalse(m_shooter.stopCommand());
 
         m_operatorController.rightY()
                 .whileTrue(m_pivot.runPercentCommand(() -> -m_operatorController.getRightY() / 3.0))
