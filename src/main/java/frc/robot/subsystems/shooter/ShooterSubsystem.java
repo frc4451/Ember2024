@@ -33,12 +33,12 @@ public class ShooterSubsystem extends SubsystemBase {
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
                 io = new ShooterIOTalonFX();
-                beambreak = new BeambreakDigitalInput(ShooterConstants.kBeamBreakChannel);
+                beambreak = new BeambreakDigitalInput(ShooterConstants.kBeambreakChannel);
                 break;
             case SIM:
                 io = new ShooterIOSim() {
                 };
-                beambreak = new BeambreakIOSim(ShooterConstants.kBeamBreakChannel);
+                beambreak = new BeambreakIOSim(ShooterConstants.kBeambreakChannel);
                 break;
             case REPLAY:
             default:
@@ -102,7 +102,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     // For testing and sim
-    public Command setBeamBreakObstructedCommand(boolean value) {
+    public Command setBeambreakObstructedCommand(boolean value) {
         return new InstantCommand(() -> {
             this.beambreak.overrideObstructed(value);
         });

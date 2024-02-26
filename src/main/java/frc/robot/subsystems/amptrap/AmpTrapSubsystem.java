@@ -26,11 +26,11 @@ public class AmpTrapSubsystem extends SubsystemBase {
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
                 io = new AmpTrapIOTalonFX();
-                beambreak = new BeambreakDigitalInput(AmpTrapConstants.kBeamBreakCanID);
+                beambreak = new BeambreakDigitalInput(AmpTrapConstants.kBeambreakChannel);
                 break;
             case SIM:
                 io = new AmpTrapIOSim();
-                beambreak = new BeambreakIOSim(AmpTrapConstants.kBeamBreakCanID);
+                beambreak = new BeambreakIOSim(AmpTrapConstants.kBeambreakChannel);
                 break;
             case REPLAY:
             default:
@@ -49,7 +49,7 @@ public class AmpTrapSubsystem extends SubsystemBase {
         this.beambreak.updateInputs(this.beambreakInputs);
 
         Logger.processInputs("AmpTrap", this.inputs);
-        Logger.processInputs("AmpTrap/BeamBreak", this.beambreakInputs);
+        Logger.processInputs("AmpTrap/Beambreak", this.beambreakInputs);
 
         // Make sure the motor actually stops when the robot disabled
         if (DriverStation.isDisabled()) {
@@ -82,7 +82,7 @@ public class AmpTrapSubsystem extends SubsystemBase {
     }
 
     /** This is specifically for sim testing, as beambreaks are not simulated */
-    public Command overrideBeamBreakObstructedCommand(boolean value) {
+    public Command overrideBeambreakObstructedCommand(boolean value) {
         return new InstantCommand(() -> {
             this.beambreak.overrideObstructed(value);
         });

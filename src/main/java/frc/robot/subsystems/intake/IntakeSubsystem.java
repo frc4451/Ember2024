@@ -26,11 +26,11 @@ public class IntakeSubsystem extends SubsystemBase {
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
                 io = new IntakeIOTalonFX(IntakeConstants.kIntakeCanId, false);
-                beambreak = new BeambreakDigitalInput(IntakeConstants.kBeamBreakChannel);
+                beambreak = new BeambreakDigitalInput(IntakeConstants.kBeambreakChannel);
                 break;
             case SIM:
                 io = new IntakeIOSim();
-                beambreak = new BeambreakIOSim(IntakeConstants.kBeamBreakChannel);
+                beambreak = new BeambreakIOSim(IntakeConstants.kBeambreakChannel);
                 break;
             case REPLAY:
             default:
