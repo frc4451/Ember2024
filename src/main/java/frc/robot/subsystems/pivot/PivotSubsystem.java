@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.bobot_state.BobotState;
+import frc.utils.GarageUtils;
 
 public class PivotSubsystem extends SubsystemBase {
     private final PivotIO io;
@@ -113,12 +114,12 @@ public class PivotSubsystem extends SubsystemBase {
 
     public Command runPercentCommand(DoubleSupplier percentDecimal) {
         return new RunCommand(() -> {
-            double input = percentDecimal.getAsDouble();
-            boolean canMoveUp = (input > 0.0
-                    && getAngle().getDegrees() < PivotLocation.kSoftMax.angle.getDegrees());
-            boolean canMoveDown = (input < 0.0
-                    && getAngle().getDegrees() > PivotLocation.kSoftMin.angle.getDegrees());
-            io.setPercentOutput((canMoveUp || canMoveDown) ? input : 0.0);
+            double output = GarageUtils.percentWithSoftStops(
+                    percentDecimal.getAsDouble(),
+                    getAngle().getDegrees(),
+                    PivotLocation.kSoftMin.angle.getDegrees(),
+                    PivotLocation.kSoftMax.angle.getDegrees());
+            io.setPercentOutput(output);
         }, this);
     }
 

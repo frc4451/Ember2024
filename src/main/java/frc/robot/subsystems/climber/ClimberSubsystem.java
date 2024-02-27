@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.ClimberConstants;
+import frc.utils.GarageUtils;
 
 public class ClimberSubsystem extends SubsystemBase {
     private final ClimberIO io;
@@ -42,6 +43,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
         this.pidController.setTolerance(0.05);
         this.reset();
+        this.setSetpoint(0.0);
     }
 
     @Override
@@ -81,11 +83,13 @@ public class ClimberSubsystem extends SubsystemBase {
         return new InstantCommand(() -> this.setSetpoint(this.inputs.positionInches), this);
     }
 
+    public void pid() {
+        double output = this.pidController.calculate(this.inputs.positionInches);
+        setVoltage(output);
+    }
+
     public Command pidCommand() {
-        return new RunCommand(() -> {
-            double output = this.pidController.calculate(this.inputs.positionInches);
-            setVoltage(output);
-        }, this);
+        return new RunCommand(this::pid, this);
     }
 
     /**
@@ -97,17 +101,54 @@ public class ClimberSubsystem extends SubsystemBase {
      * @param percentDecimal - Joystick input for variable control.
      * @return TrapezoidProfiled Open Loop Command
      */
-    public Command runSetpointController(DoubleSupplier percentDecimal) {
-        return new RunCommand(() -> {
-            // Determine which direction we need the motors to spin
-            double direction = Math.signum(percentDecimal.getAsDouble());
+    public void runSetpointController(double percentDecimal) {
+        // Determine which direction we need the motors to spin
+        double direction = Math.signum(percentDecimal);
 
-            // Determine which state we want to end up
-            double setpoint = direction == 1
-                    ? ClimberConstants.kMaxHeightInches
-                    : ClimberConstants.kMinHeightInches;
+        // Determine which state we want to end up
+        double setpoint = direction == 1
+                ? ClimberConstants.kMaxHeightInches
+                : ClimberConstants.kMinHeightInches;
 
-            this.setSetpoint(setpoint);
-        });
+        this.setSetpoint(setpoint);
     }
+
+    /**
+     * Runs the Climber in a TrapezoidProfile control loop to keep user input
+     * between both the higher and lower bounds of our Subsystem. We feed
+     * the output position of our Trapezoid State to our PID Controller to
+     * keep a steady voltage on our motors to hold position.
+     *
+     * @param percentDecimal - Joystick input for variable control.
+     * @return TrapezoidProfiled Open Loop Command
+     */
+    public Command runSetpointControllerCommand(DoubleSupplier percentDecimal) {
+        return new RunCommand(() -> this.runSetpointController(percentDecimal.getAsDouble()));
+    }
+
+    public void runPercentOutput(double percentDecimal) {
+        double output = GarageUtils.percentWithSoftStops(
+                percentDecimal,
+                this.inputs.positionInches,
+                ClimberConstants.kMinHeightInches,
+                ClimberConstants.kMaxHeightInches);
+        this.io.setPercentOutput(output);
+    }
+
+    public Command runPercentOutputCommand(DoubleSupplier percentDecimal) {
+        return new RunCommand(() -> this.runPercentOutput(percentDecimal.getAsDouble()), this);
+    }
+
+    public Command runClimberControlCommand(DoubleSupplier percentDecimal) {
+        return new RunCommand(() -> {
+            double input = percentDecimal.getAsDouble();
+            if (input > 0.0) {
+                runSetpointController(input);
+                pid();
+            } else {
+                runPercentOutput(input);
+            }
+        }, this);
+    }
+
 }

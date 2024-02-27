@@ -37,6 +37,7 @@ import frc.robot.pathplanner.PathPlannerUtils;
 import frc.robot.pathplanner.paths.PathPlannerPoses;
 import frc.robot.subsystems.blinkin.BlinkinColors;
 import frc.robot.subsystems.blinkin.BlinkinSubsystem;
+import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.pivot.PivotLocation;
@@ -79,7 +80,7 @@ public class RobotContainer {
 
     // public final AmpTrapSubsystem m_ampTrap = new AmpTrapSubsystem();
 
-    // public final ClimberSubsystem m_climber = new ClimberSubsystem();
+    public final ClimberSubsystem m_climber = new ClimberSubsystem();
 
     // public final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
 
@@ -122,7 +123,7 @@ public class RobotContainer {
                         true,
                         true));
         m_pivot.setDefaultCommand(m_pivot.pivotPIDCommand());
-        // m_climber.setDefaultCommand(m_climber.pidCommand());
+        m_climber.setDefaultCommand(m_climber.pidCommand());
         // m_elevator.setDefaultCommand(m_elevator.pidCommand());
         // Build an auto chooser. You can make a default auto by passing in their name
         m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
@@ -135,24 +136,9 @@ public class RobotContainer {
                                 .alongWith(m_shooter.setVelocityFeederBeambreakCommand(20)));
 
         m_driverController.rightTrigger()
+                .and(m_shooter.beambreakIsObstructed().negate())
                 .whileTrue(
                         new ParallelDeadlineGroup(
-                                Commands.deferredProxy(
-                                        () -> new PathfindToTarget(
-                                                m_vision::getClosestObject,
-                                                m_robotDrive)),
-                                new ParallelCommandGroup(
-                                        m_intake.setVelocityCommand(20),
-                                        m_shooter.setVelocityFeederBeambreakCommand(20))));
-
-        m_driverController.leftBumper()
-                .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get().pathfindCommand()));
-        m_driverController.rightBumper()
-                .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get().aimingCommand()));
-
-        m_driverController.a()
-                .whileTrue(
-                        new ParallelCommandGroup(
                                 Commands.defer(
                                         () -> new PathfindToTarget(
                                                 m_vision::getClosestObject,
@@ -160,11 +146,20 @@ public class RobotContainer {
                                         Set.of(m_robotDrive)),
                                 m_intake.setVelocityThenStopCommand(20)
                                         .alongWith(m_shooter.setVelocityFeederBeambreakCommand(20))));
+
+        m_driverController.leftBumper()
+                .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get().pathfindCommand()));
+        m_driverController.rightBumper()
+                .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get().aimingCommand()));
     }
 
     private void configureOperatorBindings() {
         m_operatorController.leftTrigger()
                 .whileTrue(m_shooter.setVelocityFeederCommand(50));
+
+        m_operatorController.leftY()
+                .whileTrue(m_climber.runClimberControlCommand(() -> -m_operatorController.getLeftY()))
+                .onFalse(m_climber.setSetpointCurrentCommand());
 
         m_operatorController.rightY()
                 .whileTrue(m_pivot.runPercentCommand(() -> -m_operatorController.getRightY() / 3.0))
@@ -183,11 +178,15 @@ public class RobotContainer {
                         m_shooter.setVelocityShooterCommand(65.0, 65.0)
                                 .alongWith(m_pivot.setSetpointCommand(Rotation2d.fromDegrees(31))))
                 .onFalse(m_shooter.stopCommand());
-        // 21 ft
+        // up against the subwoofer
         m_operatorController.povDown()
                 .onTrue(
-                        m_shooter.setVelocityShooterCommand(85.0, 75.0)
-                                .alongWith(m_pivot.setSetpointCommand(Rotation2d.fromDegrees(26))))
+                        m_shooter.setVelocityShooterCommand(60.0, 60.0)
+                                .alongWith(m_pivot.setSetpointCommand(Rotation2d.fromDegrees(55))))
+                .onFalse(m_shooter.stopCommand());
+        // pooping it out onto the floor (and possibly amp)
+        m_operatorController.povLeft()
+                .onTrue(m_shooter.setVelocityShooterCommand(10.5, 10.5))
                 .onFalse(m_shooter.stopCommand());
 
     }

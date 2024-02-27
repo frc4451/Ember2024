@@ -16,7 +16,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.VisionConstants;
-import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.subsystems.drive.DriveSubsystem;
 
 public class PathfindToTarget extends Command {
@@ -93,12 +92,7 @@ public class PathfindToTarget extends Command {
                 0,
                 robotToTargetRadians);
 
-        // Theta should be negative for real, positive for sim, dunno why
-        if (AdvantageKitConstants.getMode() == AdvantageKitConstants.Mode.SIM) {
-            theta = -theta;
-        }
-
-        drive.runVelocity(new ChassisSpeeds(x, 0, theta));
+        drive.runVelocity(new ChassisSpeeds(x, 0, -theta));
     }
 
     private void stepTwo() {

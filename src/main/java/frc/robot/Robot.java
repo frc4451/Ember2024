@@ -152,6 +152,8 @@ public class Robot extends LoggedRobot {
      */
     @Override
     public void autonomousInit() {
+        m_robotContainer.m_pivot.setAngle(PivotLocation.INITIAL.angle);
+
         m_autoCommand = m_robotContainer.m_autoChooser.get();
 
         if (m_autoCommand != null) {
