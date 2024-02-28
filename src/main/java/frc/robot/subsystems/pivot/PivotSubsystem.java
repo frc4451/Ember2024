@@ -101,11 +101,13 @@ public class PivotSubsystem extends SubsystemBase {
         return new InstantCommand(() -> this.setSetpoint(this.angle));
     }
 
-    public Command pivotPIDCommand() {
-        return new RunCommand(() -> {
-            double output = this.pidController.calculate(this.getAngle().getDegrees());
-            setVoltage(output);
-        }, this);
+    private void pid() {
+        double output = this.pidController.calculate(this.getAngle().getDegrees());
+        setVoltage(output);
+    }
+
+    public Command pidCommand() {
+        return new RunCommand(this::pid, this);
     }
 
     public void setVoltage(double voltage) {
@@ -124,7 +126,9 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public Command pivotToSpeakerCommand() {
-        return new RunCommand(
-                () -> setSetpoint(Rotation2d.fromDegrees(BobotState.getShootingCalculation().angleDegrees())));
+        return new RunCommand(() -> {
+            setSetpoint(Rotation2d.fromDegrees(BobotState.getShootingCalculation().angleDegrees()));
+            pid();
+        }, this);
     }
 }

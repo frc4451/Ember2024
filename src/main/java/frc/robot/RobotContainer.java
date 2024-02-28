@@ -117,7 +117,7 @@ public class RobotContainer {
                         () -> -m_driverController.getRightX(),
                         true,
                         true));
-        m_pivot.setDefaultCommand(m_pivot.pivotPIDCommand());
+        m_pivot.setDefaultCommand(m_pivot.pivotToSpeakerCommand());
         m_climber.setDefaultCommand(m_climber.pidCommand());
         // m_elevator.setDefaultCommand(m_elevator.pidCommand());
         // Build an auto chooser. You can make a default auto by passing in their name
@@ -146,6 +146,9 @@ public class RobotContainer {
                 .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get().pathfindCommand()));
         m_driverController.rightBumper()
                 .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get().aimingCommand()));
+
+        m_driverController.a()
+                .whileTrue(m_pivot.pivotToSpeakerCommand());
     }
 
     private void configureOperatorBindings() {
@@ -163,24 +166,28 @@ public class RobotContainer {
         // presets
         // 10 ft
         m_operatorController.povUp()
+                .whileTrue(m_pivot.pidCommand())
                 .onTrue(
                         m_shooter.setVelocityShooterCommand(65.0, 65.0)
                                 .alongWith(m_pivot.setSetpointCommand(PivotLocation.k36.angle)))
                 .onFalse(m_shooter.stopCommand());
         // 15 ft
         m_operatorController.povRight()
+                .whileTrue(m_pivot.pidCommand())
                 .onTrue(
                         m_shooter.setVelocityShooterCommand(65.0, 65.0)
                                 .alongWith(m_pivot.setSetpointCommand(Rotation2d.fromDegrees(31))))
                 .onFalse(m_shooter.stopCommand());
         // up against the subwoofer
         m_operatorController.povDown()
+                .whileTrue(m_pivot.pidCommand())
                 .onTrue(
                         m_shooter.setVelocityShooterCommand(60.0, 60.0)
                                 .alongWith(m_pivot.setSetpointCommand(Rotation2d.fromDegrees(55))))
                 .onFalse(m_shooter.stopCommand());
         // pooping it out onto the floor (and possibly amp)
         m_operatorController.povLeft()
+                .whileTrue(m_pivot.pidCommand())
                 .onTrue(m_shooter.setVelocityShooterCommand(10.5, 10.5))
                 .onFalse(m_shooter.stopCommand());
 

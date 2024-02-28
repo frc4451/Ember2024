@@ -24,6 +24,12 @@ public class BobotState extends VirtualSubsystem {
     static {
         shootingInterpolator.addEntries(
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
+                        1.36,
+                        // Units.feetToMeters(3.25),
+                        55.0,
+                        70.0,
+                        50.0),
+                new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(10),
                         36.0,
                         65.0,
