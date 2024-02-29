@@ -193,8 +193,6 @@ public class Robot extends LoggedRobot {
         // simulated field.
         VisionConstants.VISION_SYSTEM_SIM
                 .ifPresent(visionSystemSim -> visionSystemSim.addAprilTags(VisionConstants.FIELD_LAYOUT));
-
-        m_robotContainer.m_vision.robotPoseSupplier = m_robotContainer.m_robotDrive::getPose;
     }
 
     @Override

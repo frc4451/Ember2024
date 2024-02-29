@@ -6,14 +6,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
@@ -75,8 +73,6 @@ public class VisionSubsystem extends VirtualSubsystem {
     private ConcurrentLinkedQueue<VisionMeasurement> visionMeasurements = new ConcurrentLinkedQueue<>();
 
     private Optional<PhotonTrackedTarget> closetObject = Optional.empty();
-
-    public Supplier<Pose2d> robotPoseSupplier = () -> new Pose2d();
 
     public VisionSubsystem() {
         // Initialize all cameras that we have pre-configured from VisionConstants.
@@ -142,7 +138,7 @@ public class VisionSubsystem extends VirtualSubsystem {
 
     public void simulationPeriodic() {
         VisionConstants.VISION_SYSTEM_SIM.ifPresent((visionSystemSim) -> {
-            visionSystemSim.update(robotPoseSupplier.get());
+            visionSystemSim.update(BobotState.getRobotPose());
         });
     }
 
