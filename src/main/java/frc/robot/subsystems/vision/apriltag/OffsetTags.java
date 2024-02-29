@@ -13,20 +13,22 @@ import frc.robot.Constants.PathPlannerConstants;
 import frc.robot.VisionConstants;
 import frc.utils.GarageUtils;
 
-public enum StageTags {
-    HUMAN(VisionConstants.RED_STAGE_HUMAN, VisionConstants.BLUE_STAGE_HUMAN, 1.0),
-    AMP(VisionConstants.RED_STAGE_AMP, VisionConstants.BLUE_STAGE_AMP, 1.0),
-    CENTER(VisionConstants.RED_STAGE_CENTER, VisionConstants.BLUE_STAGE_CENTER, 1.0),
+public enum OffsetTags {
+    STAGE_HUMAN(VisionConstants.RED_STAGE_HUMAN, VisionConstants.BLUE_STAGE_HUMAN, 1.0),
+    STAGE_AMP(VisionConstants.RED_STAGE_AMP, VisionConstants.BLUE_STAGE_AMP, 1.0),
+    STAGE_CENTER(VisionConstants.RED_STAGE_CENTER, VisionConstants.BLUE_STAGE_CENTER, 1.0),
     SPEAKER_AIM(VisionConstants.RED_SPEAKER_CENTER, VisionConstants.BLUE_SPEAKER_CENTER, 0.0),
     SPEAKER_10FT(VisionConstants.RED_SPEAKER_CENTER, VisionConstants.BLUE_SPEAKER_CENTER, Units.feetToMeters(10)),
     SPEAKER_15FT(VisionConstants.RED_SPEAKER_CENTER, VisionConstants.BLUE_SPEAKER_CENTER, Units.feetToMeters(15)),
+    AMP(VisionConstants.RED_AMP_TAG, VisionConstants.BLUE_AMP_TAG, 1.0),
+    OTHER_AMP(VisionConstants.BLUE_AMP_TAG, VisionConstants.RED_AMP_TAG, 1.0),
     ;
 
     private final int redId;
     private final int blueId;
     private final double poseOffsetMeters;
 
-    private StageTags(int red, int blue, double poseOffsetMeters) {
+    private OffsetTags(int red, int blue, double poseOffsetMeters) {
         this.redId = red;
         this.blueId = blue;
         this.poseOffsetMeters = poseOffsetMeters;

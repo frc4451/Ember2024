@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
-import frc.robot.subsystems.vision.apriltag.StageTags;
+import frc.robot.subsystems.vision.apriltag.OffsetTags;
 
 public class StrafeAndAimToStage extends StrafeAndAimToAprilTag {
     /**
@@ -16,7 +16,7 @@ public class StrafeAndAimToStage extends StrafeAndAimToAprilTag {
             DoubleSupplier xSupplier,
             DoubleSupplier ySupplier,
             Supplier<Set<TargetWithSource>> visibleAprilTagsSupplier,
-            StageTags stageTag,
+            OffsetTags stageTag,
             DriveSubsystem drive) {
         super(xSupplier,
                 ySupplier,

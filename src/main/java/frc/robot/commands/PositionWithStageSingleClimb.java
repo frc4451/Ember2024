@@ -15,7 +15,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
 import frc.robot.subsystems.vision.apriltag.AprilTagAlgorithms;
-import frc.robot.subsystems.vision.apriltag.StageTags;
+import frc.robot.subsystems.vision.apriltag.OffsetTags;
 
 public class PositionWithStageSingleClimb extends Command {
     // private static double yawMeasurementOffset = Math.PI; // To aim from the back
@@ -29,7 +29,7 @@ public class PositionWithStageSingleClimb extends Command {
     private final Supplier<Set<TargetWithSource>> visibleAprilTagsSupplier;
     private final DoubleSupplier xSupplier;
     // private final DoubleSupplier ySupplier;
-    private final StageTags stageTag;
+    private final OffsetTags stageTag;
 
     private Pose3d targetPose = new Pose3d();
     private boolean hasSeenTag = false;
@@ -37,7 +37,7 @@ public class PositionWithStageSingleClimb extends Command {
     public PositionWithStageSingleClimb(
             DoubleSupplier xSupplier,
             Supplier<Set<TargetWithSource>> visibleAprilTagsSupplier,
-            StageTags stageTag,
+            OffsetTags stageTag,
             DriveSubsystem drive) {
 
         addRequirements(drive);
@@ -78,7 +78,7 @@ public class PositionWithStageSingleClimb extends Command {
                 .ifPresent(
                         targetWithSource -> {
                             hasSeenTag = true;
-                            targetPose = targetWithSource.getTargetPoseFrom(robotPose);
+                            targetPose = stageTag.getOffsetPoseFrom(targetWithSource.getTargetPoseFrom(robotPose));
                         });
 
         ChassisSpeeds speeds = calculateCenteringSpeeds();

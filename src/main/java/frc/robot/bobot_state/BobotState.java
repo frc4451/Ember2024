@@ -4,7 +4,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.vision.apriltag.StageTags;
+import frc.robot.subsystems.vision.apriltag.OffsetTags;
 import frc.utils.VirtualSubsystem;
 
 /**
@@ -60,7 +60,7 @@ public class BobotState extends VirtualSubsystem {
 
     @Override
     public void periodic() {
-        double distanceFromSpeaker = StageTags.SPEAKER_AIM.getDistanceFrom(robotPose);
+        double distanceFromSpeaker = OffsetTags.SPEAKER_AIM.getDistanceFrom(robotPose);
         shootingCalculation = shootingInterpolator.calculateInterpolation(distanceFromSpeaker);
 
         {

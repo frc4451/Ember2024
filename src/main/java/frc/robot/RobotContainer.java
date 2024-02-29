@@ -40,7 +40,7 @@ import frc.robot.subsystems.pivot.PivotLocation;
 import frc.robot.subsystems.pivot.PivotSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
-import frc.robot.subsystems.vision.apriltag.StageTags;
+import frc.robot.subsystems.vision.apriltag.OffsetTags;
 import frc.utils.CommandCustomController;
 import frc.utils.LaneAssist;
 
@@ -155,6 +155,9 @@ public class RobotContainer {
         m_operatorController.leftTrigger()
                 .whileTrue(m_shooter.setVelocityFeederCommand(50));
 
+        m_operatorController.rightTrigger()
+                .whileTrue(m_shooter.shootAtSpeakerCommand());
+
         m_operatorController.leftY()
                 .whileTrue(m_climber.runClimberControlCommand(() -> -m_operatorController.getLeftY()))
                 .onFalse(m_climber.setSetpointCurrentCommand());
@@ -232,7 +235,7 @@ public class RobotContainer {
                         () -> -m_driverController.getLeftX(),
                         m_vision::getVisibleAprilTags,
                         m_robotDrive,
-                        StageTags.SPEAKER_10FT),
+                        OffsetTags.SPEAKER_10FT),
                         Set.of(m_robotDrive)));
 
         Command speakerPosition15Command = new ParallelCommandGroup(
@@ -241,42 +244,42 @@ public class RobotContainer {
                         () -> -m_driverController.getLeftX(),
                         m_vision::getVisibleAprilTags,
                         m_robotDrive,
-                        StageTags.SPEAKER_15FT),
+                        OffsetTags.SPEAKER_15FT),
                         Set.of(m_robotDrive)));
 
         Command ampCommand = Commands.defer(() -> new PositionWithAmp(
                 () -> -m_driverController.getLeftX(),
                 m_vision::getVisibleAprilTags,
                 m_robotDrive,
-                false),
+                OffsetTags.AMP),
                 Set.of(m_robotDrive));
 
         Command otherAmpCommand = Commands.defer(() -> new PositionWithAmp(
                 () -> -m_driverController.getLeftY(),
                 m_vision::getVisibleAprilTags,
                 m_robotDrive,
-                true),
+                OffsetTags.OTHER_AMP),
                 Set.of(m_robotDrive));
 
         Command stageHumanCommand = Commands.defer(() -> new SequentialCommandGroup(
                 new PositionWithStageSingleClimb(
                         () -> -m_driverController.getLeftY(),
                         m_vision::getVisibleAprilTags,
-                        StageTags.HUMAN,
+                        OffsetTags.STAGE_HUMAN,
                         m_robotDrive)),
                 Set.of(m_robotDrive));
 
         Command stageAmpCommand = Commands.defer(() -> new PositionWithStageSingleClimb(
                 () -> -m_driverController.getLeftY(),
                 m_vision::getVisibleAprilTags,
-                StageTags.AMP,
+                OffsetTags.STAGE_AMP,
                 m_robotDrive),
                 Set.of(m_robotDrive));
 
         Command stageCenterCommand = Commands.defer(() -> new PositionWithStageSingleClimb(
                 () -> -m_driverController.getLeftY(),
                 m_vision::getVisibleAprilTags,
-                StageTags.CENTER,
+                OffsetTags.STAGE_CENTER,
                 m_robotDrive),
                 Set.of(m_robotDrive));
 
@@ -286,9 +289,9 @@ public class RobotContainer {
         m_laneAssistChooser = new LoggedDashboardChooser<>("LaneAssist", new SendableChooser<>());
 
         m_laneAssistCommands.put("Amp",
-                new LaneAssist(PathPlannerPoses.AMP.getDeferredCommand(), ampCommand));
+                new LaneAssist(OffsetTags.AMP.getDeferredCommand(), ampCommand));
         m_laneAssistCommands.put("Other Amp",
-                new LaneAssist(PathPlannerPoses.OTHER_AMP.getDeferredCommand(), otherAmpCommand));
+                new LaneAssist(OffsetTags.OTHER_AMP.getDeferredCommand(), otherAmpCommand));
         m_laneAssistCommands.put("Human Player",
                 new LaneAssist(PathPlannerPoses.HUMAN_PLAYER.getDeferredCommand(),
                         new InstantCommand()));
@@ -302,19 +305,19 @@ public class RobotContainer {
                 new LaneAssist(PathPlannerPoses.SPEAKER_RIGHT.getDeferredCommand(),
                         speakerStrafeAndAimCommand));
         m_laneAssistCommands.put("Amp",
-                new LaneAssist(PathPlannerPoses.AMP.getDeferredCommand(), ampCommand));
+                new LaneAssist(OffsetTags.AMP.getDeferredCommand(), ampCommand));
         m_laneAssistCommands.put("Other Amp",
-                new LaneAssist(PathPlannerPoses.OTHER_AMP.getDeferredCommand(), otherAmpCommand));
+                new LaneAssist(OffsetTags.OTHER_AMP.getDeferredCommand(), otherAmpCommand));
         m_laneAssistCommands.put("Stage Center",
-                new LaneAssist(StageTags.CENTER.getDeferredCommand(), stageCenterCommand));
+                new LaneAssist(OffsetTags.STAGE_CENTER.getDeferredCommand(), stageCenterCommand));
         m_laneAssistCommands.put("Stage Human",
-                new LaneAssist(StageTags.HUMAN.getDeferredCommand(), stageHumanCommand));
+                new LaneAssist(OffsetTags.STAGE_HUMAN.getDeferredCommand(), stageHumanCommand));
         m_laneAssistCommands.put("Stage Amp",
-                new LaneAssist(StageTags.AMP.getDeferredCommand(), stageAmpCommand));
+                new LaneAssist(OffsetTags.STAGE_AMP.getDeferredCommand(), stageAmpCommand));
         m_laneAssistCommands.put("Speaker (10 ft)",
-                new LaneAssist(StageTags.SPEAKER_10FT.getDeferredCommand(), speakerPosition10Command));
+                new LaneAssist(OffsetTags.SPEAKER_10FT.getDeferredCommand(), speakerPosition10Command));
         m_laneAssistCommands.put("Speaker (15 ft)",
-                new LaneAssist(StageTags.SPEAKER_15FT.getDeferredCommand(), speakerPosition15Command));
+                new LaneAssist(OffsetTags.SPEAKER_15FT.getDeferredCommand(), speakerPosition15Command));
 
         {
             String defaultLaneAssist = "Amp";

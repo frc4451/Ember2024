@@ -15,7 +15,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
 import frc.robot.subsystems.vision.apriltag.AprilTagAlgorithms;
-import frc.robot.subsystems.vision.apriltag.StageTags;
+import frc.robot.subsystems.vision.apriltag.OffsetTags;
 import frc.utils.GarageUtils;
 
 public class PositionWithSpeaker extends Command {
@@ -25,7 +25,7 @@ public class PositionWithSpeaker extends Command {
     private final String logRoot;
 
     private final DriveSubsystem drive;
-    private final StageTags tag;
+    private final OffsetTags tag;
     private final Supplier<Set<TargetWithSource>> visibleAprilTagsSupplier;
     // private final DoubleSupplier xSupplier;
     private final DoubleSupplier ySupplier;
@@ -38,7 +38,7 @@ public class PositionWithSpeaker extends Command {
             DoubleSupplier ySupplier,
             Supplier<Set<TargetWithSource>> visibleAprilTagsSupplier,
             DriveSubsystem drive,
-            StageTags tag) {
+            OffsetTags tag) {
         addRequirements(drive);
         setName("PositionWithSpeaker");
 
