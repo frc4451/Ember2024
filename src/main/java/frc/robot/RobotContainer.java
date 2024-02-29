@@ -117,7 +117,7 @@ public class RobotContainer {
                         () -> -m_driverController.getRightX(),
                         true,
                         true));
-        m_pivot.setDefaultCommand(m_pivot.pivotToSpeakerCommand());
+        m_pivot.setDefaultCommand(m_pivot.pidCommand());
         m_climber.setDefaultCommand(m_climber.pidCommand());
         // m_elevator.setDefaultCommand(m_elevator.pidCommand());
         // Build an auto chooser. You can make a default auto by passing in their name
@@ -222,11 +222,13 @@ public class RobotContainer {
      * </p>
      */
     private void configureLaneChooser() {
-        Command speakerStrafeAndAimCommand = Commands.defer(() -> new StrafeAndAimToSpeaker(
-                () -> -m_driverController.getLeftY(),
-                () -> -m_driverController.getLeftX(),
-                m_robotDrive),
-                Set.of(m_robotDrive));
+        Command speakerStrafeAndAimCommand = new ParallelCommandGroup(
+                m_pivot.pivotToSpeakerCommand(),
+                Commands.defer(() -> new StrafeAndAimToSpeaker(
+                        () -> -m_driverController.getLeftY(),
+                        () -> -m_driverController.getLeftX(),
+                        m_robotDrive),
+                        Set.of(m_robotDrive)));
 
         Command speakerPosition10Command = new ParallelCommandGroup(
                 m_pivot.setSetpointCommand(PivotLocation.k36.angle),
