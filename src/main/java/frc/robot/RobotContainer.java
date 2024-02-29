@@ -225,7 +225,6 @@ public class RobotContainer {
         Command speakerStrafeAndAimCommand = Commands.defer(() -> new StrafeAndAimToSpeaker(
                 () -> -m_driverController.getLeftY(),
                 () -> -m_driverController.getLeftX(),
-                m_vision::getVisibleAprilTags,
                 m_robotDrive),
                 Set.of(m_robotDrive));
 
@@ -233,7 +232,6 @@ public class RobotContainer {
                 m_pivot.setSetpointCommand(PivotLocation.k36.angle),
                 Commands.defer(() -> new PositionWithSpeaker(
                         () -> -m_driverController.getLeftX(),
-                        m_vision::getVisibleAprilTags,
                         m_robotDrive,
                         OffsetTags.SPEAKER_10FT),
                         Set.of(m_robotDrive)));
@@ -242,21 +240,18 @@ public class RobotContainer {
                 m_pivot.setSetpointCommand(PivotLocation.INITIAL.angle),
                 Commands.defer(() -> new PositionWithSpeaker(
                         () -> -m_driverController.getLeftX(),
-                        m_vision::getVisibleAprilTags,
                         m_robotDrive,
                         OffsetTags.SPEAKER_15FT),
                         Set.of(m_robotDrive)));
 
         Command ampCommand = Commands.defer(() -> new PositionWithAmp(
                 () -> -m_driverController.getLeftX(),
-                m_vision::getVisibleAprilTags,
                 m_robotDrive,
                 OffsetTags.AMP),
                 Set.of(m_robotDrive));
 
         Command otherAmpCommand = Commands.defer(() -> new PositionWithAmp(
                 () -> -m_driverController.getLeftY(),
-                m_vision::getVisibleAprilTags,
                 m_robotDrive,
                 OffsetTags.OTHER_AMP),
                 Set.of(m_robotDrive));
@@ -264,21 +259,18 @@ public class RobotContainer {
         Command stageHumanCommand = Commands.defer(() -> new SequentialCommandGroup(
                 new PositionWithStageSingleClimb(
                         () -> -m_driverController.getLeftY(),
-                        m_vision::getVisibleAprilTags,
                         OffsetTags.STAGE_HUMAN,
                         m_robotDrive)),
                 Set.of(m_robotDrive));
 
         Command stageAmpCommand = Commands.defer(() -> new PositionWithStageSingleClimb(
                 () -> -m_driverController.getLeftY(),
-                m_vision::getVisibleAprilTags,
                 OffsetTags.STAGE_AMP,
                 m_robotDrive),
                 Set.of(m_robotDrive));
 
         Command stageCenterCommand = Commands.defer(() -> new PositionWithStageSingleClimb(
                 () -> -m_driverController.getLeftY(),
-                m_vision::getVisibleAprilTags,
                 OffsetTags.STAGE_CENTER,
                 m_robotDrive),
                 Set.of(m_robotDrive));

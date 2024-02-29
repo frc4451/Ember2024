@@ -2,8 +2,6 @@ package frc.robot.commands;
 
 import java.util.Set;
 import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
@@ -12,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.bobot_state.BobotState;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
 import frc.robot.subsystems.vision.apriltag.AprilTagAlgorithms;
@@ -20,13 +19,12 @@ import frc.robot.subsystems.vision.apriltag.OffsetTags;
 public class PositionWithStageSingleClimb extends Command {
     // private static double yawMeasurementOffset = Math.PI; // To aim from the back
     private final PIDController thetaController = new PIDController(6, 0, 0.1);
-    private final PIDController yController = new PIDController(5, 0, 0);
+    private final PIDController yController = new PIDController(6, 0, 0);
 
     private final String logRoot;
 
     private final DriveSubsystem drive;
     // private final int targetFiducialId;
-    private final Supplier<Set<TargetWithSource>> visibleAprilTagsSupplier;
     private final DoubleSupplier xSupplier;
     // private final DoubleSupplier ySupplier;
     private final OffsetTags stageTag;
@@ -36,7 +34,6 @@ public class PositionWithStageSingleClimb extends Command {
 
     public PositionWithStageSingleClimb(
             DoubleSupplier xSupplier,
-            Supplier<Set<TargetWithSource>> visibleAprilTagsSupplier,
             OffsetTags stageTag,
             DriveSubsystem drive) {
 
@@ -46,10 +43,7 @@ public class PositionWithStageSingleClimb extends Command {
         logRoot = "Commands/" + getName() + "/";
 
         this.xSupplier = xSupplier;
-
-        this.visibleAprilTagsSupplier = visibleAprilTagsSupplier;
         this.drive = drive;
-
         this.stageTag = stageTag;
 
         targetPose = stageTag.getOffsetPose();
@@ -68,7 +62,7 @@ public class PositionWithStageSingleClimb extends Command {
     public void execute() {
         Pose3d robotPose = new Pose3d(drive.getPose());
 
-        Set<TargetWithSource> targets = visibleAprilTagsSupplier.get();
+        Set<TargetWithSource> targets = BobotState.getVisibleAprilTags();
         AprilTagAlgorithms.filterTags(targets.stream(), stageTag.getId())
                 .reduce((targetWithSourceA,
                         targetWithSourceB) -> targetWithSourceA.target().getPoseAmbiguity() <= targetWithSourceB

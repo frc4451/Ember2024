@@ -1,9 +1,14 @@
 package frc.robot.bobot_state;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
 import frc.robot.subsystems.vision.apriltag.OffsetTags;
 import frc.utils.VirtualSubsystem;
 
@@ -20,6 +25,8 @@ public class BobotState extends VirtualSubsystem {
     private static ShootingInterpolator.InterpolatedCalculation shootingCalculation;
 
     private static Pose2d robotPose = new Pose2d();
+
+    private static Set<TargetWithSource> visibleAprilTags = new HashSet<>();
 
     static {
         shootingInterpolator.addEntries(
@@ -54,6 +61,14 @@ public class BobotState extends VirtualSubsystem {
         return robotPose;
     }
 
+    public static void updateVisibleAprilTags(Set<TargetWithSource> trackedAprilTags) {
+        visibleAprilTags = trackedAprilTags;
+    }
+
+    public static Set<TargetWithSource> getVisibleAprilTags() {
+        return visibleAprilTags;
+    }
+
     public static ShootingInterpolator.InterpolatedCalculation getShootingCalculation() {
         return shootingCalculation;
     }
@@ -70,6 +85,18 @@ public class BobotState extends VirtualSubsystem {
             Logger.recordOutput(calcLogRoot + "AngleDegrees", shootingCalculation.angleDegrees());
             Logger.recordOutput(calcLogRoot + "LeftSpeedRotPerSec", shootingCalculation.leftSpeedRotPerSec());
             Logger.recordOutput(calcLogRoot + "RightSpeedRotPerSec", shootingCalculation.rightSpeedRotPerSec());
+        }
+
+        {
+            String calcLogRoot = logRoot + "VisionCalculations/";
+            Logger.recordOutput(calcLogRoot + "AprilTags", visibleAprilTags.stream()
+                    .map((TargetWithSource source) -> source.target().getFiducialId())
+                    .collect(Collectors.toList())
+                    .stream()
+                    .mapToInt(Integer::intValue)
+                    .distinct()
+                    .sorted()
+                    .toArray());
         }
     }
 

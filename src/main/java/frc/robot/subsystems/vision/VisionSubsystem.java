@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.VisionConstants;
 import frc.robot.VisionConstants.VisionSource;
+import frc.robot.bobot_state.BobotState;
 import frc.robot.subsystems.vision.apriltag.AprilTagAlgorithms;
 import frc.robot.subsystems.vision.apriltag.AprilTagIO;
 import frc.robot.subsystems.vision.apriltag.AprilTagIOInputsAutoLogged;
@@ -74,8 +75,6 @@ public class VisionSubsystem extends VirtualSubsystem {
     private ConcurrentLinkedQueue<VisionMeasurement> visionMeasurements = new ConcurrentLinkedQueue<>();
 
     private Optional<PhotonTrackedTarget> closetObject = Optional.empty();
-
-    private Set<TargetWithSource> visibleAprilTags = new HashSet<>();
 
     public Supplier<Pose2d> robotPoseSupplier = () -> new Pose2d();
 
@@ -207,7 +206,7 @@ public class VisionSubsystem extends VirtualSubsystem {
             currentVisibleAprilTags.removeIf(targetWithSource -> targetWithSource.target.getFiducialId() == -1);
         }
 
-        visibleAprilTags = currentVisibleAprilTags;
+        BobotState.updateVisibleAprilTags(currentVisibleAprilTags);
     }
 
     /**
@@ -263,9 +262,5 @@ public class VisionSubsystem extends VirtualSubsystem {
      */
     public VisionMeasurement pollLatestVisionMeasurement() {
         return visionMeasurements.poll();
-    }
-
-    public Set<TargetWithSource> getVisibleAprilTags() {
-        return visibleAprilTags;
     }
 }

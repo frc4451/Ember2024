@@ -2,8 +2,6 @@ package frc.robot.commands;
 
 import java.util.Set;
 import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
@@ -12,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.bobot_state.BobotState;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
 import frc.robot.subsystems.vision.apriltag.AprilTagAlgorithms;
@@ -26,7 +25,6 @@ public class PositionWithSpeaker extends Command {
 
     private final DriveSubsystem drive;
     private final OffsetTags tag;
-    private final Supplier<Set<TargetWithSource>> visibleAprilTagsSupplier;
     // private final DoubleSupplier xSupplier;
     private final DoubleSupplier ySupplier;
 
@@ -36,7 +34,6 @@ public class PositionWithSpeaker extends Command {
 
     public PositionWithSpeaker(
             DoubleSupplier ySupplier,
-            Supplier<Set<TargetWithSource>> visibleAprilTagsSupplier,
             DriveSubsystem drive,
             OffsetTags tag) {
         addRequirements(drive);
@@ -45,10 +42,7 @@ public class PositionWithSpeaker extends Command {
         logRoot = "Commands/" + getName() + "/";
 
         this.ySupplier = ySupplier;
-
         this.tag = tag;
-
-        this.visibleAprilTagsSupplier = visibleAprilTagsSupplier;
         this.drive = drive;
 
         xController.setTolerance(0.1);
@@ -69,7 +63,7 @@ public class PositionWithSpeaker extends Command {
     public void execute() {
         Pose3d robotPose = new Pose3d(drive.getPose());
 
-        Set<TargetWithSource> targets = this.visibleAprilTagsSupplier.get();
+        Set<TargetWithSource> targets = BobotState.getVisibleAprilTags();
         AprilTagAlgorithms.filterTags(targets.stream(), tag.getId())
                 .reduce((targetWithSourceA,
                         targetWithSourceB) -> targetWithSourceA.target().getPoseAmbiguity() <= targetWithSourceB

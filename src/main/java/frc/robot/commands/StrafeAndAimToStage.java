@@ -20,7 +20,6 @@ public class StrafeAndAimToStage extends StrafeAndAimToAprilTag {
             DriveSubsystem drive) {
         super(xSupplier,
                 ySupplier,
-                visibleAprilTagsSupplier,
                 stageTag.getId(),
                 drive,
                 false);
