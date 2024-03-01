@@ -70,7 +70,12 @@ public final class VisionConstants {
 
     // Review the Field layout for positions
     // https://firstfrc.blob.core.windows.net/frc2024/FieldAssets/2024LayoutMarkingDiagram.pdf
-    public static final Set<Integer> RED_HUMAN_PLAYER_TAGS = Set.of(1, 2);
+    public static final Integer RED_HUMAN_PLAYER_WALL = 9;
+    public static final Integer RED_HUMAN_PLAYER_INSIDE = 10;
+
+    public static final Set<Integer> RED_HUMAN_PLAYER_TAGS = Set.of(
+            RED_HUMAN_PLAYER_WALL,
+            RED_HUMAN_PLAYER_INSIDE);
     public static final Integer RED_SPEAKER_OFFSET = 3;
     public static final Integer RED_SPEAKER_CENTER = 4;
     public static final Set<Integer> RED_SPEAKER_TAGS = Set.of(RED_SPEAKER_OFFSET, RED_SPEAKER_CENTER);
@@ -80,7 +85,13 @@ public final class VisionConstants {
     public static final Integer BLUE_SPEAKER_CENTER = 7;
     public static final Integer BLUE_SPEAKER_OFFSET = 8;
     public static final Set<Integer> BLUE_SPEAKER_TAGS = Set.of(BLUE_SPEAKER_CENTER, BLUE_SPEAKER_OFFSET);
-    public static final Set<Integer> BLUE_HUMAN_PLAYER_TAGS = Set.of(9, 10);
+
+    public static final Integer BLUE_HUMAN_PLAYER_INSIDE = 1;
+    public static final Integer BLUE_HUMAN_PLAYER_WALL = 2;
+
+    public static final Set<Integer> BLUE_HUMAN_PLAYER_TAGS = Set.of(
+            BLUE_HUMAN_PLAYER_INSIDE,
+            BLUE_HUMAN_PLAYER_WALL);
 
     public static final Integer RED_STAGE_HUMAN = 11;
     public static final Integer RED_STAGE_AMP = 12;

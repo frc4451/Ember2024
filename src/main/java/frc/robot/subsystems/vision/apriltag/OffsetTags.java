@@ -25,7 +25,8 @@ public enum OffsetTags {
     SPEAKER_10FT(VisionConstants.RED_SPEAKER_CENTER, VisionConstants.BLUE_SPEAKER_CENTER, Units.feetToMeters(10)),
     SPEAKER_15FT(VisionConstants.RED_SPEAKER_CENTER, VisionConstants.BLUE_SPEAKER_CENTER, Units.feetToMeters(15)),
     AMP(VisionConstants.RED_AMP_TAG, VisionConstants.BLUE_AMP_TAG, 1.0),
-    OTHER_AMP(VisionConstants.BLUE_AMP_TAG, VisionConstants.RED_AMP_TAG, 1.0),;
+    OTHER_AMP(VisionConstants.BLUE_AMP_TAG, VisionConstants.RED_AMP_TAG, 1.0),
+    HUMAN_PLAYER(VisionConstants.RED_HUMAN_PLAYER_INSIDE, VisionConstants.BLUE_HUMAN_PLAYER_INSIDE, 1.0);
 
     private final int redId;
     private final int blueId;
