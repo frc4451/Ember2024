@@ -5,6 +5,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -22,6 +23,9 @@ public class ElevatorSubsystem extends SubsystemBase {
             ElevatorConstants.kD);
 
     private double setpointInches = 0.0;
+
+    private final ElevatorVisualizer measuredVisualizer = new ElevatorVisualizer("Measured", Color.kBlack);
+    private final ElevatorVisualizer setpointVisualizer = new ElevatorVisualizer("Setpoint", Color.kGreen);
 
     public ElevatorSubsystem() {
         switch (AdvantageKitConstants.getMode()) {
@@ -54,6 +58,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         Logger.recordOutput("Elevator/SetpointInches", setpointInches);
 
+        // Log Mechanisms
+        measuredVisualizer.update(this.inputs.positionInches);
+        setpointVisualizer.update(this.setpointInches);
     }
 
     public void reset() {

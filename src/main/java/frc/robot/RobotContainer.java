@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants.AdvantageKitConstants;
+import frc.robot.Constants.AdvantageKitConstants.Mode;
 import frc.robot.Constants.OIConstants;
 import frc.robot.bobot_state.BobotState;
 import frc.robot.commands.PathfindToTarget;
@@ -56,6 +58,10 @@ public class RobotContainer {
 
     final CommandCustomController m_operatorController = new CommandCustomController(
             OIConstants.kOperatorControllerPort);
+
+    final CommandCustomController m_programmerController = AdvantageKitConstants.getMode() == Mode.SIM
+            ? new CommandCustomController(OIConstants.kProgrammerControllerPort)
+            : null;
 
     // For tests only
     // final CommandCustomController m_programmerController = new

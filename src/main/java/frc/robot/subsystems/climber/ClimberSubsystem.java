@@ -7,6 +7,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -25,6 +26,9 @@ public class ClimberSubsystem extends SubsystemBase {
             ClimberConstants.kD);
 
     private double setpointInches = 0.0;
+
+    private final ClimberVisualizer measuredVisualizer = new ClimberVisualizer("Measured", Color.kBlack);
+    private final ClimberVisualizer setpointVisualizer = new ClimberVisualizer("Setpoint", Color.kGreen);
 
     public ClimberSubsystem() {
         switch (AdvantageKitConstants.getMode()) {
@@ -57,6 +61,9 @@ public class ClimberSubsystem extends SubsystemBase {
         }
 
         Logger.recordOutput("Climber/SetpointInches", setpointInches);
+
+        measuredVisualizer.update(this.inputs.positionInches);
+        setpointVisualizer.update(setpointInches);
     }
 
     public void setVoltage(double voltage) {
