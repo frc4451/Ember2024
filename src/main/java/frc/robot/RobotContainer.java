@@ -148,7 +148,11 @@ public class RobotContainer {
                 .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get().aimingCommand()));
 
         m_driverController.a()
-                .whileTrue(m_pivot.pivotToSpeakerCommand());
+                .whileTrue(new ParallelCommandGroup(
+                        m_pivot.pivotToSpeakerCommand()
+                // ,m_shooter.shootAtSpeakerCommand()
+                //
+                ));
     }
 
     private void configureOperatorBindings() {

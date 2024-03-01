@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.subsystems.pivot.PivotLocation;
+import frc.robot.subsystems.vision.VisionSubsystem.VisionMeasurement;
 import frc.utils.VirtualSubsystem;
 
 /**
@@ -143,6 +144,14 @@ public class Robot extends LoggedRobot {
             m_robotContainer.m_robotDrive.zeroHeading();
             m_robotContainer.m_robotDrive.resetPose(new Pose2d());
             m_robotContainer.m_pivot.setAngle(PivotLocation.INITIAL.angle);
+        }
+
+        // Fun fact this doesn't work (yet?)
+        if (m_robotContainer.m_driverController.getHID().getAButtonPressed()) {
+            VisionMeasurement measurement = m_robotContainer.m_vision.pollLatestVisionMeasurement();
+            if (measurement != null) {
+                m_robotContainer.m_robotDrive.resetPose(measurement.estimation().estimatedPose.toPose2d());
+            }
         }
     }
 

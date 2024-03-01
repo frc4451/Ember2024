@@ -10,7 +10,8 @@ public class GarageUtils {
      * "DEFAULT" alliance.
      */
     public static Alliance getAlliance() {
-        return DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get()
+        return DriverStation.getAlliance().isPresent()
+                ? DriverStation.getAlliance().get()
                 : PathPlannerConstants.DEFAULT_ALLIANCE;
     }
 

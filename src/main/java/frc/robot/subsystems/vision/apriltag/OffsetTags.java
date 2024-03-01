@@ -1,5 +1,7 @@
 package frc.robot.subsystems.vision.apriltag;
 
+import java.util.Optional;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -11,6 +13,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.PathPlannerConstants;
 import frc.robot.VisionConstants;
+import frc.robot.bobot_state.BobotState;
+import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
 import frc.utils.GarageUtils;
 
 public enum OffsetTags {
@@ -21,8 +25,7 @@ public enum OffsetTags {
     SPEAKER_10FT(VisionConstants.RED_SPEAKER_CENTER, VisionConstants.BLUE_SPEAKER_CENTER, Units.feetToMeters(10)),
     SPEAKER_15FT(VisionConstants.RED_SPEAKER_CENTER, VisionConstants.BLUE_SPEAKER_CENTER, Units.feetToMeters(15)),
     AMP(VisionConstants.RED_AMP_TAG, VisionConstants.BLUE_AMP_TAG, 1.0),
-    OTHER_AMP(VisionConstants.BLUE_AMP_TAG, VisionConstants.RED_AMP_TAG, 1.0),
-    ;
+    OTHER_AMP(VisionConstants.BLUE_AMP_TAG, VisionConstants.RED_AMP_TAG, 1.0),;
 
     private final int redId;
     private final int blueId;
@@ -93,16 +96,57 @@ public enum OffsetTags {
 
     /**
      * Using the robot's known pose, find the distance of how far away the robot is
-     * from the {@link #StageTag}.
+     * from the {@link #OffsetTags}.
      *
      * @param pose - Current Robot Pose
      * @return Distance from robot to target (meters)
      */
-    public double getDistanceFrom(Pose2d pose) {
+    public double getFieldDistanceFrom(Pose2d pose) {
         Translation2d poseTranslation = pose.getTranslation();
         Translation2d targetTranslation = getPose().toPose2d().getTranslation();
         double distanceToTarget = poseTranslation.getDistance(targetTranslation);
 
         return distanceToTarget;
+    }
+
+    /**
+     * Using the robot's known pose, find the distance of how far away the robot is
+     * from the {@link #OffsetTags}.
+     *
+     * @param pose - Current Robot Pose
+     * @return Distance from robot to target (meters)
+     */
+    public Optional<Double> getVisionDistanceFrom(Pose2d pose) {
+        Optional<Double> distance = Optional.empty();
+
+        Optional<TargetWithSource> targetWithSource = AprilTagAlgorithms
+                .filterTags(BobotState.getVisibleAprilTags().stream(), getId())
+                .reduce((targetWithSourceA,
+                        targetWithSourceB) -> targetWithSourceA.target().getPoseAmbiguity() <= targetWithSourceB
+                                .target().getPoseAmbiguity()
+                                        ? targetWithSourceA
+                                        : targetWithSourceB);
+
+        if (targetWithSource.isPresent()) {
+            Translation2d poseTranslation = pose.getTranslation();
+
+            Pose3d tagPose = targetWithSource.get().getTargetPoseFrom(new Pose3d(pose));
+            Pose3d targetPose = getOffsetPoseFrom(tagPose);
+            Translation2d targetTranslation = targetPose.toPose2d().getTranslation();
+            distance = Optional.of(poseTranslation.getDistance(targetTranslation));
+        }
+
+        return distance;
+    }
+
+    /**
+     * Using the robot's known pose, find the distance of how far away the robot is
+     * from the {@link #OffsetTags}.
+     *
+     * @param pose - Current Robot Pose
+     * @return Distance from robot to target (meters)
+     */
+    public double getDistanceFrom(Pose2d pose) {
+        return getVisionDistanceFrom(pose).orElse(getFieldDistanceFrom(pose));
     }
 }

@@ -3,12 +3,13 @@ package frc.robot.pathplanner;
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants.PathPlannerConstants;
 
 public class PathPlannerUtils {
     public static void configureLogging() {
@@ -31,22 +32,12 @@ public class PathPlannerUtils {
         Logger.recordOutput("Pathplanner/TrajectoryTarget", new Pose2d());
     }
 
-    private static Command getPathFromName(String name) {
-        PathPlannerPath path = PathPlannerPath.fromPathFile(name);
-
-        return AutoBuilder.followPath(path);
-    }
-
-    /**
-     * Gets the test path
-     *
-     * @return Command
-     */
-    public static Command getTestPath() {
-        return getPathFromName("Test Path");
-    }
-
-    public static Command getPoopPath() {
-        return getPathFromName("poop m2");
+    public static Command pathToPoseCommand(Pose2d pose) {
+        return Commands.deferredProxy(
+                () -> AutoBuilder.pathfindToPose(
+                        pose,
+                        PathPlannerConstants.DEFAULT_PATH_CONSTRAINTS,
+                        0.0,
+                        0.0));
     }
 }
