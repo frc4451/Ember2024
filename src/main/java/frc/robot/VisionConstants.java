@@ -41,8 +41,8 @@ public final class VisionConstants {
                     "Arducam_OV9281_FL",
                     new Transform3d(
                             new Translation3d(
-                                    Units.inchesToMeters(-8.89), // right+
                                     Units.inchesToMeters(12.05), // forward+
+                                    Units.inchesToMeters(8.89), // left+
                                     Units.inchesToMeters(7.56)), // up+
                             new Rotation3d(
                                     0,
@@ -53,8 +53,8 @@ public final class VisionConstants {
                     "Arducam_OV9281_FR",
                     new Transform3d(
                             new Translation3d(
-                                    Units.inchesToMeters(8.89), // right+
                                     Units.inchesToMeters(12.05), // forward+
+                                    Units.inchesToMeters(-8.89), // left+
                                     Units.inchesToMeters(7.56)), // up+
                             new Rotation3d(
                                     0,
@@ -66,8 +66,8 @@ public final class VisionConstants {
                     "Arducam_OV9281_RL",
                     new Transform3d(
                             new Translation3d(
-                                    Units.inchesToMeters(-10.35), // right+
                                     Units.inchesToMeters(-13.14), // forward+
+                                    Units.inchesToMeters(10.35), // left+
                                     Units.inchesToMeters(10.50)), // up+
                             new Rotation3d(
                                     0,
@@ -78,8 +78,8 @@ public final class VisionConstants {
                     "Arducam_OV9281_RR",
                     new Transform3d(
                             new Translation3d(
-                                    Units.inchesToMeters(10.35), // right+
                                     Units.inchesToMeters(-13.14), // forward+
+                                    Units.inchesToMeters(-10.35), // left+
                                     Units.inchesToMeters(10.50)), // up+
                             new Rotation3d(
                                     0,
@@ -90,8 +90,8 @@ public final class VisionConstants {
             "Arducam_OV9782_USB_Camera",
             new Transform3d(
                     new Translation3d(
-                            Units.inchesToMeters(0), // right+
                             Units.inchesToMeters(-13.59), // forward+
+                            Units.inchesToMeters(0), // left+
                             Units.inchesToMeters(20.51)), // up+
                     new Rotation3d(0, Units.degreesToRadians(25.0), 0)));
 
