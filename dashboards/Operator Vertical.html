@@ -1,0 +1,32 @@
+<dashboard-tab
+    tab-name="TeleOperated"
+    slot="tab"
+    selected=""
+    source-provider="NetworkTables"
+><garage-toggle-sendable
+        source-provider="NetworkTables"
+        source-key="/SmartDashboard/LaneAssist"
+        style="flex-direction: column; width: 299.661px; height: 1180px; transform: translate(0px, 0px);"
+        options="[&quot;On&quot;,&quot;Off&quot;]"
+        selected="Speaker Center"
+    ></garage-toggle-sendable><frc-field-wrapper
+        source-key="/SmartDashboard/Field"
+        source-provider="NetworkTables"
+        style="transform: translate(300.333px, 306px); width: 420.823px; height: 277px;"
+        game="Crescendo"
+        grid-size="1"
+    >
+    </frc-field-wrapper><frc-camera-wrapper
+        source-provider="NetworkTables"
+        style="transform: translate(299.667px, 0px); width: 420.323px; height: 308.5px;"
+        source-key="/CameraPublisher/Arducam_OV9782_USB_Camera-processed"
+        streams="[]"
+        background-color="black"
+        wait-image="./no-camera-stream.jpg"
+        hide-crosshair=""
+        crosshair-color="white"
+    ></frc-camera-wrapper></dashboard-tab><dashboard-tab
+    slot="tab"
+    tab-name="Autonomous"
+    source-provider="NetworkTables"
+></dashboard-tab>
