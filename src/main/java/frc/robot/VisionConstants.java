@@ -36,27 +36,54 @@ public final class VisionConstants {
     //
     // NOTE this should be updated with real values from measurements on the robot
     public static final List<VisionSource> APRIL_TAG_SOURCES = List.of(
+            // FL
             new VisionSource(
-                    "Arducam_OV9281_USB_Camera",
+                    "Arducam_OV9281_FL",
                     new Transform3d(
                             new Translation3d(
-                                    Units.inchesToMeters(-9), // right+
-                                    Units.inchesToMeters(-11.85), // forward+
-                                    Units.inchesToMeters(7.43)), // up+
+                                    Units.inchesToMeters(-8.89), // right+
+                                    Units.inchesToMeters(12.05), // forward+
+                                    Units.inchesToMeters(7.56)), // up+
                             new Rotation3d(
                                     0,
-                                    Units.degreesToRadians(-30),
+                                    Units.degreesToRadians(-28),
                                     Units.degreesToRadians(180 + 28)))),
+            // FR
             new VisionSource(
-                    "RG_Camera_2",
+                    "Arducam_OV9281_FR",
                     new Transform3d(
                             new Translation3d(
-                                    Units.inchesToMeters(9), // right+
-                                    Units.inchesToMeters(-11.85), // forward+
-                                    Units.inchesToMeters(7.43)), // up+
+                                    Units.inchesToMeters(8.89), // right+
+                                    Units.inchesToMeters(12.05), // forward+
+                                    Units.inchesToMeters(7.56)), // up+
                             new Rotation3d(
                                     0,
-                                    Units.degreesToRadians(-30),
+                                    Units.degreesToRadians(-28),
+                                    Units.degreesToRadians(180 + 28)))),
+
+            // RL
+            new VisionSource(
+                    "Arducam_OV9281_RL",
+                    new Transform3d(
+                            new Translation3d(
+                                    Units.inchesToMeters(-10.35), // right+
+                                    Units.inchesToMeters(-13.14), // forward+
+                                    Units.inchesToMeters(10.50)), // up+
+                            new Rotation3d(
+                                    0,
+                                    Units.degreesToRadians(-28),
+                                    Units.degreesToRadians(180 + 28)))),
+            // RR
+            new VisionSource(
+                    "Arducam_OV9281_RR",
+                    new Transform3d(
+                            new Translation3d(
+                                    Units.inchesToMeters(10.35), // right+
+                                    Units.inchesToMeters(-13.14), // forward+
+                                    Units.inchesToMeters(10.50)), // up+
+                            new Rotation3d(
+                                    0,
+                                    Units.degreesToRadians(-28),
                                     Units.degreesToRadians(180 - 28)))));
 
     public static final VisionSource OBJECT_DETECTION_SOURCE = new VisionSource(
@@ -64,9 +91,9 @@ public final class VisionConstants {
             new Transform3d(
                     new Translation3d(
                             Units.inchesToMeters(0), // right+
-                            Units.inchesToMeters(-13.205), // forward+
-                            Units.inchesToMeters(9.412)), // up+
-                    new Rotation3d(0, Units.degreesToRadians(10), 0)));
+                            Units.inchesToMeters(-13.59), // forward+
+                            Units.inchesToMeters(20.51)), // up+
+                    new Rotation3d(0, Units.degreesToRadians(25.0), 0)));
 
     // Review the Field layout for positions
     // https://firstfrc.blob.core.windows.net/frc2024/FieldAssets/2024LayoutMarkingDiagram.pdf
