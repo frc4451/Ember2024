@@ -6,18 +6,6 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "StageStart1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -34,7 +22,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "StageStart2"
+                        "pathName": "AmpsideStart1"
                       }
                     },
                     {
@@ -46,19 +34,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "A3toA2"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Shoot"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "A2toA1"
+                        "pathName": "AmpsideStart2"
                       }
                     },
                     {
@@ -72,6 +48,48 @@
                       "data": {
                         "pathName": "A1toB1"
                       }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "B1to15FT"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "15FTtoB2"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "B2to15FT"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "B2toFrontCenter"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
                     }
                   ]
                 }
@@ -82,13 +100,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "B1to15FT"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
+            "pathName": "FrontCentertoA2"
           }
         }
       ]

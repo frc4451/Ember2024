@@ -3,37 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.881979007201258,
-        "y": 4.095403506122328
-      },
-      "prevControl": null,
-      "nextControl": {
-        "x": 6.781979007201258,
-        "y": 4.095403506122328
-      },
-      "isLocked": false,
-      "linkedName": "B3"
-    },
-    {
-      "anchor": {
         "x": 4.55,
         "y": 5.51
       },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.6103073792140914,
+        "y": 5.852020143325668
+      },
+      "isLocked": false,
+      "linkedName": "center15ft"
+    },
+    {
+      "anchor": {
+        "x": 2.557296653054846,
+        "y": 5.56
+      },
       "prevControl": {
-        "x": 4.55,
-        "y": 4.31
+        "x": 1.591370826765778,
+        "y": 5.81881904510252
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "center15ft"
+      "linkedName": "A2"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.2,
-    "maxAcceleration": 4.2,
+    "maxVelocity": 4.8,
+    "maxAcceleration": 4.8,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -44,6 +44,9 @@
   },
   "reversed": false,
   "folder": "Note2Location",
-  "previewStartingState": null,
-  "useDefaultConstraints": false
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
 }
