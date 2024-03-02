@@ -38,7 +38,6 @@ import frc.robot.subsystems.blinkin.BlinkinSubsystem;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.pivot.PivotLocation;
 import frc.robot.subsystems.pivot.PivotSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
@@ -156,10 +155,10 @@ public class RobotContainer {
 
     private void configureOperatorBindings() {
         m_operatorController.leftTrigger()
-                .whileTrue(m_shooter.setVelocityFeederCommand(50));
+                .whileTrue(m_shooter.shootAtSpeakerCommand());
 
         m_operatorController.rightTrigger()
-                .whileTrue(m_shooter.shootAtSpeakerCommand());
+                .whileTrue(m_shooter.setVelocityFeederCommand(50));
 
         m_operatorController.leftY()
                 .whileTrue(m_climber.runClimberControlCommand(() -> -m_operatorController.getLeftY()))
@@ -174,15 +173,8 @@ public class RobotContainer {
         m_operatorController.povUp()
                 .whileTrue(m_pivot.pidCommand())
                 .onTrue(
-                        m_shooter.setVelocityShooterCommand(65.0, 65.0)
-                                .alongWith(m_pivot.setSetpointCommand(PivotLocation.k36.angle)))
-                .onFalse(m_shooter.stopCommand());
-        // 15 ft
-        m_operatorController.povRight()
-                .whileTrue(m_pivot.pidCommand())
-                .onTrue(
-                        m_shooter.setVelocityShooterCommand(82.0, 77.0)
-                                .alongWith(m_pivot.setSetpointCommand(Rotation2d.fromDegrees(30))))
+                        m_shooter.setVelocityShooterCommand(85.0, 75.0)
+                                .alongWith(m_pivot.setSetpointCommand(Rotation2d.fromDegrees(27.875))))
                 .onFalse(m_shooter.stopCommand());
         // up against the subwoofer
         m_operatorController.povDown()
@@ -191,10 +183,17 @@ public class RobotContainer {
                         m_shooter.setVelocityShooterCommand(60.0, 60.0)
                                 .alongWith(m_pivot.setSetpointCommand(Rotation2d.fromDegrees(55))))
                 .onFalse(m_shooter.stopCommand());
-        // pooping it out onto the floor (and possibly amp)
+        // 10ft shot
         m_operatorController.povLeft()
                 .whileTrue(m_pivot.pidCommand())
-                .onTrue(m_shooter.setVelocityShooterCommand(10.5, 10.5))
+                .onTrue(m_shooter.setVelocityShooterCommand(85.0, 75.0)
+                        .alongWith(m_pivot.setSetpointCommand(Rotation2d.fromDegrees(36))))
+                .onFalse(m_shooter.stopCommand());
+        // 13ft shot
+        m_operatorController.povRight()
+                .whileTrue(m_pivot.pidCommand())
+                .onTrue(m_shooter.setVelocityShooterCommand(85.0, 75.0)
+                        .alongWith(m_pivot.setSetpointCommand(Rotation2d.fromDegrees(31.5))))
                 .onFalse(m_shooter.stopCommand());
 
         m_operatorController.a()
