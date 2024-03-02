@@ -40,24 +40,24 @@ public final class VisionConstants {
                     "Arducam_OV9281_USB_Camera",
                     new Transform3d(
                             new Translation3d(
-                                    Units.inchesToMeters(-9), // right+
-                                    Units.inchesToMeters(-11.85), // forward+
-                                    Units.inchesToMeters(7.43)), // up+
+                                    Units.inchesToMeters(-12.05), // forward+
+                                    Units.inchesToMeters(8.89), // left+
+                                    Units.inchesToMeters(7.56)), // up+
                             new Rotation3d(
                                     0,
-                                    Units.degreesToRadians(-30),
-                                    Units.degreesToRadians(180 + 28)))),
+                                    Units.degreesToRadians(-28),
+                                    Units.degreesToRadians(180 + 30)))),
             new VisionSource(
                     "RG_Camera_2",
                     new Transform3d(
                             new Translation3d(
-                                    Units.inchesToMeters(9), // right+
-                                    Units.inchesToMeters(-11.85), // forward+
-                                    Units.inchesToMeters(7.43)), // up+
+                                    Units.inchesToMeters(-12.05), // forward+
+                                    Units.inchesToMeters(-8.89), // left+
+                                    Units.inchesToMeters(7.56)), // up+
                             new Rotation3d(
                                     0,
-                                    Units.degreesToRadians(-30),
-                                    Units.degreesToRadians(180 - 28)))));
+                                    Units.degreesToRadians(-28),
+                                    Units.degreesToRadians(180 - 30)))));
 
     public static final VisionSource OBJECT_DETECTION_SOURCE = new VisionSource(
             "Arducam_OV9782_USB_Camera",

@@ -50,7 +50,7 @@ public class PivotSubsystem extends SubsystemBase {
                 break;
         }
 
-        this.pidController.setTolerance(Units.degreesToRadians(2.0));
+        this.pidController.setTolerance(Units.degreesToRadians(0.1));
         this.setAngle(PivotLocation.INITIAL.angle);
         this.setSetpoint(PivotLocation.INITIAL.angle);
     }

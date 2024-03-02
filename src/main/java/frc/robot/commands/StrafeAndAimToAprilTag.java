@@ -22,7 +22,7 @@ import frc.robot.subsystems.vision.apriltag.AprilTagAlgorithms;
  */
 public class StrafeAndAimToAprilTag extends Command {
     private static double yawMeasurementOffset = Math.PI; // To aim from the back
-    private final PIDController thetaController = new PIDController(6, 0, 0.1);
+    private final PIDController thetaController = new PIDController(2, 0, 0.1);
     private final String logRoot;
 
     private final DriveSubsystem drive;
@@ -54,6 +54,7 @@ public class StrafeAndAimToAprilTag extends Command {
 
         targetPose = VisionConstants.FIELD_LAYOUT.getTagPose(targetFiducialId).get();
 
+        thetaController.setTolerance(Units.degreesToRadians(0.1));
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
     }
 

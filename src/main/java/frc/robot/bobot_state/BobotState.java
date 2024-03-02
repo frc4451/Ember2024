@@ -30,30 +30,31 @@ public class BobotState extends VirtualSubsystem {
 
     static {
         shootingInterpolator.addEntries(
-                // Subwoofer (calculated: 92cm from wall)
-                new ShootingInterpolator.DistanceAngleSpeedEntry(
-                        1.36,
-                        55.0,
-                        70.0,
-                        50.0),
-                // Empirically gathered 10ft shot (prototype)
+                // // Subwoofer (calculated: 92cm from wall)
+                // new ShootingInterpolator.DistanceAngleSpeedEntry(
+                // 1.36,
+                // 55.0,
+                // 70.0,
+                // 50.0),
+                // 10ft
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(10),
                         36.0,
                         65.0,
-                        65.0),
-                // Empirically gathered 15ft shot (prototype)
-                new ShootingInterpolator.DistanceAngleSpeedEntry(
-                        Units.feetToMeters(15),
-                        31.0,
-                        65.0,
-                        65.0),
-                // Empirically gathered 21ft shot (prototype)
-                new ShootingInterpolator.DistanceAngleSpeedEntry(
-                        Units.feetToMeters(21),
-                        26.0,
-                        85.0,
-                        70.0));
+                        65.0)
+        // // Empirically gathered 15ft shot (prototype)
+        // new ShootingInterpolator.DistanceAngleSpeedEntry(
+        // Units.feetToMeters(15),
+        // 31.0,
+        // 85.0,
+        // 75.0),
+        // // Empirically gathered 21ft shot (prototype)
+        // new ShootingInterpolator.DistanceAngleSpeedEntry(
+        // Units.feetToMeters(21),
+        // 26.0,
+        // 85.0,
+        // 70.0)
+        );
     }
 
     public static void updateRobotPose(Pose2d pose) {

@@ -152,13 +152,6 @@ public class RobotContainer {
                 .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get().pathfindCommand()));
         m_driverController.rightBumper()
                 .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get().aimingCommand()));
-
-        m_driverController.a()
-                .whileTrue(new ParallelCommandGroup(
-                        m_pivot.pivotToSpeakerCommand()
-                // ,m_shooter.shootAtSpeakerCommand()
-                //
-                ));
     }
 
     private void configureOperatorBindings() {
@@ -188,8 +181,8 @@ public class RobotContainer {
         m_operatorController.povRight()
                 .whileTrue(m_pivot.pidCommand())
                 .onTrue(
-                        m_shooter.setVelocityShooterCommand(65.0, 65.0)
-                                .alongWith(m_pivot.setSetpointCommand(Rotation2d.fromDegrees(31))))
+                        m_shooter.setVelocityShooterCommand(82.0, 77.0)
+                                .alongWith(m_pivot.setSetpointCommand(Rotation2d.fromDegrees(30))))
                 .onFalse(m_shooter.stopCommand());
         // up against the subwoofer
         m_operatorController.povDown()
@@ -204,6 +197,17 @@ public class RobotContainer {
                 .onTrue(m_shooter.setVelocityShooterCommand(10.5, 10.5))
                 .onFalse(m_shooter.stopCommand());
 
+        m_operatorController.a()
+                .whileTrue(new ParallelCommandGroup(
+                        m_pivot.pivotToSpeakerCommand(),
+                        m_shooter.shootAtSpeakerCommand()
+                // Commands.defer(() -> new StrafeAndAimToSpeaker(
+                // () -> -m_driverController.getLeftY(),
+                // () -> -m_driverController.getLeftX(),
+                // m_robotDrive),
+                // Set.of(m_robotDrive))
+                ))
+                .onFalse(m_shooter.stopCommand());
     }
 
     private void configureProgrammerBindings() {
@@ -233,7 +237,6 @@ public class RobotContainer {
      */
     private void configureLaneChooser() {
         Command speakerStrafeAndAimCommand = new ParallelCommandGroup(
-                m_pivot.pivotToSpeakerCommand(),
                 Commands.defer(() -> new StrafeAndAimToSpeaker(
                         () -> -m_driverController.getLeftY(),
                         () -> -m_driverController.getLeftX(),
@@ -241,7 +244,6 @@ public class RobotContainer {
                         Set.of(m_robotDrive)));
 
         Command speakerPosition10Command = new ParallelCommandGroup(
-                m_pivot.setSetpointCommand(PivotLocation.k36.angle),
                 Commands.defer(() -> new PositionWithSpeaker(
                         () -> -m_driverController.getLeftX(),
                         m_robotDrive,
@@ -249,7 +251,6 @@ public class RobotContainer {
                         Set.of(m_robotDrive)));
 
         Command speakerPosition15Command = new ParallelCommandGroup(
-                m_pivot.setSetpointCommand(PivotLocation.INITIAL.angle),
                 Commands.defer(() -> new PositionWithSpeaker(
                         () -> -m_driverController.getLeftX(),
                         m_robotDrive,
