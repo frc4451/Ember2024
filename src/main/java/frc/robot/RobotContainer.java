@@ -233,9 +233,21 @@ public class RobotContainer {
      * Register the commands with PathPlanner
      */
     private void configureNamedCommands() {
-        NamedCommands.registerCommand("Shoot", new InstantCommand());
         NamedCommands.registerCommand("PickUpNote", new InstantCommand());
         NamedCommands.registerCommand("FindNote", new InstantCommand());
+
+        NamedCommands.registerCommand("RunIntake", new InstantCommand());
+
+        // Run Interpolation in Parallel
+        NamedCommands.registerCommand(
+                "InterpolatePivotAndRunShooter",
+                new ParallelCommandGroup(
+                        m_pivot.pivotToSpeakerCommand(),
+                        m_shooter.shootAtSpeakerCommand()));
+
+        NamedCommands.registerCommand("InterpolatePivot", m_pivot.pivotToSpeakerCommand());
+        NamedCommands.registerCommand("RampShooter", m_shooter.shootAtSpeakerCommand());
+        NamedCommands.registerCommand("Shoot", m_shooter.setVelocityFeederCommand(50));
     }
 
     /**

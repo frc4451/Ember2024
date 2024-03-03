@@ -25,7 +25,135 @@
         wait-image="./no-camera-stream.jpg"
         hide-crosshair=""
         crosshair-color="white"
-    ></frc-camera-wrapper></dashboard-tab><dashboard-tab
+    ></frc-camera-wrapper><vaadin-number-field
+        label="Shooter Distance (Feet)"
+        value="0"
+        has-value=""
+        has-label=""
+        source-provider="NetworkTables"
+        style="transform: translate(299.5px, 529px); width: 168px; height: 77px;"
+        readonly=""
+        source-key="/AdvantageKit/RealOutputs/BobotState/ShootingCalculation/DistanceFeet"
+        placeholder=""
+        min="NaN"
+        max="NaN"
+    ><input
+            slot="input"
+            value="0"
+            type="number"
+            id="vaadin-number-field-35"
+            aria-labelledby="label-vaadin-number-field-35"
+            aria-describedby=""
+            min="undefined"
+            max="undefined"
+            step="any"
+            readonly=""
+        ><label
+            slot="label"
+            id="label-vaadin-number-field-35"
+            for="vaadin-number-field-35"
+        >Shooter Distance (Feet)</label>
+        <div
+            slot="error-message"
+            id="error-message-vaadin-number-field-32"
+            hidden=""
+        ></div>
+    </vaadin-number-field><vaadin-number-field
+        label="Pivot Interpolated Angle"
+        value="0"
+        has-value=""
+        has-label=""
+        source-provider="NetworkTables"
+        style="transform: translate(471.5px, 530px); width: 250px; height: 97px;"
+        readonly=""
+        source-key="/AdvantageKit/RealOutputs/BobotState/ShootingCalculation/AngleDegrees"
+        placeholder=""
+        min="NaN"
+        max="NaN"
+    ><input
+            slot="input"
+            value="0"
+            type="number"
+            id="vaadin-number-field-221"
+            aria-labelledby="label-vaadin-number-field-221"
+            aria-describedby=""
+            min="undefined"
+            max="undefined"
+            step="any"
+            readonly=""
+        ><label
+            slot="label"
+            id="label-vaadin-number-field-221"
+            for="vaadin-number-field-221"
+        >Pivot Interpolated Angle</label>
+        <div
+            slot="error-message"
+            id="error-message-vaadin-number-field-179"
+            hidden=""
+        ></div>
+    </vaadin-number-field><vaadin-number-field
+        label="Left Shooter Speed"
+        value="0"
+        has-value=""
+        has-label=""
+        source-provider="NetworkTables"
+        style="transform: translate(300px, 604.5px); width: 173px; height: 77px;"
+        source-key="/AdvantageKit/RealOutputs/BobotState/ShootingCalculation/LeftSpeedRotPerSec"
+        placeholder=""
+        min="NaN"
+        max="NaN"
+    ><input
+            slot="input"
+            value="0"
+            type="number"
+            id="vaadin-number-field-232"
+            aria-labelledby="label-vaadin-number-field-232"
+            aria-describedby=""
+            min="undefined"
+            max="undefined"
+            step="any"
+        ><label
+            slot="label"
+            id="label-vaadin-number-field-232"
+            for="vaadin-number-field-232"
+        >Left Shooter Speed</label>
+        <div
+            slot="error-message"
+            id="error-message-vaadin-number-field-186"
+            hidden=""
+        ></div>
+    </vaadin-number-field><vaadin-number-field
+        label="Right Shooter Speed"
+        value="0"
+        has-value=""
+        has-label=""
+        source-provider="NetworkTables"
+        style="transform: translate(474px, 605px); width: 246.5px; height: 77px;"
+        source-key="/AdvantageKit/RealOutputs/BobotState/ShootingCalculation/RightSpeedRotPerSec"
+        placeholder=""
+        min="NaN"
+        max="NaN"
+    ><input
+            slot="input"
+            value="0"
+            type="number"
+            id="vaadin-number-field-233"
+            aria-labelledby="label-vaadin-number-field-233"
+            aria-describedby=""
+            min="undefined"
+            max="undefined"
+            step="any"
+        ><label
+            slot="label"
+            id="label-vaadin-number-field-233"
+            for="vaadin-number-field-233"
+        >Right Shooter Speed</label>
+        <div
+            slot="error-message"
+            id="error-message-vaadin-number-field-187"
+            hidden=""
+        ></div>
+    </vaadin-number-field></dashboard-tab><dashboard-tab
     slot="tab"
     tab-name="Autonomous"
     source-provider="NetworkTables"
