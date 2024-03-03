@@ -244,6 +244,8 @@ public final class Constants {
     }
 
     public static final class ElevatorConstants {
+        public static final int kBeambreakChannel = 2;
+
         public static final double kMaxHeightInches = 20.0;
         public static final double kMinHeightInches = 0.0;
 

@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.bobot_state.BobotState;
@@ -71,6 +72,8 @@ public class PivotSubsystem extends SubsystemBase {
         Logger.recordOutput("Pivot/Angle", getAngle().getDegrees());
         Logger.recordOutput("Pivot/SetpointAngle", getSetpoint().getDegrees());
 
+        Logger.recordOutput("Pivot/IsBelowElevatorThreshold", this.pivotIsBelowElevatorMax().getAsBoolean());
+
         // Log Mechanisms - This needs to be recorded in Radians
         measuredVisualizer.update(getAngle().getRadians());
         setpointVisualizer.update(getSetpoint().getRadians());
@@ -120,7 +123,7 @@ public class PivotSubsystem extends SubsystemBase {
                     percentDecimal.getAsDouble(),
                     getAngle().getDegrees(),
                     PivotLocation.kSoftMin.angle.getDegrees(),
-                    PivotLocation.kSoftMax.angle.getDegrees());
+                    PivotLocation.kElevatorDownSoftMax.angle.getDegrees());
             io.setPercentOutput(output);
         }, this);
     }
@@ -130,5 +133,12 @@ public class PivotSubsystem extends SubsystemBase {
             setSetpoint(Rotation2d.fromDegrees(BobotState.getShootingCalculation().angleDegrees()));
             pid();
         }, this);
+    }
+
+    /**
+     * The Pivot cannot exceed 42degrees when the elevator is down.
+     */
+    public Trigger pivotIsBelowElevatorMax() {
+        return new Trigger(() -> this.getAngle().getDegrees() <= PivotLocation.kElevatorDownHardMax.angle.getDegrees());
     }
 }

@@ -28,6 +28,8 @@ public class BobotState extends VirtualSubsystem {
 
     private static Set<TargetWithSource> visibleAprilTags = new HashSet<>();
 
+    private static boolean isElevatorUp = false;
+
     static {
         shootingInterpolator.addEntries(
                 // // Subwoofer (calculated: 92cm from wall)
@@ -37,21 +39,28 @@ public class BobotState extends VirtualSubsystem {
                 // 70.0,
                 // 50.0),
                 // 10ft
+
+                new ShootingInterpolator.DistanceAngleSpeedEntry(
+                        Double.MIN_VALUE,
+                        36.0,
+                        85.0,
+                        70.0),
+
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(10),
                         36.0,
                         85.0,
-                        75.0),
+                        70.0),
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(13),
                         31.5,
                         85.0,
-                        75.0),
+                        70.0),
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(15),
                         27.875,
                         85.0,
-                        75.0)
+                        70.0)
 
         // // Empirically gathered 15ft shot (prototype)
         // new ShootingInterpolator.DistanceAngleSpeedEntry(
@@ -113,6 +122,18 @@ public class BobotState extends VirtualSubsystem {
                     .sorted()
                     .toArray());
         }
+    }
+
+    public static boolean isElevatorUp() {
+        return BobotState.isElevatorUp;
+    }
+
+    public static boolean isElevatorDown() {
+        return !BobotState.isElevatorUp;
+    }
+
+    public static void setElevatorUp(boolean isElevatorUp) {
+        BobotState.isElevatorUp = isElevatorUp;
     }
 
     @Override

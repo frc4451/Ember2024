@@ -53,7 +53,7 @@ public class PathfindToTarget extends Command {
     public void execute() {
         switch (step) {
             case 1 -> stepOne();
-            case 2 -> stepTwo();
+            // case 2 -> stepTwo();
             default -> shouldFinish = true;
         }
     }

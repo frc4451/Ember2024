@@ -180,12 +180,12 @@ public class RobotContainer {
                                 .alongWith(m_pivot.setSetpointCommand(Rotation2d.fromDegrees(27.875))))
                 .onFalse(m_shooter.stopCommand());
         // up against the subwoofer
-        m_operatorController.povDown()
-                .whileTrue(m_pivot.pidCommand())
-                .onTrue(
-                        m_shooter.setVelocityShooterCommand(60.0, 60.0)
-                                .alongWith(m_pivot.setSetpointCommand(Rotation2d.fromDegrees(55))))
-                .onFalse(m_shooter.stopCommand());
+        // m_operatorController.povDown()
+        // .whileTrue(m_pivot.pidCommand())
+        // .onTrue(
+        // m_shooter.setVelocityShooterCommand(60.0, 60.0)
+        // .alongWith(m_pivot.setSetpointCommand(Rotation2d.fromDegrees(55))))
+        // .onFalse(m_shooter.stopCommand());
         // 10ft shot
         m_operatorController.povLeft()
                 .whileTrue(m_pivot.pidCommand())
@@ -212,15 +212,15 @@ public class RobotContainer {
                 .onFalse(m_shooter.stopCommand());
 
         // Move the Pivot before raising or lowering the Elevator
-        m_operatorController.y()
-                .whileTrue(m_elevator.pidCommand())
-                .onTrue(m_elevator.setSetpointCommand(ElevatorConstants.kMaxHeightInches));
+        // m_operatorController.y()
+        // .whileTrue(m_elevator.pidCommand())
+        // .onTrue(m_elevator.setSetpointCommand(ElevatorConstants.kMaxHeightInches));
 
-        // Get the Pivot out of the way before lowering the Elevator
-        m_operatorController.x()
-                .whileTrue(m_elevator.pidCommand().alongWith(m_pivot.pidCommand()))
-                .onTrue(m_pivot.setSetpointCommand(PivotLocation.INITIAL.angle)
-                        .andThen(m_elevator.setSetpointCommand(ElevatorConstants.kMinHeightInches)));
+        // // Get the Pivot out of the way before lowering the Elevator
+        // m_operatorController.x()
+        // .whileTrue(m_elevator.pidCommand().alongWith(m_pivot.pidCommand()))
+        // .onTrue(m_pivot.setSetpointCommand(PivotLocation.INITIAL.angle)
+        // .andThen(m_elevator.setSetpointCommand(ElevatorConstants.kMinHeightInches)));
 
         // .whileTrue(m_pivot.pidCommand())
         // .onTrue(m_pivot.setSetpointCommand(PivotLocation.INITIAL.angle).andThen(Commands.none()));
@@ -328,15 +328,8 @@ public class RobotContainer {
         m_laneAssistCommands.put("Human Player",
                 new LaneAssist(PathPlannerPoses.HUMAN_PLAYER.getDeferredCommand(),
                         new InstantCommand()));
-        m_laneAssistCommands.put("Speaker Left",
-                new LaneAssist(PathPlannerPoses.SPEAKER_LEFT.getDeferredCommand(),
-                        speakerStrafeAndAimCommand));
-        m_laneAssistCommands.put("Speaker Center",
-                new LaneAssist(PathPlannerPoses.SPEAKER_CENTER.getDeferredCommand(),
-                        speakerStrafeAndAimCommand));
-        m_laneAssistCommands.put("Speaker Right",
-                new LaneAssist(PathPlannerPoses.SPEAKER_RIGHT.getDeferredCommand(),
-                        speakerStrafeAndAimCommand));
+        m_laneAssistCommands.put("Aim at Speaker",
+                new LaneAssist(Commands.none(), speakerStrafeAndAimCommand));
         m_laneAssistCommands.put("Amp",
                 new LaneAssist(OffsetTags.AMP.getDeferredCommand(), ampCommand));
         m_laneAssistCommands.put("Other Amp",
