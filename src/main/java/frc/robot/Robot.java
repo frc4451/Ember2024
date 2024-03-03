@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.AdvantageKitConstants;
+import frc.robot.subsystems.pivot.PivotLocation;
+import frc.robot.subsystems.vision.VisionSubsystem.VisionMeasurement;
 import frc.utils.VirtualSubsystem;
 
 /**
@@ -141,7 +143,15 @@ public class Robot extends LoggedRobot {
         if (m_robotContainer.m_driverController.getHID().getBButtonPressed()) {
             m_robotContainer.m_robotDrive.zeroHeading();
             m_robotContainer.m_robotDrive.resetPose(new Pose2d());
-            // m_robotContainer.m_pivot.setAngle(PivotLocation.INITIAL.angle);
+            m_robotContainer.m_pivot.setAngle(PivotLocation.INITIAL.angle);
+        }
+
+        // Fun fact this doesn't work (yet?)
+        if (m_robotContainer.m_driverController.getHID().getAButtonPressed()) {
+            VisionMeasurement measurement = m_robotContainer.m_vision.pollLatestVisionMeasurement();
+            if (measurement != null) {
+                m_robotContainer.m_robotDrive.resetPose(measurement.estimation().estimatedPose.toPose2d());
+            }
         }
     }
 
@@ -151,6 +161,8 @@ public class Robot extends LoggedRobot {
      */
     @Override
     public void autonomousInit() {
+        m_robotContainer.m_pivot.setAngle(PivotLocation.INITIAL.angle);
+
         m_autoCommand = m_robotContainer.m_autoChooser.get();
 
         if (m_autoCommand != null) {
@@ -190,8 +202,6 @@ public class Robot extends LoggedRobot {
         // simulated field.
         VisionConstants.VISION_SYSTEM_SIM
                 .ifPresent(visionSystemSim -> visionSystemSim.addAprilTags(VisionConstants.FIELD_LAYOUT));
-
-        m_robotContainer.m_vision.robotPoseSupplier = m_robotContainer.m_robotDrive::getPose;
     }
 
     @Override

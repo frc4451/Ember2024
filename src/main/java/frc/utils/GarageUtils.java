@@ -10,7 +10,8 @@ public class GarageUtils {
      * "DEFAULT" alliance.
      */
     public static Alliance getAlliance() {
-        return DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get()
+        return DriverStation.getAlliance().isPresent()
+                ? DriverStation.getAlliance().get()
                 : PathPlannerConstants.DEFAULT_ALLIANCE;
     }
 
@@ -24,5 +25,11 @@ public class GarageUtils {
 
     public static double getFlipped() {
         return GarageUtils.isRedAlliance() ? -1 : 1;
+    }
+
+    public static double percentWithSoftStops(double percentDecimal, double position, double min, double max) {
+        boolean canMoveUp = (percentDecimal > 0.0 && position < max);
+        boolean canMoveDown = (percentDecimal < 0.0 && position > min);
+        return (canMoveUp || canMoveDown) ? percentDecimal : 0.0;
     }
 }

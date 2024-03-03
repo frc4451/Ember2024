@@ -1,0 +1,68 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.4522628733915735,
+        "y": 4.227261352965997
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.9181928193359723,
+        "y": 6.520127139587118
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.701511180635409,
+        "y": 4.349874496635576
+      },
+      "prevControl": {
+        "x": 4.347670905115468,
+        "y": 4.293823784591756
+      },
+      "nextControl": {
+        "x": 7.6265375362477945,
+        "y": 4.429573040020802
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.300909826430475,
+        "y": 4.1046482092964185
+      },
+      "prevControl": {
+        "x": 6.903119988597279,
+        "y": 4.067864266195546
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.2,
+    "maxAcceleration": 4.2,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Ember Tuning",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

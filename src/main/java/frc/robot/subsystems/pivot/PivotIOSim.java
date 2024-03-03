@@ -12,7 +12,7 @@ import frc.robot.Constants.IntakeConstants;
 // Won't be doing that right now but that might work.
 public class PivotIOSim implements PivotIO {
     private final SingleJointedArmSim armSim = new SingleJointedArmSim(
-            DCMotor.getNEO(1),
+            DCMotor.getFalcon500(1),
             IntakeConstants.kPivotReduction,
             0.3, // moment of intertia (I think this is in kg * m^2) (number is wrong)
             0.8, // arm length (m) (number is wrong)
@@ -26,11 +26,13 @@ public class PivotIOSim implements PivotIO {
     @Override
     public void updateInputs(PivotIOInputs inputs) {
         armSim.update(0.02); // 20 ms is the standard periodic loop time
+        inputs.appliedVoltageLeader = appliedVoltage;
+        inputs.appliedVoltageFollower = appliedVoltage;
+        inputs.currentAmperageLeader = armSim.getCurrentDrawAmps();
+        inputs.currentAmperageFollower = armSim.getCurrentDrawAmps();
 
-        inputs.appliedVoltage = appliedVoltage;
-        inputs.currentAmperage = armSim.getCurrentDrawAmps();
-
-        inputs.relativeAngleRad = armSim.getAngleRads();
+        inputs.positionRadLeader = armSim.getAngleRads();
+        inputs.positionRadFollower = armSim.getAngleRads();
     }
 
     @Override
@@ -43,8 +45,8 @@ public class PivotIOSim implements PivotIO {
     }
 
     @Override
-    public void setPercentOutput(double decimalPercent) {
-        setVoltage(12.0 * decimalPercent);
+    public void setPercentOutput(double percentDecimal) {
+        setVoltage(12.0 * percentDecimal);
     }
 
     @Override

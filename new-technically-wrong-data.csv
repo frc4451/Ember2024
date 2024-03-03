@@ -1,0 +1,10 @@
+All data is being read from robot code,Preset 1,Preset 2,Preset 3,Preset 4,Preset 5,Preset 6,Preset 7,Preset 8,Preset 8
+distance (ft),10,15,15,15,15,15,15,15,15
+angle (degrees),36,31,31,28,28,29,30,30,30
+left velocity (rot per sec),65,65,85,85,75,75,80,77,82
+right velocity (rot per sec),65,65,75,75,70,70,75,72,77
+attempt 1,bounced out,too low,too high,too low,too low,hit top lip (went in),bounced out,too high,success
+attempt 2,success (bounced down),too low,too high,success,too low,bottom lip (went in),top lip (went in),too low,bounced out
+attempt 3,success (bounced down),,too high,bounced out,too low,too low,too high,too high,success
+attempt 4,success (bounced down),,too high,too low,too low,,success,too high,too high
+attempt 5,success (bounced down),,too high,bounced out,,,too low,,

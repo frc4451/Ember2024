@@ -22,6 +22,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.bobot_state.BobotState;
 import frc.robot.subsystems.vision.VisionSubsystem.VisionMeasurement;
 import frc.utils.GarageUtils;
 
@@ -161,8 +162,12 @@ public class DriveSubsystem extends SubsystemBase {
         m_poseEstimator.update(m_trackedRotation, positions);
         addVisionMeasurements();
 
-        Logger.recordOutput("Odometry/Robot", getPose());
-        Logger.recordOutput("Odometry/RotationDeg", getPose().getRotation().getDegrees());
+        Pose2d pose = getPose();
+
+        BobotState.updateRobotPose(pose);
+
+        Logger.recordOutput("Odometry/Robot", pose);
+        Logger.recordOutput("Odometry/RotationDeg", pose.getRotation().getDegrees());
     }
 
     private void addVisionMeasurements() {
