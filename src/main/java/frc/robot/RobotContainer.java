@@ -244,7 +244,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("PickUpNote", new InstantCommand());
         NamedCommands.registerCommand("FindNote", new InstantCommand());
 
-        NamedCommands.registerCommand("RunIntake", new InstantCommand());
+        NamedCommands.registerCommand("Intake", new InstantCommand());
 
         // Run Interpolation in Parallel
         NamedCommands.registerCommand(
