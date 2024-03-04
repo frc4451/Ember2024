@@ -21,9 +21,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.AdvantageKitConstants;
-import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.AdvantageKitConstants.Mode;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
@@ -36,12 +36,12 @@ import frc.robot.commands.StrafeAndAimToSpeaker;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.pathplanner.PathPlannerUtils;
 import frc.robot.pathplanner.paths.PathPlannerPoses;
+import frc.robot.subsystems.blinkin.BlinkinColors;
 import frc.robot.subsystems.blinkin.BlinkinSubsystem;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.elevator.ElevatorSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.pivot.PivotLocation;
 import frc.robot.subsystems.pivot.PivotSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
@@ -243,7 +243,12 @@ public class RobotContainer {
      * Register the commands with PathPlanner
      */
     private void configureNamedCommands() {
-        NamedCommands.registerCommand("PickUpNote", new InstantCommand());
+        NamedCommands.registerCommand("Shoot", new InstantCommand());
+        NamedCommands.registerCommand("AimAtSpeaker", new InstantCommand());
+        NamedCommands.registerCommand("Intake", new RunCommand(
+                () -> m_shooter.beambreakIsObstructed()
+                        .onTrue(m_intake.setVelocityCommand(20.0))
+                        .onFalse(m_intake.stopCommand())));
         NamedCommands.registerCommand("FindNote", new InstantCommand());
 
         NamedCommands.registerCommand("RunIntake", new InstantCommand());
@@ -365,7 +370,46 @@ public class RobotContainer {
             m_laneAssistChooser.addOption(key, laneAssist);
         });
 
-        // m_laneAssistChooser.addDefaultOption("Human Player",
-        // m_laneAssistCommands.get("Human Player"));
+        m_laneAssistChooser.addDefaultOption("Human Player", m_laneAssistCommands.get("Human Player"));
+
+        m_driverController.leftTrigger()
+                .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get().pathfindCommand()));
+        m_driverController.rightTrigger()
+                .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get().aimingCommand()));
+    }
+
+    /**
+     * Use this method to define your button->command mappings. Buttons can be
+     * created by
+     * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
+     * subclasses ({@link
+     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling
+     * passing it to a
+     * {@link JoystickButton}.
+     */
+    private void configureButtonBindings() {
+
+        m_driverController.rightBumper()
+                .whileTrue(new RunCommand(
+                        () -> m_robotDrive.setCross(),
+                        m_robotDrive));
+
+        m_operatorController.rightY()
+                .whileTrue(m_pivot.runPercentCommand(() -> -m_operatorController.getRightY() / 2.0))
+                .onFalse(m_pivot.setSetpointCurrentCommand());
+
+        m_driverController
+                .rightBumper()
+                .whileTrue(
+                        Commands.defer(
+                                () -> new PathfindToTarget(
+                                        m_vision::getClosestObject,
+                                        m_robotDrive),
+                                Set.of(m_robotDrive)));
+
+        m_driverController.povUp().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_RED));
+        m_driverController.povRight().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_GREEN));
+        m_driverController.povDown().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_BLUE));
+        m_driverController.povLeft().onTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_YELLOW));
     }
 }

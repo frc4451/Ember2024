@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.16,
-        "y": 4.56
+        "x": 2.2086908691294997,
+        "y": 4.48
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.203301270189222,
-        "y": 4.534999999999999
+        "x": 2.2540062584813323,
+        "y": 4.458869086912966
       },
       "isLocked": false,
       "linkedName": "StageLaunch"
     },
     {
       "anchor": {
-        "x": 2.61,
-        "y": 4.32
+        "x": 2.54,
+        "y": 4.3
       },
       "prevControl": {
-        "x": 2.1769872981077807,
-        "y": 4.57
+        "x": 2.4946846106481675,
+        "y": 4.321130913087035
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,13 +39,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -30.0,
+    "rotation": -25.0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "PathSegments",
   "previewStartingState": {
-    "rotation": -30.0,
+    "rotation": -25.0,
     "velocity": 0
   },
   "useDefaultConstraints": false

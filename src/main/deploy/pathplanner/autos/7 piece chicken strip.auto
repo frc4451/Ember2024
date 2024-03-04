@@ -6,6 +6,18 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "StageStart1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -22,7 +34,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "AmpsideStart1"
+                        "pathName": "StageStart2"
                       }
                     },
                     {
@@ -34,7 +46,19 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "AmpsideStart2"
+                        "pathName": "A3toA2"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "A2toA1"
                       }
                     },
                     {
@@ -72,17 +96,35 @@
                       "data": {
                         "pathName": "B2to15FT"
                       }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "15FTtoB3"
+                      }
                     }
                   ]
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot"
-                }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "B3to15FT"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         }
       ]

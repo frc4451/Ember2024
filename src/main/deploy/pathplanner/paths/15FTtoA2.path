@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.41,
-        "y": 1.62
+        "x": 4.55,
+        "y": 5.51
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.3732635157628779,
-        "y": 1.5491100212933293
+        "x": 3.6103073792140914,
+        "y": 5.852020143325668
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "center15ft"
     },
     {
       "anchor": {
-        "x": 3.238115707005723,
-        "y": 1.9437877337256768
+        "x": 2.557296653054846,
+        "y": 5.56
       },
       "prevControl": {
-        "x": 2.7546355092760972,
-        "y": 2.348332388968834
+        "x": 1.591370826765778,
+        "y": 5.81881904510252
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "A2"
     }
   ],
   "rotationTargets": [],
@@ -39,11 +39,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -52.48088617952384,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Kates Paths",
+  "folder": "Note2Location",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0
