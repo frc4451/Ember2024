@@ -4,24 +4,24 @@
     {
       "anchor": {
         "x": 7.90046841354944,
-        "y": 7.432741351969191
+        "y": 7.45
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.85046841354944,
-        "y": 7.432741351969191
+        "x": 6.960775792763531,
+        "y": 7.107979856674331
       },
       "isLocked": false,
       "linkedName": "B1"
     },
     {
       "anchor": {
-        "x": 4.570152986459821,
-        "y": 5.900431800863602
+        "x": 4.55,
+        "y": 5.51
       },
       "prevControl": {
-        "x": 4.570152986459821,
-        "y": 6.900431800863602
+        "x": 4.972618261740699,
+        "y": 6.41630778703665
       },
       "nextControl": null,
       "isLocked": false,
@@ -44,6 +44,9 @@
   },
   "reversed": false,
   "folder": "Note2Location",
-  "previewStartingState": null,
+  "previewStartingState": {
+    "rotation": 10.0,
+    "velocity": 0
+  },
   "useDefaultConstraints": false
 }

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.41,
-        "y": 1.62
+        "x": 0.7401886415755699,
+        "y": 4.36
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.3732635157628779,
-        "y": 1.5491100212933293
+        "x": 1.1933425350938947,
+        "y": 4.57130913087035
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "SpeakerStageside"
     },
     {
       "anchor": {
-        "x": 3.238115707005723,
-        "y": 1.9437877337256768
+        "x": 2.537562767433229,
+        "y": 4.3
       },
       "prevControl": {
-        "x": 2.7546355092760972,
-        "y": 2.348332388968834
+        "x": 2.2633971548395486,
+        "y": 4.833697683029571
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "A3"
     }
   ],
   "rotationTargets": [],
@@ -39,14 +39,14 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -52.48088617952384,
+    "rotation": -25.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Kates Paths",
+  "folder": "PathSegments",
   "previewStartingState": {
-    "rotation": 0,
-    "velocity": 0
+    "rotation": -60.0,
+    "velocity": 0.0
   },
   "useDefaultConstraints": true
 }

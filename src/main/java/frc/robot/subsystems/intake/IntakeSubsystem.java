@@ -46,6 +46,7 @@ public class IntakeSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         this.io.updateInputs(this.inputs);
+        this.io.updateInputs(this.inputs);
         this.beambreak.updateInputs(this.beambreakInputs);
 
         Logger.processInputs("Intake", this.inputs);
