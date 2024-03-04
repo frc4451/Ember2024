@@ -2,8 +2,6 @@ package frc.robot.commands;
 
 import java.util.Set;
 import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -12,6 +10,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.bobot_state.BobotState;
 import frc.robot.VisionConstants;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
@@ -23,12 +22,11 @@ import frc.robot.subsystems.vision.apriltag.AprilTagAlgorithms;
  */
 public class StrafeAndAimToAprilTag extends Command {
     private static double yawMeasurementOffset = Math.PI; // To aim from the back
-    private final PIDController thetaController = new PIDController(6, 0, 0.1);
+    private final PIDController thetaController = new PIDController(5, 0, 0.1);
     private final String logRoot;
 
     private final DriveSubsystem drive;
     private final int targetFiducialId;
-    private final Supplier<Set<TargetWithSource>> visibleAprilTagsSupplier;
     private final DoubleSupplier xSupplier;
     private final DoubleSupplier ySupplier;
     private final boolean fieldRelative;
@@ -40,7 +38,6 @@ public class StrafeAndAimToAprilTag extends Command {
     public StrafeAndAimToAprilTag(
             DoubleSupplier xSupplier,
             DoubleSupplier ySupplier,
-            Supplier<Set<TargetWithSource>> visibleAprilTagsSupplier,
             int targetFiducialId,
             DriveSubsystem drive,
             boolean fieldRelative) {
@@ -52,22 +49,21 @@ public class StrafeAndAimToAprilTag extends Command {
         this.xSupplier = xSupplier;
         this.ySupplier = ySupplier;
         this.targetFiducialId = targetFiducialId;
-        this.visibleAprilTagsSupplier = visibleAprilTagsSupplier;
         this.drive = drive;
         this.fieldRelative = fieldRelative;
 
         targetPose = VisionConstants.FIELD_LAYOUT.getTagPose(targetFiducialId).get();
 
+        thetaController.setTolerance(Units.degreesToRadians(0.1));
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
     }
 
     public StrafeAndAimToAprilTag(
             DoubleSupplier xSupplier,
             DoubleSupplier ySupplier,
-            Supplier<Set<TargetWithSource>> visibleAprilTagsSupplier,
             int targetFiducialId,
             DriveSubsystem drive) {
-        this(xSupplier, ySupplier, visibleAprilTagsSupplier, targetFiducialId, drive, true);
+        this(xSupplier, ySupplier, targetFiducialId, drive, true);
     }
 
     @Override
@@ -81,7 +77,7 @@ public class StrafeAndAimToAprilTag extends Command {
     public void execute() {
         Pose3d robotPose = new Pose3d(drive.getPose());
 
-        Set<TargetWithSource> targets = this.visibleAprilTagsSupplier.get();
+        Set<TargetWithSource> targets = BobotState.getVisibleAprilTags();
         AprilTagAlgorithms.filterTags(targets.stream(), targetFiducialId)
                 .reduce((targetWithSourceA,
                         targetWithSourceB) -> targetWithSourceA.target().getPoseAmbiguity() <= targetWithSourceB

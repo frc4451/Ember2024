@@ -6,14 +6,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
@@ -22,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.VisionConstants;
 import frc.robot.VisionConstants.VisionSource;
+import frc.robot.bobot_state.BobotState;
 import frc.robot.subsystems.vision.apriltag.AprilTagAlgorithms;
 import frc.robot.subsystems.vision.apriltag.AprilTagIO;
 import frc.robot.subsystems.vision.apriltag.AprilTagIOInputsAutoLogged;
@@ -74,10 +73,6 @@ public class VisionSubsystem extends VirtualSubsystem {
     private ConcurrentLinkedQueue<VisionMeasurement> visionMeasurements = new ConcurrentLinkedQueue<>();
 
     private Optional<PhotonTrackedTarget> closetObject = Optional.empty();
-
-    private Set<TargetWithSource> visibleAprilTags = new HashSet<>();
-
-    public Supplier<Pose2d> robotPoseSupplier = () -> new Pose2d();
 
     public VisionSubsystem() {
         // Initialize all cameras that we have pre-configured from VisionConstants.
@@ -143,7 +138,7 @@ public class VisionSubsystem extends VirtualSubsystem {
 
     public void simulationPeriodic() {
         VisionConstants.VISION_SYSTEM_SIM.ifPresent((visionSystemSim) -> {
-            visionSystemSim.update(robotPoseSupplier.get());
+            visionSystemSim.update(BobotState.getRobotPose());
         });
     }
 
@@ -207,7 +202,7 @@ public class VisionSubsystem extends VirtualSubsystem {
             currentVisibleAprilTags.removeIf(targetWithSource -> targetWithSource.target.getFiducialId() == -1);
         }
 
-        visibleAprilTags = currentVisibleAprilTags;
+        BobotState.updateVisibleAprilTags(currentVisibleAprilTags);
     }
 
     /**
@@ -263,9 +258,5 @@ public class VisionSubsystem extends VirtualSubsystem {
      */
     public VisionMeasurement pollLatestVisionMeasurement() {
         return visionMeasurements.poll();
-    }
-
-    public Set<TargetWithSource> getVisibleAprilTags() {
-        return visibleAprilTags;
     }
 }

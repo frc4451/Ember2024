@@ -7,13 +7,19 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AdvantageKitConstants;
+import frc.robot.Constants.IntakeConstants;
+import frc.robot.bobot_state.BobotState;
+import frc.utils.GarageUtils;
 
 public class PivotSubsystem extends SubsystemBase {
     private final PivotIO io;
@@ -23,14 +29,18 @@ public class PivotSubsystem extends SubsystemBase {
     private Rotation2d setpoint = new Rotation2d();
 
     private final PIDController pidController = new PIDController(
-            Constants.IntakeConstants.kPivotP,
-            Constants.IntakeConstants.kPivotI,
-            Constants.IntakeConstants.kPivotD);
+            IntakeConstants.kPivotP,
+            IntakeConstants.kPivotI,
+            IntakeConstants.kPivotD);
+
+    // Mechanisms
+    private final PivotVisualizer measuredVisualizer = new PivotVisualizer("Measured", Color.kBlack);
+    private final PivotVisualizer setpointVisualizer = new PivotVisualizer("Setpoint", Color.kGreen);
 
     public PivotSubsystem() {
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
-                io = new PivotIOSparkMax();
+                io = new PivotIOTalonFX();
                 break;
             case SIM:
                 io = new PivotIOSim();
@@ -42,8 +52,9 @@ public class PivotSubsystem extends SubsystemBase {
                 break;
         }
 
-        setAngle(PivotLocation.INITIAL.angle);
-        setSetpoint(PivotLocation.INITIAL.angle);
+        this.pidController.setTolerance(Units.degreesToRadians(0.1));
+        this.setAngle(PivotLocation.INITIAL.angle);
+        this.setSetpoint(PivotLocation.INITIAL.angle);
     }
 
     @Override
@@ -57,10 +68,16 @@ public class PivotSubsystem extends SubsystemBase {
             this.io.stop();
         }
 
-        this.angle = new Rotation2d(this.inputs.relativeAngleRad);
+        this.angle = new Rotation2d(this.inputs.positionRadLeader);
 
         Logger.recordOutput("Pivot/Angle", getAngle().getDegrees());
         Logger.recordOutput("Pivot/SetpointAngle", getSetpoint().getDegrees());
+
+        Logger.recordOutput("Pivot/IsBelowElevatorThreshold", this.pivotIsBelowElevatorMax().getAsBoolean());
+
+        // Log Mechanisms - This needs to be recorded in Radians
+        measuredVisualizer.update(getAngle().getRadians());
+        setpointVisualizer.update(getSetpoint().getRadians());
     }
 
     public void setAngle(Rotation2d angle) {
@@ -77,7 +94,7 @@ public class PivotSubsystem extends SubsystemBase {
 
     private void setSetpoint(Rotation2d angle) {
         this.setpoint = angle;
-        this.pidController.setSetpoint(angle.getDegrees());
+        this.pidController.setSetpoint(setpoint.getDegrees());
     }
 
     public Command setSetpointCommand(Rotation2d angle) {
@@ -88,18 +105,64 @@ public class PivotSubsystem extends SubsystemBase {
         return new InstantCommand(() -> this.setSetpoint(this.angle));
     }
 
-    public Command pivotPIDCommand() {
+    private void pid() {
+        double output = this.pidController.calculate(this.getAngle().getDegrees());
+        setVoltage(output);
+    }
+
+    public Command pidCommand() {
+        return new RunCommand(this::pid, this);
+    }
+
+    public void setVoltage(double voltage) {
+        this.io.setVoltage(MathUtil.clamp(voltage, -12.0, 12.0));
+    }
+
+    public double getPivotUpperLimit() {
+        return BobotState.isElevatorDown()
+                ? PivotLocation.kElevatorDownSoftMax.angle.getDegrees()
+                : PivotLocation.kSoftMax.angle.getDegrees();
+    }
+
+    /**
+     * Forces the pivot out of the way of the Elevator.
+     *
+     * We're using empirically gathered angles, but long term we should consider
+     * a linear interpolation table for this.
+     */
+    public Command movePivotOutOfTheElevatorsWay() {
         return new RunCommand(() -> {
-            double output = this.pidController.calculate(this.getAngle().getDegrees());
-            useOutput(output);
+            setSetpoint(
+                    Rotation2d.fromDegrees(MathUtil.clamp(
+                            this.angle.getDegrees(),
+                            PivotLocation.INITIAL.angle.getDegrees(),
+                            PivotLocation.kElevatorDownSoftMax.angle.getDegrees())));
+            pid();
         }, this);
     }
 
-    public void useOutput(double output) {
-        this.io.setVoltage(MathUtil.clamp(output, -12, 12));
+    public Command runPercentCommand(DoubleSupplier percentDecimal) {
+        return new RunCommand(() -> {
+            double output = GarageUtils.percentWithSoftStops(
+                    percentDecimal.getAsDouble(),
+                    getAngle().getDegrees(),
+                    PivotLocation.kSoftMin.angle.getDegrees(),
+                    getPivotUpperLimit());
+            io.setPercentOutput(output);
+        }, this);
     }
 
-    public Command runPercentCommand(DoubleSupplier decimalPercent) {
-        return new RunCommand(() -> this.io.setPercentOutput(decimalPercent.getAsDouble()), this);
+    public Command pivotToSpeakerCommand() {
+        return new RunCommand(() -> {
+            setSetpoint(Rotation2d.fromDegrees(BobotState.getShootingCalculation().angleDegrees()));
+            pid();
+        }, this);
+    }
+
+    /**
+     * The Pivot cannot exceed 42degrees when the elevator is down.
+     */
+    public Trigger pivotIsBelowElevatorMax() {
+        return new Trigger(() -> this.getAngle().getDegrees() <= PivotLocation.kElevatorDownHardMax.angle.getDegrees());
     }
 }

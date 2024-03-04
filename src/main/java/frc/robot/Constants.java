@@ -11,8 +11,8 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RobotBase;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -29,6 +29,11 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 public final class Constants {
 
     public static int pdp = 0;
+
+    /**
+     * Command Scheduler loopback
+     */
+    public static double loopback = 0.02;
 
     public static final class AdvantageKitConstants {
         public static enum Mode {
@@ -162,6 +167,7 @@ public final class Constants {
     public static final class OIConstants {
         public static final int kDriverControllerPort = 0;
         public static final int kOperatorControllerPort = 1;
+        public static final int kProgrammerControllerPort = 2;
         public static final double kDriveDeadband = 0.05;
     }
 
@@ -175,14 +181,34 @@ public final class Constants {
                 .withSupplyCurrentThreshold(35.0)
                 .withSupplyTimeThreshold(0.5);
 
-        public static final int kTopRollerCanId = 20;
-        public static final int kBottomRollerCanId = 21;
-        public static final int kBeamBreakChannel = 0;
+        public static final int kBeambreakChannel = 0;
 
         // public static final double kPivotMinDegrees = 10.0;
         // public static final double kPivotMaxDegrees = 167.25;
 
-        public static final double kPivotReduction = 240.0;
+        public static final double kPivotReduction = 80.0;
+
+        public static final int kPivotLeaderCanId = 6;
+        public static final int kPivotFollowerCanId = 7;
+        public static final double kPivotVelocityRadiansPerSecond = Units.degreesToRadians(15.0);
+
+        public static final double kPivotP = 0.3;
+        public static final double kPivotI = 0.0;
+        public static final double kPivotD = 0.0;
+
+        public static int kIntakeCanId = 1;
+    }
+
+    public static final class AmpTrapConstants {
+        public static final CurrentLimitsConfigs rollerCurrentConfig = new CurrentLimitsConfigs()
+                .withSupplyCurrentLimit(30.0)
+                .withSupplyCurrentThreshold(35.0)
+                .withSupplyTimeThreshold(0.5);
+
+        // public static final double kPivotMinDegrees = 10.0;
+        // public static final double kPivotMaxDegrees = 167.25;
+
+        public static final double kPivotReduction = 5.0;
 
         public static final int kPivotCanId = 22;
         public static final double kPivotVelocityRadiansPerSecond = Units.degreesToRadians(15.0);
@@ -190,11 +216,52 @@ public final class Constants {
         public static final double kPivotP = 0.3;
         public static final double kPivotI = 0.0;
         public static final double kPivotD = 0.0;
+
+        public static int kBeambreakChannel = 0;
     }
 
     public static final class ShooterConstants {
-        public static final int kLeftShooterCanID = 4;
-        public static final int kRightShooterCanID = 3;
+        public static final int kLeftShooterCanID = 3;
+        public static final int kRightShooterCanID = 4;
+        public static final int kFeederCanID = 2;
+        public static final int kBeambreakChannel = 1;
 
+        public static final double kFeederShootVelocity = 50;
+    }
+
+    public static final class ClimberConstants {
+        public static final double kMaxVelocityRotPerSecond = 10.0;
+        public static final double kMaxHeightInches = 18.0;
+        public static final double kMinHeightInches = 0.0;
+
+        public static final double kClimberSpoolDiameter = 1.0;
+        public static final double kClimberReduction = 25.0;
+
+        public static final int kClimberCanId = 5;
+
+        public static final double kP = 1.0;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+        // public static final double kD = 1.0;
+    }
+
+    public static final class ElevatorConstants {
+        public static final int kBeambreakChannel = 2;
+
+        public static final double kMaxHeightInches = 20.0;
+        public static final double kMinHeightInches = 0.0;
+
+        public static final double kElevatorSpoolDiameter = 0.75;
+        public static final double kElevatorReduction = 5.0;
+
+        public static final int kElevatorCanID = 8;
+
+        public static final double kP = 5.0;
+        public static final double kI = 0.0;
+        public static final double kD = 1.0;
+    }
+
+    public static final class PhoenixConstants {
+        public static final int defaultStatusSignalFrequencyHz = 50;
     }
 }

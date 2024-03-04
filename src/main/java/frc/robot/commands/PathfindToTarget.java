@@ -16,7 +16,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.VisionConstants;
-import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.subsystems.drive.DriveSubsystem;
 
 public class PathfindToTarget extends Command {
@@ -54,7 +53,7 @@ public class PathfindToTarget extends Command {
     public void execute() {
         switch (step) {
             case 1 -> stepOne();
-            case 2 -> stepTwo();
+            // case 2 -> stepTwo();
             default -> shouldFinish = true;
         }
     }
@@ -90,22 +89,17 @@ public class PathfindToTarget extends Command {
 
         double x = xController.calculate(0, robotToTarget.getTranslation().getNorm());
         double theta = thetaController.calculate(
-                Math.PI,
+                0,
                 robotToTargetRadians);
 
-        // Theta should be negative for real, positive for sim, dunno why
-        if (AdvantageKitConstants.getMode() == AdvantageKitConstants.Mode.SIM) {
-            theta = -theta;
-        }
-
-        drive.runVelocity(new ChassisSpeeds(-x, 0, -theta));
+        drive.runVelocity(new ChassisSpeeds(x, 0, -theta));
     }
 
     private void stepTwo() {
         driveExtraTimer.start();
 
         if (!driveExtraTimer.hasElapsed(0.25)) {
-            drive.runVelocity(new ChassisSpeeds(-0.5, 0, 0));
+            drive.runVelocity(new ChassisSpeeds(0.5, 0, 0));
         } else {
             step++;
         }
