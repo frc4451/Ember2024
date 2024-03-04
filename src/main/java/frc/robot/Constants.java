@@ -225,6 +225,8 @@ public final class Constants {
         public static final int kRightShooterCanID = 4;
         public static final int kFeederCanID = 2;
         public static final int kBeambreakChannel = 1;
+
+        public static final double kFeederShootVelocity = 50;
     }
 
     public static final class ClimberConstants {

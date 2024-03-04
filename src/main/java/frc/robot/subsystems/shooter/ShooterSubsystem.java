@@ -125,4 +125,12 @@ public class ShooterSubsystem extends SubsystemBase {
             setVelocityShooter(shootingCalculation.leftSpeedRotPerSec(), shootingCalculation.rightSpeedRotPerSec());
         }, this).andThen(stopCommand());
     }
+
+    public Command fireAtSpeakerCommand(double feederVelocity) {
+        return new RunCommand(() -> {
+            ShootingInterpolator.InterpolatedCalculation shootingCalculation = BobotState.getShootingCalculation();
+            setVelocityShooter(shootingCalculation.leftSpeedRotPerSec(), shootingCalculation.rightSpeedRotPerSec());
+            setVelocityFeeder(feederVelocity);
+        }, this).andThen(stopCommand());
+    }
 }

@@ -26,6 +26,7 @@ import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.AdvantageKitConstants.Mode;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.bobot_state.BobotState;
 import frc.robot.commands.PathfindToTarget;
 import frc.robot.commands.PositionWithAmp;
@@ -160,9 +161,6 @@ public class RobotContainer {
         m_operatorController.leftTrigger()
                 .whileTrue(m_shooter.shootAtSpeakerCommand());
 
-        m_operatorController.rightTrigger()
-                .whileTrue(m_shooter.setVelocityFeederCommand(50));
-
         m_operatorController.leftY()
                 .whileTrue(m_climber.runClimberControlCommand(() -> -m_operatorController.getLeftY()))
                 .onFalse(m_climber.setSetpointCurrentCommand());
@@ -199,27 +197,39 @@ public class RobotContainer {
                         .alongWith(m_pivot.setSetpointCommand(Rotation2d.fromDegrees(31.5))))
                 .onFalse(m_shooter.stopCommand());
 
+        // Auto-Aiming while moving
         m_operatorController.a()
                 .whileTrue(new ParallelCommandGroup(
                         m_pivot.pivotToSpeakerCommand(),
-                        m_shooter.shootAtSpeakerCommand()
-                // Commands.defer(() -> new StrafeAndAimToSpeaker(
-                // () -> -m_driverController.getLeftY(),
-                // () -> -m_driverController.getLeftX(),
-                // m_robotDrive),
-                // Set.of(m_robotDrive))
-                ))
+                        m_shooter.shootAtSpeakerCommand()))
                 .onFalse(m_shooter.stopCommand());
+
+        // Fire the shooter, works with presets as well
+        m_operatorController.rightTrigger()
+                .whileTrue(m_shooter.setVelocityFeederCommand(ShooterConstants.kFeederShootVelocity));
+
+        // Keep auto-aim active, but fire when ready.
+        m_operatorController
+                .a()
+                .and(m_operatorController.rightTrigger())
+                .whileTrue(
+                        new ParallelCommandGroup(
+                                m_pivot.pivotToSpeakerCommand(),
+                                m_shooter.fireAtSpeakerCommand(ShooterConstants.kFeederShootVelocity)));
 
         // Move the Pivot before raising or lowering the Elevator
         // m_operatorController.y()
-        // .whileTrue(m_elevator.pidCommand())
-        // .onTrue(m_elevator.setSetpointCommand(ElevatorConstants.kMaxHeightInches));
+        // .whileTrue(m_elevator.pidCommand().alongWith(m_pivot.pidCommand()))
+        // .onTrue(
+        // m_pivot.movePivotOutOfTheElevatorsWay()
+        // .until(m_pivot.pivotIsBelowElevatorMax())
+        // .andThen(m_elevator.setSetpointCommand(ElevatorConstants.kMaxHeightInches)));
 
         // // Get the Pivot out of the way before lowering the Elevator
         // m_operatorController.x()
         // .whileTrue(m_elevator.pidCommand().alongWith(m_pivot.pidCommand()))
-        // .onTrue(m_pivot.setSetpointCommand(PivotLocation.INITIAL.angle)
+        // .onTrue(m_pivot.movePivotOutOfTheElevatorsWay()
+        // .until(m_pivot.pivotIsBelowElevatorMax())
         // .andThen(m_elevator.setSetpointCommand(ElevatorConstants.kMinHeightInches)));
 
         // .whileTrue(m_pivot.pidCommand())
@@ -346,7 +356,7 @@ public class RobotContainer {
                 new LaneAssist(OffsetTags.SPEAKER_15FT.getDeferredCommand(), speakerPosition15Command));
 
         {
-            String defaultLaneAssist = "Amp";
+            String defaultLaneAssist = "Aim at Speaker";
             m_laneAssistChooser.addDefaultOption(defaultLaneAssist,
                     m_laneAssistCommands.get(defaultLaneAssist));
         }
@@ -355,6 +365,7 @@ public class RobotContainer {
             m_laneAssistChooser.addOption(key, laneAssist);
         });
 
-        m_laneAssistChooser.addDefaultOption("Human Player", m_laneAssistCommands.get("Human Player"));
+        // m_laneAssistChooser.addDefaultOption("Human Player",
+        // m_laneAssistCommands.get("Human Player"));
     }
 }

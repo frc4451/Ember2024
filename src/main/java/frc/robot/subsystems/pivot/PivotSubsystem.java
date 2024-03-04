@@ -11,6 +11,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -117,13 +118,36 @@ public class PivotSubsystem extends SubsystemBase {
         this.io.setVoltage(MathUtil.clamp(voltage, -12.0, 12.0));
     }
 
+    public double getPivotUpperLimit() {
+        return BobotState.isElevatorDown()
+                ? PivotLocation.kElevatorDownSoftMax.angle.getDegrees()
+                : PivotLocation.kSoftMax.angle.getDegrees();
+    }
+
+    /**
+     * Forces the pivot out of the way of the Elevator.
+     *
+     * We're using empirically gathered angles, but long term we should consider
+     * a linear interpolation table for this.
+     */
+    public Command movePivotOutOfTheElevatorsWay() {
+        return new RunCommand(() -> {
+            setSetpoint(
+                    Rotation2d.fromDegrees(MathUtil.clamp(
+                            this.angle.getDegrees(),
+                            PivotLocation.INITIAL.angle.getDegrees(),
+                            PivotLocation.kElevatorDownSoftMax.angle.getDegrees())));
+            pid();
+        }, this);
+    }
+
     public Command runPercentCommand(DoubleSupplier percentDecimal) {
         return new RunCommand(() -> {
             double output = GarageUtils.percentWithSoftStops(
                     percentDecimal.getAsDouble(),
                     getAngle().getDegrees(),
                     PivotLocation.kSoftMin.angle.getDegrees(),
-                    PivotLocation.kElevatorDownSoftMax.angle.getDegrees());
+                    getPivotUpperLimit());
             io.setPercentOutput(output);
         }, this);
     }
