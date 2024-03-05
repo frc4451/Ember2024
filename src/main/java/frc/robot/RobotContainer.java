@@ -253,10 +253,6 @@ public class RobotContainer {
      * Register the commands with PathPlanner
      */
     private void configureNamedCommands() {
-        NamedCommands.registerCommand("PickUpNote", new InstantCommand());
-
-        NamedCommands.registerCommand("FindNote", new InstantCommand());
-
         NamedCommands.registerCommand("RunIntake",
                 new SequentialCommandGroup(
                         new ParallelDeadlineGroup(
@@ -283,10 +279,6 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("RampShooter", m_shooter.shootAtSpeakerCommand());
 
-        // NamedCommands.registerCommand(
-        // "Shoot",
-        // m_shooter.fireAtSpeakerCommand(ShooterConstants.kFeederShootVelocity));
-
         NamedCommands.registerCommand(
                 "Shoot",
                 new SequentialCommandGroup(
@@ -301,7 +293,6 @@ public class RobotContainer {
                         m_pivot.pivotToSpeakerCommand(),
                         m_intake.setVelocityCommand(IntakeConstants.kIntakeVelocity),
                         m_shooter.fireAtSpeakerCommand(ShooterConstants.kFeederShootVelocity)));
-
     }
 
     /**
