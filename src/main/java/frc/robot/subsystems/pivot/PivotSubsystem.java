@@ -11,7 +11,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -119,8 +118,8 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public double getPivotUpperLimit() {
-        return BobotState.isElevatorDown()
-                ? PivotLocation.kElevatorDownSoftMax.angle.getDegrees()
+        return BobotState.isElevatorUp()
+                ? PivotLocation.kElevatorUpSoftMax.angle.getDegrees()
                 : PivotLocation.kSoftMax.angle.getDegrees();
     }
 
@@ -136,7 +135,7 @@ public class PivotSubsystem extends SubsystemBase {
                     Rotation2d.fromDegrees(MathUtil.clamp(
                             this.angle.getDegrees(),
                             PivotLocation.INITIAL.angle.getDegrees(),
-                            PivotLocation.kElevatorDownSoftMax.angle.getDegrees())));
+                            PivotLocation.kElevatorUpSoftMax.angle.getDegrees())));
             pid();
         }, this);
     }
@@ -163,6 +162,6 @@ public class PivotSubsystem extends SubsystemBase {
      * The Pivot cannot exceed 42degrees when the elevator is down.
      */
     public Trigger pivotIsBelowElevatorMax() {
-        return new Trigger(() -> this.getAngle().getDegrees() <= PivotLocation.kElevatorDownHardMax.angle.getDegrees());
+        return new Trigger(() -> this.getAngle().getDegrees() <= PivotLocation.kElevatorUpHardMax.angle.getDegrees());
     }
 }

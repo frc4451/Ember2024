@@ -196,7 +196,8 @@ public final class Constants {
         public static final double kPivotI = 0.0;
         public static final double kPivotD = 0.0;
 
-        public static int kIntakeCanId = 1;
+        public static final int kIntakeCanId = 1;
+        public static final double kIntakeVelocity = 20.0;
     }
 
     public static final class AmpTrapConstants {
@@ -226,7 +227,8 @@ public final class Constants {
         public static final int kFeederCanID = 2;
         public static final int kBeambreakChannel = 1;
 
-        public static final double kFeederShootVelocity = 50;
+        public static final double kFeederIntakeVelocity = 20.0;
+        public static final double kFeederShootVelocity = 50.0;
     }
 
     public static final class ClimberConstants {
@@ -251,7 +253,9 @@ public final class Constants {
         public static final double kMaxHeightInches = 20.0;
         public static final double kMinHeightInches = 0.0;
 
-        public static final double kElevatorSpoolDiameter = 0.75;
+        public static final double kPivotClearanceHeightInches = 15.0;
+
+        public static final double kElevatorSpoolDiameter = 0.7;
         public static final double kElevatorReduction = 5.0;
 
         public static final int kElevatorCanID = 8;

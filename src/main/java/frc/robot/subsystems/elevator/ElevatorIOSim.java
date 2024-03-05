@@ -32,6 +32,11 @@ public class ElevatorIOSim implements ElevatorIO {
     }
 
     @Override
+    public void setPercentOutput(double percentDecimal) {
+        setVoltage(12.0 * percentDecimal);
+    }
+
+    @Override
     public void setPosition(double positionInches) {
         sim.setState(positionInches / kInchesPerRotation, sim.getAngularVelocityRadPerSec());
     }

@@ -19,6 +19,9 @@ public interface ElevatorIO {
     public default void setVoltage(double voltage) {
     }
 
+    public default void setPercentOutput(double percentDecimal) {
+    }
+
     public default void stop() {
         setVoltage(0.0);
     }

@@ -74,6 +74,11 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     }
 
     @Override
+    public void setPercentOutput(double percentDecimal) {
+        this.io.set(percentDecimal);
+    }
+
+    @Override
     public void setPosition(double positionInches) {
         this.io.setPosition(positionInches / kInchesPerRotation);
     }

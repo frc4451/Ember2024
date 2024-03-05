@@ -1,5 +1,7 @@
 package frc.robot.subsystems.elevator;
 
+import java.util.function.DoubleSupplier;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
@@ -17,6 +19,7 @@ import frc.robot.bobot_state.BobotState;
 import frc.robot.reusable_io.beambreak.BeambreakDigitalInput;
 import frc.robot.reusable_io.beambreak.BeambreakIO;
 import frc.robot.reusable_io.beambreak.BeambreakIOInputsAutoLogged;
+import frc.utils.GarageUtils;
 
 public class ElevatorSubsystem extends SubsystemBase {
     private final ElevatorIO io;
@@ -118,6 +121,19 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public Trigger elevatorIsUp() {
-        return new Trigger(() -> this.inputs.positionInches >= 10.0);
+        return new Trigger(() -> this.inputs.positionInches >= ElevatorConstants.kPivotClearanceHeightInches);
+    }
+
+    public void runPercentOutput(double percentDecimal) {
+        double output = GarageUtils.percentWithSoftStops(
+                percentDecimal,
+                this.inputs.positionInches + this.inputs.velocityInchesPerSecond,
+                ElevatorConstants.kMinHeightInches,
+                ElevatorConstants.kMaxHeightInches);
+        this.io.setPercentOutput(output);
+    }
+
+    public Command runPercentOutputCommand(DoubleSupplier percentDecimal) {
+        return new RunCommand(() -> this.runPercentOutput(percentDecimal.getAsDouble()), this);
     }
 }
