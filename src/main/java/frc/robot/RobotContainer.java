@@ -26,9 +26,9 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.AdvantageKitConstants.Mode;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.FeederConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.bobot_state.BobotState;
 import frc.robot.commands.PathfindToTarget;
 import frc.robot.commands.PositionWithAmp;
@@ -42,6 +42,7 @@ import frc.robot.subsystems.blinkin.BlinkinSubsystem;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.elevator.ElevatorSubsystem;
+import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.pivot.PivotSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -81,6 +82,8 @@ public class RobotContainer {
     public final IntakeSubsystem m_intake = new IntakeSubsystem();
 
     public final PivotSubsystem m_pivot = new PivotSubsystem();
+
+    public final FeederSubsystem m_feeder = new FeederSubsystem();
 
     public final ShooterSubsystem m_shooter = new ShooterSubsystem();
 
@@ -138,11 +141,11 @@ public class RobotContainer {
         m_driverController.leftTrigger()
                 .whileTrue(
                         m_intake.setVelocityThenStopCommand(IntakeConstants.kIntakeVelocity)
-                                .alongWith(m_shooter
-                                        .setVelocityFeederBeambreakCommand(ShooterConstants.kFeederIntakeVelocity)));
+                                .alongWith(
+                                        m_feeder.setVelocityBeambreakCommand(FeederConstants.kFeederIntakeVelocity)));
 
         m_driverController.rightTrigger()
-                .and(m_shooter.beambreakIsObstructed().negate())
+                .and(m_feeder.beambreakIsObstructed().negate())
                 .whileTrue(
                         new ParallelCommandGroup(
                                 Commands.defer(
@@ -151,8 +154,8 @@ public class RobotContainer {
                                                 m_robotDrive),
                                         Set.of(m_robotDrive)),
                                 m_intake.setVelocityThenStopCommand(IntakeConstants.kIntakeVelocity)
-                                        .alongWith(m_shooter.setVelocityFeederBeambreakCommand(
-                                                ShooterConstants.kFeederIntakeVelocity))));
+                                        .alongWith(m_feeder.setVelocityBeambreakCommand(
+                                                FeederConstants.kFeederIntakeVelocity))));
 
         m_driverController.leftBumper()
                 .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get().pathfindCommand()));
@@ -181,7 +184,7 @@ public class RobotContainer {
         m_operatorController.povUp()
                 .whileTrue(m_pivot.pidCommand())
                 .onTrue(
-                        m_shooter.setVelocityShooterCommand(85.0, 75.0)
+                        m_shooter.setVelocityCommand(85.0, 75.0)
                                 .alongWith(m_pivot.setSetpointCommand(Rotation2d.fromDegrees(27.875))))
                 .onFalse(m_shooter.stopCommand());
         // up against the subwoofer
@@ -194,13 +197,13 @@ public class RobotContainer {
         // 10ft shot
         m_operatorController.povLeft()
                 .whileTrue(m_pivot.pidCommand())
-                .onTrue(m_shooter.setVelocityShooterCommand(85.0, 75.0)
+                .onTrue(m_shooter.setVelocityCommand(85.0, 75.0)
                         .alongWith(m_pivot.setSetpointCommand(Rotation2d.fromDegrees(36))))
                 .onFalse(m_shooter.stopCommand());
         // 13ft shot
         m_operatorController.povRight()
                 .whileTrue(m_pivot.pidCommand())
-                .onTrue(m_shooter.setVelocityShooterCommand(85.0, 75.0)
+                .onTrue(m_shooter.setVelocityCommand(85.0, 75.0)
                         .alongWith(m_pivot.setSetpointCommand(Rotation2d.fromDegrees(31.5))))
                 .onFalse(m_shooter.stopCommand());
 
@@ -213,7 +216,7 @@ public class RobotContainer {
 
         // Fire the shooter, works with presets as well
         m_operatorController.rightTrigger()
-                .whileTrue(m_shooter.setVelocityFeederCommand(ShooterConstants.kFeederShootVelocity));
+                .whileTrue(m_feeder.setVelocityCommand(FeederConstants.kFeederShootVelocity));
 
         // Keep auto-aim active, but fire when ready.
         m_operatorController
@@ -222,7 +225,8 @@ public class RobotContainer {
                 .whileTrue(
                         new ParallelCommandGroup(
                                 m_pivot.pivotToSpeakerCommand(),
-                                m_shooter.fireAtSpeakerCommand(ShooterConstants.kFeederShootVelocity)));
+                                m_shooter.shootAtSpeakerCommand(),
+                                m_intake.setVelocityThenStopCommand(FeederConstants.kFeederShootVelocity)));
 
         // Move the Pivot before raising or lowering the Elevator
         m_operatorController.y()
@@ -260,13 +264,6 @@ public class RobotContainer {
                                 m_intake.setVelocityCommand(IntakeConstants.kIntakeVelocity)),
                         m_intake.stopCommand()));
 
-        // Run Interpolation in Parallel
-        NamedCommands.registerCommand(
-                "Interpolate",
-                new ParallelCommandGroup(
-                        m_pivot.pivotToSpeakerCommand(),
-                        m_shooter.shootAtSpeakerCommand()));
-
         NamedCommands.registerCommand(
                 "AimAtSpeaker",
                 Commands.defer(() -> new StrafeAndAimToSpeaker(
@@ -274,6 +271,13 @@ public class RobotContainer {
                         () -> 0,
                         m_robotDrive),
                         Set.of(m_robotDrive)));
+
+        // Run Interpolation in Parallel
+        NamedCommands.registerCommand(
+                "Interpolate",
+                new ParallelCommandGroup(
+                        m_pivot.pivotToSpeakerCommand(),
+                        m_shooter.shootAtSpeakerCommand()));
 
         NamedCommands.registerCommand("InterpolatePivot", m_pivot.pivotToSpeakerCommand());
 
@@ -284,15 +288,16 @@ public class RobotContainer {
                 new SequentialCommandGroup(
                         new ParallelDeadlineGroup(
                                 new WaitCommand(1),
-                                m_shooter.fireAtSpeakerCommand(ShooterConstants.kFeederShootVelocity)),
-                        m_shooter.stopFeederCommand()));
+                                m_shooter.shootAtSpeakerCommand(),
+                                m_intake.setVelocityCommand(FeederConstants.kFeederShootVelocity)),
+                        m_intake.stopCommand()));
 
         NamedCommands.registerCommand(
                 "FIRE!",
                 new ParallelCommandGroup(
                         m_pivot.pivotToSpeakerCommand(),
-                        m_intake.setVelocityCommand(IntakeConstants.kIntakeVelocity),
-                        m_shooter.fireAtSpeakerCommand(ShooterConstants.kFeederShootVelocity)));
+                        m_shooter.shootAtSpeakerCommand(),
+                        m_intake.setVelocityThenStopCommand(FeederConstants.kFeederShootVelocity)));
     }
 
     /**
