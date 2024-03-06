@@ -75,6 +75,7 @@ public class AmpTrapSubsystem extends SubsystemBase {
 
     public void stop() {
         this.io.stop();
+        this.runVelocity(0);
     }
 
     public Command stopCommand() {
@@ -90,5 +91,11 @@ public class AmpTrapSubsystem extends SubsystemBase {
 
     public Trigger beambreakIsObtructed() {
         return new Trigger(() -> this.beambreakInputs.isObstructed);
+    }
+
+    public Command scoreIntoAmpCommand() {
+        return new RunCommand(() -> {
+            this.runPercentCommand(50);
+        }, this).andThen(this.stopCommand());
     }
 }
