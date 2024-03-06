@@ -254,6 +254,7 @@ public final class Constants {
         public static final double kMinHeightInches = 0.0;
 
         public static final double kAmpScoreHeightInches = 15.0;
+        public static final double kTrapScoreHeightInches = 15.0;
 
         public static final double kPivotClearanceHeightInches = 15.0;
 

@@ -38,6 +38,7 @@ import frc.robot.commands.StrafeAndAimToSpeaker;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.pathplanner.PathPlannerUtils;
 import frc.robot.pathplanner.paths.PathPlannerPoses;
+import frc.robot.subsystems.amptrap.AmpTrapSubsystem;
 import frc.robot.subsystems.blinkin.BlinkinSubsystem;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -84,7 +85,7 @@ public class RobotContainer {
 
     public final ShooterSubsystem m_shooter = new ShooterSubsystem();
 
-    // public final AmpTrapSubsystem m_ampTrap = new AmpTrapSubsystem();
+    public final AmpTrapSubsystem m_ampTrap = new AmpTrapSubsystem();
 
     public final ClimberSubsystem m_climber = new ClimberSubsystem();
 
@@ -129,7 +130,7 @@ public class RobotContainer {
                         true));
         m_pivot.setDefaultCommand(m_pivot.pidCommand());
         m_climber.setDefaultCommand(m_climber.pidCommand());
-        // m_elevator.setDefaultCommand(m_elevator.pidCommand());
+        m_elevator.setDefaultCommand(m_elevator.pidCommand());
         // Build an auto chooser. You can make a default auto by passing in their name
         m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
     }
@@ -214,24 +215,22 @@ public class RobotContainer {
                 .onFalse(m_shooter.stopCommand());
 
         // Fire the shooter, works with presets as well
-        m_operatorController.rightTrigger()
-                .whileTrue(m_shooter.setVelocityFeederCommand(ShooterConstants.kFeederShootVelocity));
+        // m_operatorController.rightTrigger()
+        // .whileTrue(m_shooter.setVelocityFeederCommand(ShooterConstants.kFeederShootVelocity));
 
         // Keep auto-aim active, but fire when ready.
-        m_operatorController
-                .a()
-                .and(m_operatorController.rightTrigger())
-                .whileTrue(
-                        new ParallelCommandGroup(
-                                m_pivot.pivotToSpeakerCommand(),
-                                m_shooter.fireAtSpeakerCommand(ShooterConstants.kFeederShootVelocity)));
+        // m_operatorController
+        // .a()
+        // .and(m_operatorController.rightTrigger())
+        // .whileTrue(
+        // new ParallelCommandGroup(
+        // m_pivot.pivotToSpeakerCommand(),
+        // m_shooter.fireAtSpeakerCommand(ShooterConstants.kFeederShootVelocity)));
 
         // Move the Pivot before raising or lowering the Elevator
         m_operatorController.y()
                 .whileTrue(
-                        new ParallelCommandGroup(
-                                m_pivot.pidCommand(),
-                                m_elevator.pidCommand()))
+                        m_elevator.pidCommand().alongWith(m_pivot.pidCommand()))
                 .onTrue(
                         m_pivot.movePivotOutOfTheElevatorsWay()
                                 .until(m_pivot.pivotIsBelowElevatorMax())
@@ -243,6 +242,42 @@ public class RobotContainer {
                 .onTrue(m_pivot.movePivotOutOfTheElevatorsWay()
                         .until(m_pivot.pivotIsBelowElevatorMax())
                         .andThen(m_elevator.setSetpointCommand(ElevatorConstants.kMinHeightInches)));
+
+        // Move the Pivot out of the elevators way, then move the elevator to AMP score
+        // mode, then move pivot to feed the AMP.
+        m_operatorController.b()
+                .whileTrue(m_elevator.pidCommand().alongWith(m_pivot.pidCommand()))
+                .onTrue(m_pivot.movePivotOutOfTheElevatorsWay()
+                        .until(m_pivot.pivotIsBelowElevatorMax())
+                        .andThen(m_elevator.setSetpointCommand(ElevatorConstants.kAmpScoreHeightInches)));
+
+        // Assuming that the Operator set the setpoint, we move the pivot to fit
+        // into the Amp/Trap mechanism.
+        m_operatorController.b()
+                .and(m_operatorController.rightBumper())
+                .and(m_elevator.elevatorIsAtAmp())
+                .whileTrue(m_elevator.pidCommand().alongWith(m_pivot.pidCommand()))
+                .onTrue(m_pivot.movePivotToAmpScoringPosition());
+
+        // Assuming that both the PivotAngle and the Elevator Height are right,
+        // score into the AMP.
+        m_operatorController.b()
+                .and(m_operatorController.rightTrigger())
+                .and(m_elevator.elevatorIsAtAmp())
+                .and(m_pivot.pivotIsNearAmpScoringAngle())
+                .whileTrue(
+                        m_elevator.pidCommand()
+                                .alongWith(m_pivot.pidCommand())
+                                .alongWith(m_ampTrap.runPercentCommand(50)))
+                .onFalse(m_ampTrap.stopCommand());
+
+        // @TODO add controls for Trap, should look similar to the AMP scoring controls
+
+        // m_pivot.movePivotOutOfTheElevatorsWay()
+        // .until(m_pivot.pivotIsBelowElevatorMax())
+        // .andThen(m_elevator.setSetpointCommand(ElevatorConstants.kAmpScoreHeightInches))
+        // .until(m_elevator.elevatorIsUp())
+        // .andThen(m_pivot.movePivotToAmpScoringPosition())
 
         // .whileTrue(m_pivot.pidCommand())
         // .onTrue(m_pivot.setSetpointCommand(PivotLocation.INITIAL.angle).andThen(Commands.none()));

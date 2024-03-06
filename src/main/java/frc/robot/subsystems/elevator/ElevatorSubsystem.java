@@ -113,15 +113,31 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public Trigger elevatorIsDown() {
-        return new Trigger(() -> this.inputs.positionInches <= 1.0);
+        return new Trigger(() -> MathUtil.isNear(
+                ElevatorConstants.kMinHeightInches,
+                this.inputs.positionInches,
+                1.0));
     }
 
-    public Trigger elevatorIsMoving() {
-        return new Trigger(() -> this.inputs.velocityInchesPerSecond >= 1.0);
+    public Trigger elevatorIsAtAmp() {
+        return new Trigger(() -> MathUtil.isNear(
+                ElevatorConstants.kAmpScoreHeightInches,
+                this.inputs.positionInches,
+                1.0));
+    }
+
+    public Trigger elevatorIsAtTrap() {
+        return new Trigger(() -> MathUtil.isNear(
+                ElevatorConstants.kTrapScoreHeightInches,
+                this.inputs.positionInches,
+                1.0));
     }
 
     public Trigger elevatorIsUp() {
-        return new Trigger(() -> this.inputs.positionInches >= ElevatorConstants.kPivotClearanceHeightInches);
+        return new Trigger(() -> MathUtil.isNear(
+                ElevatorConstants.kPivotClearanceHeightInches,
+                this.inputs.positionInches,
+                1.0));
     }
 
     public void runPercentOutput(double percentDecimal) {

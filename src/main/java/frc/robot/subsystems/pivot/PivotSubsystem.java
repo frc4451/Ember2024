@@ -140,6 +140,13 @@ public class PivotSubsystem extends SubsystemBase {
         }, this);
     }
 
+    public Command movePivotToAmpScoringPosition() {
+        return new RunCommand(() -> {
+            setSetpoint(PivotLocation.kAmpScoringPosition.angle);
+            pid();
+        }, this);
+    }
+
     public Command runPercentCommand(DoubleSupplier percentDecimal) {
         return new RunCommand(() -> {
             double output = GarageUtils.percentWithSoftStops(
@@ -169,5 +176,26 @@ public class PivotSubsystem extends SubsystemBase {
      */
     public Trigger pivotIsBelowElevatorMax() {
         return new Trigger(() -> this.getAngle().getDegrees() <= PivotLocation.kElevatorDownHardMax.angle.getDegrees());
+    }
+
+    public Trigger pivotIsNearAmpScoringAngle() {
+        return new Trigger(() -> MathUtil.isNear(
+                PivotLocation.kAmpScoringPosition.angle.getDegrees(),
+                this.getAngle().getDegrees(),
+                1.0));
+    }
+
+    public Trigger pivotIsNearTrapScoringAngle() {
+        return new Trigger(() -> MathUtil.isNear(
+                PivotLocation.kTrapScoringPosition.angle.getDegrees(),
+                this.getAngle().getDegrees(),
+                1.0));
+    }
+
+    public Trigger pivotIsNearBottom() {
+        return new Trigger(() -> MathUtil.isNear(
+                PivotLocation.INITIAL.angle.getDegrees(),
+                this.getAngle().getDegrees(),
+                1.0));
     }
 }
