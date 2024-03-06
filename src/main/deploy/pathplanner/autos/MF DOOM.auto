@@ -10,70 +10,154 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "Intake"
-                }
-              },
-              {
                 "type": "sequential",
                 "data": {
                   "commands": [
                     {
-                      "type": "path",
+                      "type": "deadline",
                       "data": {
-                        "pathName": "AmpsideStart1"
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "ShootNote1"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "InterpolateSetpoint"
+                            }
+                          }
+                        ]
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Shoot"
+                        "name": "FireOne"
                       }
                     },
                     {
-                      "type": "path",
+                      "type": "deadline",
                       "data": {
-                        "pathName": "AmpsideStart2"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Shoot"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "A1toB1"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "B1to15FT"
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "GetNote2"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "RunIntakeReal"
+                            }
+                          }
+                        ]
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Shoot"
+                        "name": "FireOne"
                       }
                     },
                     {
-                      "type": "path",
+                      "type": "deadline",
                       "data": {
-                        "pathName": "15FTtoB2"
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "A1toB1"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "RunIntakeReal"
+                            }
+                          }
+                        ]
                       }
                     },
                     {
-                      "type": "path",
+                      "type": "deadline",
                       "data": {
-                        "pathName": "B2to15FT"
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "B1to15FT"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "InterpolateSetpoint"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "FireOne"
+                      }
+                    },
+                    {
+                      "type": "deadline",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "15FTtoB2"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "RunIntakeReal"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "deadline",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "B2to15FT"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "InterpolateSetpoint"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "FireOne"
                       }
                     }
                   ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PivotPID"
                 }
               }
             ]

@@ -119,8 +119,8 @@ public class PivotSubsystem extends SubsystemBase {
 
     public double getPivotUpperLimit() {
         return BobotState.isElevatorUp()
-                ? PivotLocation.kElevatorUpSoftMax.angle.getDegrees()
-                : PivotLocation.kSoftMax.angle.getDegrees();
+                ? PivotLocation.kElevatorDownSoftMax.angle.getDegrees()
+                : PivotLocation.kElevatorUpSoftMax.angle.getDegrees();
     }
 
     /**
@@ -135,7 +135,7 @@ public class PivotSubsystem extends SubsystemBase {
                     Rotation2d.fromDegrees(MathUtil.clamp(
                             this.angle.getDegrees(),
                             PivotLocation.INITIAL.angle.getDegrees(),
-                            PivotLocation.kElevatorUpSoftMax.angle.getDegrees())));
+                            PivotLocation.kElevatorDownSoftMax.angle.getDegrees())));
             pid();
         }, this);
     }
@@ -158,10 +158,16 @@ public class PivotSubsystem extends SubsystemBase {
         }, this);
     }
 
+    public Command controlSetpointToSpeakerCommand() {
+        return new RunCommand(() -> {
+            setSetpoint(Rotation2d.fromDegrees(BobotState.getShootingCalculation().angleDegrees()));
+        });
+    }
+
     /**
      * The Pivot cannot exceed 42degrees when the elevator is down.
      */
     public Trigger pivotIsBelowElevatorMax() {
-        return new Trigger(() -> this.getAngle().getDegrees() <= PivotLocation.kElevatorUpHardMax.angle.getDegrees());
+        return new Trigger(() -> this.getAngle().getDegrees() <= PivotLocation.kElevatorDownHardMax.angle.getDegrees());
     }
 }

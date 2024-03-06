@@ -162,7 +162,16 @@ public class RobotContainer {
 
     private void configureOperatorBindings() {
         m_operatorController.leftTrigger()
-                .whileTrue(m_shooter.shootAtSpeakerCommand());
+                .whileTrue(new ParallelCommandGroup(
+                        m_pivot.pivotToSpeakerCommand(),
+                        m_shooter.shootAtSpeakerCommand()))
+                .onFalse(m_shooter.stopCommand());
+
+        m_operatorController.rightTrigger()
+                .whileTrue(new ParallelCommandGroup(
+                        m_pivot.pivotToSpeakerCommand(),
+                        m_shooter.fireAtSpeakerCommand(ShooterConstants.kFeederShootVelocity)))
+                .onFalse(m_shooter.stopCommand());
 
         // m_operatorController.leftY()
         // .whileTrue(m_climber.runClimberControlCommand(() ->
@@ -182,7 +191,7 @@ public class RobotContainer {
                 .whileTrue(m_pivot.pidCommand())
                 .onTrue(
                         m_shooter.setVelocityShooterCommand(85.0, 75.0)
-                                .alongWith(m_pivot.setSetpointCommand(Rotation2d.fromDegrees(27.875))))
+                                .alongWith(m_pivot.setSetpointCommand(Rotation2d.fromDegrees(34.0))))
                 .onFalse(m_shooter.stopCommand());
         // up against the subwoofer
         // m_operatorController.povDown()
@@ -202,13 +211,6 @@ public class RobotContainer {
                 .whileTrue(m_pivot.pidCommand())
                 .onTrue(m_shooter.setVelocityShooterCommand(85.0, 75.0)
                         .alongWith(m_pivot.setSetpointCommand(Rotation2d.fromDegrees(31.5))))
-                .onFalse(m_shooter.stopCommand());
-
-        // Auto-Aiming while moving
-        m_operatorController.a()
-                .whileTrue(new ParallelCommandGroup(
-                        m_pivot.pivotToSpeakerCommand(),
-                        m_shooter.shootAtSpeakerCommand()))
                 .onFalse(m_shooter.stopCommand());
 
         // Fire the shooter, works with presets as well
@@ -253,10 +255,10 @@ public class RobotContainer {
      * Register the commands with PathPlanner
      */
     private void configureNamedCommands() {
-        NamedCommands.registerCommand("RunIntake",
+        NamedCommands.registerCommand("RunIntakeReal",
                 new SequentialCommandGroup(
                         new ParallelDeadlineGroup(
-                                // m_shooter.setVelocityFeederBeambreakCommand(ShooterConstants.kFeederIntakeVelocity),
+                                m_shooter.setVelocityFeederBeambreakCommand(ShooterConstants.kFeederIntakeVelocity),
                                 m_intake.setVelocityCommand(IntakeConstants.kIntakeVelocity)),
                         m_intake.stopCommand()));
 
@@ -265,6 +267,12 @@ public class RobotContainer {
                 "Interpolate",
                 new ParallelCommandGroup(
                         m_pivot.pivotToSpeakerCommand(),
+                        m_shooter.shootAtSpeakerCommand()));
+
+        NamedCommands.registerCommand(
+                "InterpolateSetpoint",
+                new ParallelCommandGroup(
+                        m_pivot.controlSetpointToSpeakerCommand(),
                         m_shooter.shootAtSpeakerCommand()));
 
         NamedCommands.registerCommand(
@@ -277,7 +285,11 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("InterpolatePivot", m_pivot.pivotToSpeakerCommand());
 
+        NamedCommands.registerCommand("InterpolatePivotSetpoint", m_pivot.controlSetpointToSpeakerCommand());
+
         NamedCommands.registerCommand("RampShooter", m_shooter.shootAtSpeakerCommand());
+
+        NamedCommands.registerCommand("PivotPID", m_pivot.pidCommand());
 
         NamedCommands.registerCommand(
                 "Shoot",
@@ -293,6 +305,16 @@ public class RobotContainer {
                         m_pivot.pivotToSpeakerCommand(),
                         m_intake.setVelocityCommand(IntakeConstants.kIntakeVelocity),
                         m_shooter.fireAtSpeakerCommand(ShooterConstants.kFeederShootVelocity)));
+
+        NamedCommands.registerCommand(
+                "FireOne",
+                new SequentialCommandGroup(
+                        new ParallelDeadlineGroup(
+                                new WaitCommand(1),
+                                m_pivot.controlSetpointToSpeakerCommand(),
+                                m_intake.setVelocityCommand(IntakeConstants.kIntakeVelocity),
+                                m_shooter.fireAtSpeakerCommand(ShooterConstants.kFeederShootVelocity)),
+                        m_shooter.stopFeederCommand()));
     }
 
     /**
