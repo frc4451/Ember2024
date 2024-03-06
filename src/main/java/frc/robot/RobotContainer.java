@@ -246,10 +246,8 @@ public class RobotContainer {
         // Move the Pivot out of the elevators way, then move the elevator to AMP score
         // mode, then move pivot to feed the AMP.
         m_operatorController.b()
-                .whileTrue(m_elevator.pidCommand().alongWith(m_pivot.pidCommand()))
-                .onTrue(m_pivot.movePivotOutOfTheElevatorsWay()
-                        .until(m_pivot.pivotIsBelowElevatorMax())
-                        .andThen(m_elevator.setSetpointCommand(ElevatorConstants.kAmpScoreHeightInches)));
+                .and(m_elevator.elevatorIsDown())
+                .onTrue(m_elevator.setSetpointCommand(ElevatorConstants.kAmpScoreHeightInches));
 
         // Assuming that the Operator set the setpoint, we move the pivot to fit
         // into the Amp/Trap mechanism.
@@ -268,8 +266,9 @@ public class RobotContainer {
                 .whileTrue(
                         m_elevator.pidCommand()
                                 .alongWith(m_pivot.pidCommand())
-                                .alongWith(m_ampTrap.runPercentCommand(50)))
-                .onFalse(m_ampTrap.stopCommand());
+                                .alongWith(m_shooter.shootIntoAmpCommand())
+                                .alongWith(m_ampTrap.runVelocityCommand(25)))
+                .onFalse(m_shooter.stopCommand().alongWith(m_ampTrap.stopCommand()));
 
         // @TODO add controls for Trap, should look similar to the AMP scoring controls
 
