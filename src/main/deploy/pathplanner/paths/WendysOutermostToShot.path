@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.28,
+        "y": 0.6900000000000001
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.054306437501762,
+        "y": 0.9607927638077493
+      },
+      "isLocked": false,
+      "linkedName": "WendysOutermostNote"
+    },
+    {
+      "anchor": {
+        "x": 2.85,
+        "y": 3.0999999999999996
+      },
+      "prevControl": {
+        "x": 3.780797561595124,
+        "y": 2.53264837863009
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "WendysShot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -46.5,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Wendys",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

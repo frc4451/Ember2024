@@ -3,9 +3,10 @@
   "robotLength": 0.89,
   "holonomicMode": true,
   "pathFolders": [
-    "Kates Paths",
-    "New Folder",
     "Ember Tuning",
+    "Kates Paths",
+    "Wendys",
+    "New New Folder",
     "Note2Location",
     "Note2Note",
     "PathSegments",
