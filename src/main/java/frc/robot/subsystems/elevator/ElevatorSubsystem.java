@@ -16,17 +16,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.bobot_state.BobotState;
-import frc.robot.reusable_io.beambreak.BeambreakDigitalInput;
-import frc.robot.reusable_io.beambreak.BeambreakIO;
-import frc.robot.reusable_io.beambreak.BeambreakIOInputsAutoLogged;
 import frc.utils.GarageUtils;
 
 public class ElevatorSubsystem extends SubsystemBase {
     private final ElevatorIO io;
-    private final BeambreakIO beambreak;
 
     private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
-    private final BeambreakIOInputsAutoLogged beambreakInputs = new BeambreakIOInputsAutoLogged();
 
     private final PIDController pidController = new PIDController(
             ElevatorConstants.kP,
@@ -42,17 +37,13 @@ public class ElevatorSubsystem extends SubsystemBase {
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
                 io = new ElevatorIOTalonFX(ElevatorConstants.kElevatorCanID, false);
-                beambreak = new BeambreakDigitalInput(ElevatorConstants.kBeambreakChannel);
                 break;
             case SIM:
                 io = new ElevatorIOSim();
-                beambreak = new BeambreakDigitalInput(ElevatorConstants.kBeambreakChannel);
                 break;
             case REPLAY:
             default:
                 io = new ElevatorIO() {
-                };
-                beambreak = new BeambreakIO() {
                 };
                 break;
         }
@@ -64,10 +55,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         this.io.updateInputs(this.inputs);
-        this.beambreak.updateInputs(this.beambreakInputs);
 
         Logger.processInputs("Elevator", this.inputs);
-        Logger.processInputs("Elevator/BeamBreak", this.beambreakInputs);
 
         if (DriverStation.isDisabled()) {
             this.setSetpoint(0.0);

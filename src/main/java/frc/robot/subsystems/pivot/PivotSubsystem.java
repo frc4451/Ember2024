@@ -114,7 +114,7 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public void setVoltage(double voltage) {
-        this.io.setVoltage(MathUtil.clamp(voltage, -12.0, 12.0));
+        this.io.setVoltage(MathUtil.clamp(voltage, -6.0, 6.0));
     }
 
     public double getPivotUpperLimit() {
@@ -143,6 +143,13 @@ public class PivotSubsystem extends SubsystemBase {
     public Command movePivotToAmpScoringPosition() {
         return new RunCommand(() -> {
             setSetpoint(PivotLocation.kAmpScoringPosition.angle);
+            pid();
+        }, this);
+    }
+
+    public Command movePivotToTrapScoringPosition() {
+        return new RunCommand(() -> {
+            setSetpoint(PivotLocation.kTrapScoringPosition.angle);
             pid();
         }, this);
     }

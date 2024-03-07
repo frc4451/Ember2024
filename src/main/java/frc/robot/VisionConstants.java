@@ -36,6 +36,31 @@ public final class VisionConstants {
     //
     // NOTE this should be updated with real values from measurements on the robot
     public static final List<VisionSource> APRIL_TAG_SOURCES = List.of(
+            // FL
+            new VisionSource(
+                    "ElevatorRight",
+                    new Transform3d(
+                            new Translation3d(
+                                    Units.inchesToMeters(13.14), // forward+
+                                    Units.inchesToMeters(10.35), // left+
+                                    Units.inchesToMeters(10.50)), // up+
+                            new Rotation3d(
+                                    0,
+                                    Units.degreesToRadians(-28),
+                                    Units.degreesToRadians(-30)))),
+            // FR
+            new VisionSource(
+                    "ElevatorLeft",
+                    new Transform3d(
+                            new Translation3d(
+                                    Units.inchesToMeters(13.14), // forward+
+                                    Units.inchesToMeters(-10.35), // left+
+                                    Units.inchesToMeters(10.50)), // up+
+                            new Rotation3d(
+                                    0,
+                                    Units.degreesToRadians(-28),
+                                    Units.degreesToRadians(30)))),
+            // RL
             new VisionSource(
                     "Arducam_OV9281_USB_Camera",
                     new Transform3d(
@@ -47,6 +72,7 @@ public final class VisionConstants {
                                     0,
                                     Units.degreesToRadians(-28),
                                     Units.degreesToRadians(180 + 30)))),
+            // RR
             new VisionSource(
                     "RG_Camera_2",
                     new Transform3d(
@@ -63,10 +89,10 @@ public final class VisionConstants {
             "Arducam_OV9782_USB_Camera",
             new Transform3d(
                     new Translation3d(
-                            Units.inchesToMeters(0), // right+
-                            Units.inchesToMeters(-13.205), // forward+
-                            Units.inchesToMeters(9.412)), // up+
-                    new Rotation3d(0, Units.degreesToRadians(10), 0)));
+                            Units.inchesToMeters(-13.59), // forward+
+                            Units.inchesToMeters(0), // left+
+                            Units.inchesToMeters(20.51)), // up+
+                    new Rotation3d(0, Units.degreesToRadians(25), 0)));
 
     // Review the Field layout for positions
     // https://firstfrc.blob.core.windows.net/frc2024/FieldAssets/2024LayoutMarkingDiagram.pdf
