@@ -3,9 +3,11 @@ package frc.robot.subsystems.amptrap;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.Constants.AmpTrapConstants;
@@ -21,13 +23,21 @@ public class AmpTrapIOTalonFX implements AmpTrapIO {
 
     private final VelocityVoltage velocity = new VelocityVoltage(0);
 
-    public AmpTrapIOTalonFX() {
+    public AmpTrapIOTalonFX(boolean isInverted) {
         this.roller.getConfigurator().apply(
                 new TalonFXConfiguration()
                         .withMotorOutput(new MotorOutputConfigs()
-                                .withNeutralMode(NeutralModeValue.Coast))
+                                .withNeutralMode(NeutralModeValue.Coast).withInverted(
+                                        isInverted
+                                                ? InvertedValue.Clockwise_Positive
+                                                : InvertedValue.CounterClockwise_Positive))
                         .withClosedLoopRamps(new ClosedLoopRampsConfigs()
-                                .withDutyCycleClosedLoopRampPeriod(1.0)));
+                                .withDutyCycleClosedLoopRampPeriod(1.0))
+                        .withSlot0(new Slot0Configs()
+                                .withKV(0.12)
+                                .withKP(0.1)
+                                .withKI(0)
+                                .withKD(0)));
 
         velocity.Slot = 0;
 
