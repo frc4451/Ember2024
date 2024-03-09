@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.6194152343860253,
-        "y": 3.363531171506789
+        "x": 1.4713577240349442,
+        "y": 3.2770094895267627
       },
       "isLocked": false,
       "linkedName": "WaltonPreload"
@@ -20,8 +20,8 @@
         "y": 4.06
       },
       "prevControl": {
-        "x": 2.54,
-        "y": 4.06
+        "x": 1.851458469410638,
+        "y": 4.313090553534702
       },
       "nextControl": null,
       "isLocked": false,

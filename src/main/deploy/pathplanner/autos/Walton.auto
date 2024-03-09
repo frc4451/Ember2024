@@ -22,8 +22,20 @@
                             "data": {
                               "pathName": "WaltonBackup"
                             }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "InterpolateSetpoint"
+                            }
                           }
                         ]
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "FireOne"
                       }
                     },
                     {
