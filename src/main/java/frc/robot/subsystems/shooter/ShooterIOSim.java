@@ -72,7 +72,7 @@ public class ShooterIOSim implements ShooterIO {
     public void setVelocityShooter(
             double velocityRotPerSecondLeft,
             double velocityRotPerSecondRight) {
-        closedLoopShooter = false;
+        closedLoopShooter = true;
         this.velocityRotPerSecondLeft = velocityRotPerSecondLeft;
         this.velocityRotPerSecondRight = velocityRotPerSecondRight;
     }
