@@ -42,7 +42,7 @@ public class AmpTrapIOTalonFX implements AmpTrapIO {
         velocity.Slot = 0;
 
         StatusSignal.setUpdateFrequencyForAll(
-                PhoenixConstants.defaultStatusSignalFrequencyHz,
+                PhoenixConstants.kStatusSignalFrequencyHz,
                 appliedVoltage,
                 temperatureCelsius,
                 currentAmperage,

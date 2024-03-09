@@ -67,7 +67,7 @@ public class ShooterIOTalonFX implements ShooterIO {
         velocity.Slot = 0;
 
         StatusSignal.setUpdateFrequencyForAll(
-                PhoenixConstants.defaultStatusSignalFrequencyHz,
+                PhoenixConstants.kStatusSignalFrequencyHz,
                 leftVoltage,
                 rightVoltage,
                 feederVoltage,

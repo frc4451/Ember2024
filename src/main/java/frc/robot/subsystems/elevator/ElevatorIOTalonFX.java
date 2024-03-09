@@ -44,7 +44,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         velocityVoltage.Slot = 0;
 
         StatusSignal.setUpdateFrequencyForAll(
-                PhoenixConstants.defaultStatusSignalFrequencyHz,
+                PhoenixConstants.kStatusSignalFrequencyHz,
                 appliedVoltage,
                 velocityRotPerSec,
                 temperatureCelsius,

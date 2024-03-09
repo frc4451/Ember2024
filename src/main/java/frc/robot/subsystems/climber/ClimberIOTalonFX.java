@@ -44,7 +44,7 @@ public class ClimberIOTalonFX implements ClimberIO {
         velocityVoltage.Slot = 0;
 
         StatusSignal.setUpdateFrequencyForAll(
-                PhoenixConstants.defaultStatusSignalFrequencyHz,
+                PhoenixConstants.kStatusSignalFrequencyHz,
                 appliedVoltage,
                 currentAmperage,
                 temperatureCelsius,
