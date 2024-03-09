@@ -3,38 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4695904947365457,
-        "y": 3.3350266700533404
+        "x": 1.3721671887788225,
+        "y": 4.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.6194152343860253,
-        "y": 3.363531171506789
+        "x": 1.9707617193012168,
+        "y": 4.503711229644682
       },
       "isLocked": false,
-      "linkedName": "WaltonPreload"
+      "linkedName": "WaltonStart"
     },
     {
       "anchor": {
-        "x": 2.6,
-        "y": 4.06
+        "x": 2.4695904947365457,
+        "y": 3.3350266700533404
       },
       "prevControl": {
-        "x": 2.54,
-        "y": 4.06
+        "x": 2.190549801682125,
+        "y": 3.509390647078586
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "WaltonNote"
+      "linkedName": "WaltonPreload"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.5,
-      "rotationDegrees": 0.0,
-      "rotateFast": true
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -45,13 +39,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0,
+    "rotation": -32.0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "Walton",
   "previewStartingState": {
-    "rotation": -32.0,
+    "rotation": 0,
     "velocity": 0
   },
   "useDefaultConstraints": true
