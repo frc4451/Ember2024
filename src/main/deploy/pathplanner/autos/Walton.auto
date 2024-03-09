@@ -114,7 +114,7 @@
                           {
                             "type": "named",
                             "data": {
-                              "name": "RunIntakeReal"
+                              "name": "InterpolateSetpoint"
                             }
                           }
                         ]
@@ -139,7 +139,7 @@
                           {
                             "type": "named",
                             "data": {
-                              "name": "InterpolateSetpoint"
+                              "name": "RunIntakeReal"
                             }
                           }
                         ]
@@ -158,7 +158,7 @@
                           {
                             "type": "named",
                             "data": {
-                              "name": "RunIntakeReal"
+                              "name": "InterpolateSetpoint"
                             }
                           }
                         ]

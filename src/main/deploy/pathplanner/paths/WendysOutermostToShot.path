@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 8.28,
-        "y": 0.6900000000000001
+        "y": 0.76
       },
       "prevControl": null,
       "nextControl": {
         "x": 7.054306437501762,
-        "y": 0.9607927638077493
+        "y": 1.0307927638077492
       },
       "isLocked": false,
       "linkedName": "WendysOutermostNote"

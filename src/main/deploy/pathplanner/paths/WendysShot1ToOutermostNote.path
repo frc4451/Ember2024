@@ -17,18 +17,24 @@
     {
       "anchor": {
         "x": 8.28,
-        "y": 0.7
+        "y": 0.76
       },
       "prevControl": {
         "x": 7.279999999999999,
-        "y": 0.7
+        "y": 0.76
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "WendysOutermostNote"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.75,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {

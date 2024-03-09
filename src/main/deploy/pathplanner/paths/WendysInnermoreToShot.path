@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.198995286879464,
-        "y": 2.5
+        "x": 8.27,
+        "y": 2.43
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.030310727288123,
-        "y": 1.6876217085767502
+        "x": 7.030054186775039,
+        "y": 0.9561620523241048
       },
       "isLocked": false,
       "linkedName": "WendysInnermore"
