@@ -210,7 +210,7 @@ public final class Constants {
         public static final double kPivotI = 0.0;
         public static final double kPivotD = 0.0;
 
-        public static final double kShootSpeed = 50.0;
+        public static final double kShootSpeed = 75.0;
 
         public static final int kBeambreakChannel = 2;
     }
@@ -246,7 +246,7 @@ public final class Constants {
 
     public static final class ElevatorConstants {
         public static final double kMinHeightInches = 0.0;
-        public static final double kMaxHeightInches = 22.5;
+        public static final double kMaxHeightInches = 23.5;
 
         public static final double kAmpScoreHeightInches = 15.0;
         public static final double kTrapScoreHeightInches = kMaxHeightInches;
@@ -264,6 +264,7 @@ public final class Constants {
     }
 
     public static final class PhoenixConstants {
-        public static final int defaultStatusSignalFrequencyHz = 50;
+        public static final int kDefaultStatusSignalFrequencyHz = 50;
+        public static final int kStatusSignalFrequencyHz = 50;
     }
 }

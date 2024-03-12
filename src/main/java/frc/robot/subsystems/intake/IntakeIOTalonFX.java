@@ -37,7 +37,7 @@ public class IntakeIOTalonFX implements IntakeIO {
                                 .withKD(0)));
         velocityVoltage.Slot = 0;
 
-        StatusSignal.setUpdateFrequencyForAll(PhoenixConstants.defaultStatusSignalFrequencyHz, voltage, velocity);
+        StatusSignal.setUpdateFrequencyForAll(PhoenixConstants.kStatusSignalFrequencyHz, voltage, velocity);
         talon.optimizeBusUtilization();
     }
 

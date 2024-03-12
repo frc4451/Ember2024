@@ -3,35 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4583935305750524,
-        "y": 5.551483304597447
+        "x": 2.4695904947365457,
+        "y": 3.3350266700533404
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5311346007307418,
-        "y": 5.870830972431175
+        "x": 1.4713577240349442,
+        "y": 3.2770094895267627
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "WaltonPreload"
     },
     {
       "anchor": {
-        "x": 2.4583935305750524,
-        "y": 4.361188722377445
+        "x": 2.6,
+        "y": 4.06
       },
       "prevControl": {
-        "x": 1.7172764927854214,
-        "y": 4.475206728191234
+        "x": 1.851458469410638,
+        "y": 4.313090553534702
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "WaltonNote"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1,
-      "rotationDegrees": -25.0,
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0.0,
       "rotateFast": true
     }
   ],
@@ -45,13 +45,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -30.0,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Ember Tuning",
+  "folder": "Walton",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": -32.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

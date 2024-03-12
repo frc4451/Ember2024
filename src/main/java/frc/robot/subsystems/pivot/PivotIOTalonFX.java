@@ -42,7 +42,7 @@ public class PivotIOTalonFX implements PivotIO {
         this.pivotFollower.setControl(new Follower(pivotLeader.getDeviceID(), false));
 
         StatusSignal.setUpdateFrequencyForAll(
-                PhoenixConstants.defaultStatusSignalFrequencyHz,
+                PhoenixConstants.kStatusSignalFrequencyHz,
                 appliedVoltageLeader,
                 temperatureCelsiusLeader,
                 currentAmperageLeader,

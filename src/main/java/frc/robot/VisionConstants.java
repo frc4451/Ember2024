@@ -143,11 +143,13 @@ public final class VisionConstants {
     public static final Set<Integer> ALL_TAGS = Stream.concat(RED_TAG_FIDS.stream(), BLUE_TAG_FIDS.stream())
             .collect(Collectors.toSet());
 
+    public static final Set<Integer> ANDERSON_TAGS = Set.of(1, 2, 5, 6, 9, 10, 11, 12, 13, 14, 15, 16);
+
     // Shorthand for generating all possible combinations of April Tags
     public static final List<Set<Integer>> POSSIBLE_FRAME_FID_COMBOS = List.of(RED_TAG_FIDS, BLUE_TAG_FIDS);
 
     // This is a guess, feel free to update.
-    public static final int MAX_FRAME_FIDS = 8;
+    public static final int MAX_FRAME_FIDS = 16;
     public static final double POSE_AMBIGUITY_CUTOFF = .05;
 
     /***********************************************************************
