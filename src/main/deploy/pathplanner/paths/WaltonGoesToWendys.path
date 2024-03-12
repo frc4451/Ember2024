@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.312815736742585,
-        "y": 4.019134704936077
+        "x": 1.4006716902322698,
+        "y": 4.0333869556628
       },
       "isLocked": false,
       "linkedName": "WaltonNote"
@@ -20,8 +20,8 @@
         "y": 3.0999999999999996
       },
       "prevControl": {
-        "x": 2.184545480202072,
-        "y": 3.2637654164197216
+        "x": 2.141788728021901,
+        "y": 2.864702396071458
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,8 +32,8 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.5,
-    "maxAcceleration": 3.5,
+    "maxVelocity": 3.125,
+    "maxAcceleration": 3.13,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -48,5 +48,5 @@
     "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
