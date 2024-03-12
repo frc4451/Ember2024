@@ -20,7 +20,7 @@ import frc.utils.GarageUtils;
 public class PositionWithAmp extends Command {
     private static double yawMeasurementOffset = Math.PI; // To aim from the back
     private final PIDController xController = new PIDController(5, 0, 0);
-    private final PIDController thetaController = new PIDController(1, 0, 0.1);
+    private final PIDController thetaController = new PIDController(4, 0, 0.1);
     private final String logRoot;
 
     private final DriveSubsystem drive;

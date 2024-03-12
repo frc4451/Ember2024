@@ -12,7 +12,7 @@ import frc.robot.Constants.AmpTrapConstants;
 import frc.robot.Constants.PhoenixConstants;
 
 public class AmpTrapIOTalonFX implements AmpTrapIO {
-    private final TalonFX roller = new TalonFX(AmpTrapConstants.kPivotCanId);
+    private final TalonFX roller = new TalonFX(AmpTrapConstants.kCanId);
 
     private final StatusSignal<Double> appliedVoltage = roller.getMotorVoltage();
     private final StatusSignal<Double> temperatureCelsius = roller.getDeviceTemp();
@@ -25,7 +25,7 @@ public class AmpTrapIOTalonFX implements AmpTrapIO {
         this.roller.getConfigurator().apply(
                 new TalonFXConfiguration()
                         .withMotorOutput(new MotorOutputConfigs()
-                                .withNeutralMode(NeutralModeValue.Brake))
+                                .withNeutralMode(NeutralModeValue.Coast))
                         .withClosedLoopRamps(new ClosedLoopRampsConfigs()
                                 .withDutyCycleClosedLoopRampPeriod(1.0)));
 
@@ -57,11 +57,6 @@ public class AmpTrapIOTalonFX implements AmpTrapIO {
     @Override
     public void setVoltage(double voltage) {
         this.roller.setVoltage(voltage);
-    }
-
-    @Override
-    public void stop() {
-        this.setVoltage(0.0);
     }
 
     @Override

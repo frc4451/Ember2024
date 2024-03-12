@@ -114,13 +114,13 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public void setVoltage(double voltage) {
-        this.io.setVoltage(MathUtil.clamp(voltage, -12.0, 12.0));
+        this.io.setVoltage(MathUtil.clamp(voltage, -6.0, 6.0));
     }
 
     public double getPivotUpperLimit() {
         return BobotState.isElevatorUp()
-                ? PivotLocation.kElevatorUpSoftMax.angle.getDegrees()
-                : PivotLocation.kSoftMax.angle.getDegrees();
+                ? PivotLocation.kElevatorDownSoftMax.angle.getDegrees()
+                : PivotLocation.kElevatorUpSoftMax.angle.getDegrees();
     }
 
     /**
@@ -135,7 +135,21 @@ public class PivotSubsystem extends SubsystemBase {
                     Rotation2d.fromDegrees(MathUtil.clamp(
                             this.angle.getDegrees(),
                             PivotLocation.INITIAL.angle.getDegrees(),
-                            PivotLocation.kElevatorUpSoftMax.angle.getDegrees())));
+                            PivotLocation.kElevatorDownSoftMax.angle.getDegrees())));
+            pid();
+        }, this);
+    }
+
+    public Command movePivotToAmpScoringPosition() {
+        return new RunCommand(() -> {
+            setSetpoint(PivotLocation.kAmpScoringPosition.angle);
+            pid();
+        }, this);
+    }
+
+    public Command movePivotToTrapScoringPosition() {
+        return new RunCommand(() -> {
+            setSetpoint(PivotLocation.kTrapScoringPosition.angle);
             pid();
         }, this);
     }
@@ -158,10 +172,37 @@ public class PivotSubsystem extends SubsystemBase {
         }, this);
     }
 
+    public Command controlSetpointToSpeakerCommand() {
+        return new RunCommand(() -> {
+            setSetpoint(Rotation2d.fromDegrees(BobotState.getShootingCalculation().angleDegrees()));
+        });
+    }
+
     /**
      * The Pivot cannot exceed 42degrees when the elevator is down.
      */
     public Trigger pivotIsBelowElevatorMax() {
-        return new Trigger(() -> this.getAngle().getDegrees() <= PivotLocation.kElevatorUpHardMax.angle.getDegrees());
+        return new Trigger(() -> this.getAngle().getDegrees() <= PivotLocation.kElevatorDownHardMax.angle.getDegrees());
+    }
+
+    public Trigger pivotIsNearAmpScoringAngle() {
+        return new Trigger(() -> MathUtil.isNear(
+                PivotLocation.kAmpScoringPosition.angle.getDegrees(),
+                this.getAngle().getDegrees(),
+                1.0));
+    }
+
+    public Trigger pivotIsNearTrapScoringAngle() {
+        return new Trigger(() -> MathUtil.isNear(
+                PivotLocation.kTrapScoringPosition.angle.getDegrees(),
+                this.getAngle().getDegrees(),
+                1.0));
+    }
+
+    public Trigger pivotIsNearBottom() {
+        return new Trigger(() -> MathUtil.isNear(
+                PivotLocation.INITIAL.angle.getDegrees(),
+                this.getAngle().getDegrees(),
+                1.0));
     }
 }

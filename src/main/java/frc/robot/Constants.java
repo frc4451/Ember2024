@@ -71,7 +71,7 @@ public final class Constants {
     public static final class DriveConstants {
         // Driving Parameters - Note that these are not the maximum capable speeds of
         // the robot, rather the allowed maximum speeds
-        public static final double kMaxSpeedMetersPerSecond = 5.5;
+        public static final double kMaxSpeedMetersPerSecond = 4.8;
         public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
         public static final double kDirectionSlewRate = 1.2; // radians per second
@@ -176,15 +176,7 @@ public final class Constants {
     }
 
     public static final class IntakeConstants {
-        public static final CurrentLimitsConfigs rollerCurrentConfig = new CurrentLimitsConfigs()
-                .withSupplyCurrentLimit(30.0)
-                .withSupplyCurrentThreshold(35.0)
-                .withSupplyTimeThreshold(0.5);
-
         public static final int kBeambreakChannel = 0;
-
-        // public static final double kPivotMinDegrees = 10.0;
-        // public static final double kPivotMaxDegrees = 167.25;
 
         public static final double kPivotReduction = 80.0;
 
@@ -211,14 +203,16 @@ public final class Constants {
 
         public static final double kPivotReduction = 5.0;
 
-        public static final int kPivotCanId = 22;
+        public static final int kCanId = 9;
         public static final double kPivotVelocityRadiansPerSecond = Units.degreesToRadians(15.0);
 
         public static final double kPivotP = 0.3;
         public static final double kPivotI = 0.0;
         public static final double kPivotD = 0.0;
 
-        public static int kBeambreakChannel = 0;
+        public static final double kShootSpeed = 50.0;
+
+        public static final int kBeambreakChannel = 2;
     }
 
     public static final class ShooterConstants {
@@ -251,10 +245,11 @@ public final class Constants {
     }
 
     public static final class ElevatorConstants {
-        public static final int kBeambreakChannel = 2;
-
-        public static final double kMaxHeightInches = 20.0;
         public static final double kMinHeightInches = 0.0;
+        public static final double kMaxHeightInches = 22.5;
+
+        public static final double kAmpScoreHeightInches = 15.0;
+        public static final double kTrapScoreHeightInches = kMaxHeightInches;
 
         public static final double kPivotClearanceHeightInches = 15.0;
 
@@ -263,9 +258,9 @@ public final class Constants {
 
         public static final int kElevatorCanID = 8;
 
-        public static final double kP = 5.0;
+        public static final double kP = 0.8;
         public static final double kI = 0.0;
-        public static final double kD = 1.0;
+        public static final double kD = 0.0;
     }
 
     public static final class PhoenixConstants {

@@ -21,7 +21,6 @@ import frc.robot.subsystems.vision.apriltag.AprilTagAlgorithms;
  * specifies. The ID must be a valid Fiducial ID.
  */
 public class StrafeAndAimToAprilTag extends Command {
-    private static double yawMeasurementOffset = Math.PI; // To aim from the back
     private final PIDController thetaController = new PIDController(5, 0, 0.1);
     private final String logRoot;
 
@@ -31,7 +30,8 @@ public class StrafeAndAimToAprilTag extends Command {
     private final DoubleSupplier ySupplier;
     private final boolean fieldRelative;
 
-    private double yawErrorRad = yawMeasurementOffset;
+    private final double yawMeasurementOffset;
+    private double yawErrorRad;
     private Pose3d targetPose = new Pose3d();
     private boolean hasSeenTag = false;
 
@@ -41,6 +41,16 @@ public class StrafeAndAimToAprilTag extends Command {
             int targetFiducialId,
             DriveSubsystem drive,
             boolean fieldRelative) {
+        this(xSupplier, ySupplier, targetFiducialId, drive, fieldRelative, Math.PI);
+    }
+
+    public StrafeAndAimToAprilTag(
+            DoubleSupplier xSupplier,
+            DoubleSupplier ySupplier,
+            int targetFiducialId,
+            DriveSubsystem drive,
+            boolean fieldRelative,
+            double yawMeasurementOffset) {
         addRequirements(drive);
         setName("StrafeAndAimToAprilTag");
 
@@ -51,6 +61,8 @@ public class StrafeAndAimToAprilTag extends Command {
         this.targetFiducialId = targetFiducialId;
         this.drive = drive;
         this.fieldRelative = fieldRelative;
+        this.yawMeasurementOffset = yawMeasurementOffset;
+        this.yawErrorRad = yawMeasurementOffset;
 
         targetPose = VisionConstants.FIELD_LAYOUT.getTagPose(targetFiducialId).get();
 

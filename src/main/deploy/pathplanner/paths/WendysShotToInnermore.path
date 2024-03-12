@@ -3,32 +3,38 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 5.56
+        "x": 2.85,
+        "y": 3.0999999999999996
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.05,
-        "y": 5.56
+        "x": 3.652527305054611,
+        "y": 1.4779818248525383
       },
       "isLocked": false,
-      "linkedName": "FrontCenter"
+      "linkedName": "WendysShot"
     },
     {
       "anchor": {
-        "x": 2.557296653054846,
-        "y": 5.56
+        "x": 8.198995286879464,
+        "y": 2.5
       },
       "prevControl": {
-        "x": 2.5072966530548464,
-        "y": 5.56
+        "x": 7.115824231648465,
+        "y": 1.673369457850027
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "A2"
+      "linkedName": "WendysInnermore"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 7.07827286367792,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -39,11 +45,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 22.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Note2Location",
+  "folder": "Wendys",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

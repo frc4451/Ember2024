@@ -20,6 +20,8 @@ public class AmpTrapIOSim implements AmpTrapIO {
         appliedVoltage = 12.0
                 * rollerPidController.calculate(rollerSim.getAngularVelocityRPM() / 60.0, velocityRotPerSecond);
 
+        appliedVoltage = MathUtil.clamp(appliedVoltage, -12.0, 12.0);
+
         rollerSim.setInputVoltage(appliedVoltage);
 
         rollerSim.update(0.02); // 20 ms is the standard periodic loop time
