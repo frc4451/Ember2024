@@ -70,8 +70,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public Command shootIntoAmpCommand() {
         return new RunCommand(() -> {
-            setVelocityShooter(25.0, 25.0);
-            setVelocityFeeder(ShooterConstants.kFeederShootVelocity);
+            setVelocity(25.0, 25.0);
         }, this).andThen(stopCommand());
     }
 }

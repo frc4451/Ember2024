@@ -39,7 +39,7 @@ public class FeederIOTalonFX implements FeederIO {
         velocityOut.Slot = 0;
 
         StatusSignal.setUpdateFrequencyForAll(
-                PhoenixConstants.defaultStatusSignalFrequencyHz,
+                PhoenixConstants.kStatusSignalFrequencyHz,
                 voltage,
                 amperage,
                 tempCelsius,
