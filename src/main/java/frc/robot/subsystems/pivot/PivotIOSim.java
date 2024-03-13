@@ -4,7 +4,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.PivotConstants;
 
 // This doesn't work too well in some ways because it measures the angles differently than the real implementation.
 // I also can't figure out how to implement the `setAngle` method for this.
@@ -13,7 +13,7 @@ import frc.robot.Constants.IntakeConstants;
 public class PivotIOSim implements PivotIO {
     private final SingleJointedArmSim armSim = new SingleJointedArmSim(
             DCMotor.getFalcon500(1),
-            IntakeConstants.kPivotReduction,
+            PivotConstants.kPivotReduction,
             0.3, // moment of intertia (I think this is in kg * m^2) (number is wrong)
             0.8, // arm length (m) (number is wrong)
             0.0, // physical min (rad)

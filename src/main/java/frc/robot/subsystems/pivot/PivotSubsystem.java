@@ -7,6 +7,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
@@ -15,8 +16,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants;
 import frc.robot.Constants.AdvantageKitConstants;
-import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.PivotConstants;
 import frc.robot.bobot_state.BobotState;
 import frc.utils.GarageUtils;
 
@@ -28,9 +30,18 @@ public class PivotSubsystem extends SubsystemBase {
     private Rotation2d setpoint = new Rotation2d();
 
     private final PIDController pidController = new PIDController(
-            IntakeConstants.kPivotP,
-            IntakeConstants.kPivotI,
-            IntakeConstants.kPivotD);
+            PivotConstants.kPivotP,
+            PivotConstants.kPivotI,
+            PivotConstants.kPivotD);
+
+    private final TrapezoidProfile trapezoidProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(
+            PivotConstants.kMaxVelocityRadiansPerSecond, PivotConstants.kMaxAccelerationRadiansPerSecondSquared));
+
+    private final TrapezoidProfile.State minState = new TrapezoidProfile.State(
+            PivotLocation.kSoftMin.angle.getRadians(), 0.0);
+    private final TrapezoidProfile.State maxState = new TrapezoidProfile.State(
+            PivotLocation.kElevatorUpSoftMax.angle.getRadians(), 0.0);
+    private TrapezoidProfile.State setpointState = new TrapezoidProfile.State();
 
     // Mechanisms
     private final PivotVisualizer measuredVisualizer = new PivotVisualizer("Measured", Color.kBlack);
@@ -94,6 +105,7 @@ public class PivotSubsystem extends SubsystemBase {
     private void setSetpoint(Rotation2d angle) {
         this.setpoint = angle;
         this.pidController.setSetpoint(setpoint.getDegrees());
+        this.setpointState = new TrapezoidProfile.State(angle.getDegrees(), 0.0);
     }
 
     public Command setSetpointCommand(Rotation2d angle) {
@@ -111,6 +123,29 @@ public class PivotSubsystem extends SubsystemBase {
 
     public Command pidCommand() {
         return new RunCommand(this::pid, this);
+    }
+
+    public Command runTrapezoidPercentCommand(double percentDecimal) {
+        return new RunCommand(
+                () -> io.setPercentOutput(
+                        trapezoidProfile.calculate(
+                                Constants.loopback, Math.signum(percentDecimal) > 0 ? maxState: minState,
+                                new TrapezoidProfile.State(
+                                        setpoint.getDegrees(),
+                                        0.0)).velocity * Math.abs(percentDecimal)),
+                this);
+    }
+
+    public Command runTrapezoidProfileCommand() {
+        return new RunCommand(() -> {
+            io.setPercentOutput(
+                    trapezoidProfile.calculate(
+                            Constants.loopback,
+                            setpointState,
+                            new TrapezoidProfile.State(
+                                    setpoint.getDegrees(),
+                                    0.0)).velocity);
+        }, this);
     }
 
     public void setVoltage(double voltage) {

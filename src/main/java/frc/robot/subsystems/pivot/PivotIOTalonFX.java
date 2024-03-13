@@ -10,14 +10,14 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.PivotConstants;
 import frc.robot.Constants.PhoenixConstants;
 
 public class PivotIOTalonFX implements PivotIO {
-    private static final double kRadiansPerRotation = 2.0 * Math.PI / IntakeConstants.kPivotReduction;
+    private static final double kRadiansPerRotation = 2.0 * Math.PI / PivotConstants.kPivotReduction;
 
-    private final TalonFX pivotLeader = new TalonFX(IntakeConstants.kPivotLeaderCanId);
-    private final TalonFX pivotFollower = new TalonFX(IntakeConstants.kPivotFollowerCanId);
+    private final TalonFX pivotLeader = new TalonFX(PivotConstants.kPivotLeaderCanId);
+    private final TalonFX pivotFollower = new TalonFX(PivotConstants.kPivotFollowerCanId);
 
     private final StatusSignal<Double> appliedVoltageLeader = pivotLeader.getMotorVoltage();
     private final StatusSignal<Double> temperatureCelsiusLeader = pivotLeader.getDeviceTemp();
