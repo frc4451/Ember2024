@@ -116,9 +116,11 @@ public class SwerveModuleSparks implements SwerveModuleIO {
     public void updateInputs(SwerveModuleIOInputs inputs) {
         inputs.drivePositionMeters = m_drivingEncoder.getPosition();
         inputs.driveVelocityMetersPerSec = m_drivingEncoder.getVelocity();
+        inputs.driveVoltage = m_drivingSparkFlex.getBusVoltage();
 
         inputs.turnAbsolutePositionRad = m_turningEncoder.getPosition();
         inputs.turnAngularOffsetPositionRad = m_turningEncoder.getPosition() - m_chassisAngularOffset;
+        inputs.turnVoltage = m_turningSparkMax.getBusVoltage();
         // inputs.turnVelocityRadPerSec = m_turningEncoder.getVelocity();
 
         Rotation2d angle = new Rotation2d(inputs.turnAngularOffsetPositionRad);
