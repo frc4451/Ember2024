@@ -38,7 +38,7 @@ public final class VisionConstants {
     public static final List<VisionSource> APRIL_TAG_SOURCES = List.of(
             // FL
             new VisionSource(
-                    "ElevatorRight",
+                    "FrontLeft",
                     new Transform3d(
                             new Translation3d(
                                     Units.inchesToMeters(13.14), // forward+
@@ -50,7 +50,7 @@ public final class VisionConstants {
                                     Units.degreesToRadians(-30)))),
             // FR
             new VisionSource(
-                    "ElevatorLeft",
+                    "FrontRight",
                     new Transform3d(
                             new Translation3d(
                                     Units.inchesToMeters(13.14), // forward+
@@ -62,7 +62,7 @@ public final class VisionConstants {
                                     Units.degreesToRadians(30)))),
             // RL
             new VisionSource(
-                    "Arducam_OV9281_USB_Camera",
+                    "BackLeft",
                     new Transform3d(
                             new Translation3d(
                                     Units.inchesToMeters(-12.05), // forward+
@@ -74,7 +74,7 @@ public final class VisionConstants {
                                     Units.degreesToRadians(180 + 30)))),
             // RR
             new VisionSource(
-                    "RG_Camera_2",
+                    "BackRight",
                     new Transform3d(
                             new Translation3d(
                                     Units.inchesToMeters(-12.05), // forward+
@@ -86,7 +86,7 @@ public final class VisionConstants {
                                     Units.degreesToRadians(180 - 30)))));
 
     public static final VisionSource OBJECT_DETECTION_SOURCE = new VisionSource(
-            "Arducam_OV9782_USB_Camera",
+            "ObjectDetection",
             new Transform3d(
                     new Translation3d(
                             Units.inchesToMeters(-13.59), // forward+
