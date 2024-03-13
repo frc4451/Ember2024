@@ -14,12 +14,16 @@ public interface SwerveModuleIO {
     public static class SwerveModuleIOInputs {
         public double drivePositionMeters = 0.0;
         public double driveVelocityMetersPerSec = 0.0;
-        public double driveVoltage = 0.0;
+        public double driveAppliedVoltage = 0.0;
+        public double driveCurrentAmps = 0.0;
+        public double driveTemperatureCelsius = 0.0;
 
         public double turnAbsolutePositionRad = 0.0;
         public double turnAngularOffsetPositionRad = 0.0;
-        public double turnVoltage = 0.0;
-        // public double turnVelocityRadPerSec = 0.0;
+        public double turnVelocityRadPerSec = 0.0;
+        public double turnAppliedVoltage = 0.0;
+        public double turnCurrentAmps = 0.0;
+        public double turnTemperatureCelsius = 0.0;
 
         public SwerveModuleState state = new SwerveModuleState();
         public SwerveModulePosition position = new SwerveModulePosition();
