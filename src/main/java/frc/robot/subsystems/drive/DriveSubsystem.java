@@ -5,11 +5,16 @@
 package frc.robot.subsystems.drive;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
+import javax.swing.text.html.Option;
+
 import org.littletonrobotics.junction.Logger;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -17,6 +22,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -27,6 +33,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.bobot_state.BobotState;
 import frc.robot.subsystems.vision.VisionSubsystem.VisionMeasurement;
 import frc.utils.GarageUtils;
+import frc.utils.GeomUtils;
 
 public class DriveSubsystem extends SubsystemBase {
     // Swerve Modules
@@ -67,11 +74,14 @@ public class DriveSubsystem extends SubsystemBase {
             m_visionOnlyPoseEstimator,
             m_wheelOnlyPoseEstimator);
 
-    private final Supplier<VisionMeasurement> m_visionSupplier;
+    private final Supplier<VisionMeasurement> m_visionMeasurementSupplier;
+    private final Supplier<Optional<PhotonTrackedTarget>> m_visionObjectSupplier;
 
     /** Creates a new DriveSubsystem. */
-    public DriveSubsystem(Supplier<VisionMeasurement> visionSupplier) {
-        m_visionSupplier = visionSupplier;
+    public DriveSubsystem(Supplier<VisionMeasurement> visionMeasurementSupplier,
+            Supplier<Optional<PhotonTrackedTarget>> visionObjectSupplier) {
+        m_visionMeasurementSupplier = visionMeasurementSupplier;
+        m_visionObjectSupplier = visionObjectSupplier;
 
         // Configure AutoBuilder for PathPlanner
         AutoBuilder.configureHolonomic(
@@ -87,6 +97,25 @@ public class DriveSubsystem extends SubsystemBase {
                         new ReplanningConfig()),
                 () -> GarageUtils.isRedAlliance(),
                 this);
+
+        PPHolonomicDriveController.setRotationTargetOverride(
+                () -> {
+                    switch (BobotState.getAimingMode()) {
+                        case OBJECT_DETECTION:
+                            Optional<PhotonTrackedTarget> maybeTarget = m_visionObjectSupplier.get();
+                            if (maybeTarget.isEmpty()) {
+                                return Optional.empty();
+                            }
+                            PhotonTrackedTarget target = maybeTarget.get();
+                            Transform2d robotToNote = GeomUtils.getTransformFromNote(target);
+
+                            return Optional.of(robotToNote.getRotation());
+                        case SPEAKER:
+                        default:
+                            return Optional.empty();
+                    }
+
+                });
 
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
@@ -202,7 +231,7 @@ public class DriveSubsystem extends SubsystemBase {
         Pose2d currentPose = getPose();
 
         VisionMeasurement visionMeasurement;
-        while ((visionMeasurement = m_visionSupplier.get()) != null) {
+        while ((visionMeasurement = m_visionMeasurementSupplier.get()) != null) {
             Pose2d visionPose = visionMeasurement.estimation().estimatedPose.toPose2d();
             // Ignore the vision pose's rotation
             Pose2d visionPoseWithoutRotation = new Pose2d(visionPose.getTranslation(), currentPose.getRotation());

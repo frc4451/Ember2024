@@ -1,0 +1,68 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.834979880486077,
+        "y": 6.158418365761861
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.798898816478143,
+        "y": 4.907764300338102
+      },
+      "isLocked": false,
+      "linkedName": "RCT2 End"
+    },
+    {
+      "anchor": {
+        "x": 6.52914990040507,
+        "y": 4.147562809586715
+      },
+      "prevControl": {
+        "x": 7.253611900835838,
+        "y": 3.9664473094790225
+      },
+      "nextControl": {
+        "x": 5.597290008516272,
+        "y": 4.380527782558914
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.028544648638599,
+        "y": 3.001129916276154
+      },
+      "prevControl": {
+        "x": 4.699148731136608,
+        "y": 3.209572260514438
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Rotation Correction Test",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

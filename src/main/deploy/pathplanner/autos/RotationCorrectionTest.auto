@@ -1,0 +1,43 @@
+{
+  "version": 1.0,
+  "startingPose": null,
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "TargetNote"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RCT1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RCT2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "TargetSpeaker"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RCT3"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

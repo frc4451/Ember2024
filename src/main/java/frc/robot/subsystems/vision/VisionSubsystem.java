@@ -134,7 +134,7 @@ public class VisionSubsystem extends VirtualSubsystem {
         updateVisionMeasurements();
 
         // Check for updates to Measurements away from Notes
-        // updateClosestObject();
+        updateClosestObject();
     }
 
     public void simulationPeriodic() {

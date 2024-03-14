@@ -30,8 +30,9 @@ import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.bobot_state.AimingMode;
 import frc.robot.bobot_state.BobotState;
-import frc.robot.commands.PathfindToTarget;
+import frc.robot.commands.AimAtNote;
 import frc.robot.commands.PositionWithAmp;
 import frc.robot.commands.PositionWithSpeaker;
 import frc.robot.commands.PositionWithStageSingleClimb;
@@ -78,7 +79,9 @@ public class RobotContainer {
 
     public final VisionSubsystem m_vision = new VisionSubsystem();
 
-    public final DriveSubsystem m_robotDrive = new DriveSubsystem(m_vision::pollLatestVisionMeasurement);
+    public final DriveSubsystem m_robotDrive = new DriveSubsystem(
+            m_vision::pollLatestVisionMeasurement,
+            m_vision::getClosestObject);
 
     public final IntakeSubsystem m_intake = new IntakeSubsystem();
 
@@ -147,9 +150,17 @@ public class RobotContainer {
                 .and(m_shooter.beambreakIsObstructed().negate())
                 .whileTrue(
                         new ParallelCommandGroup(
+                                // Commands.defer(
+                                // () -> new PathfindToTarget(
+                                // m_vision::getClosestObject,
+                                // m_robotDrive),
+                                // Set.of(m_robotDrive)),
                                 Commands.defer(
-                                        () -> new PathfindToTarget(
+                                        () -> new AimAtNote(
                                                 m_vision::getClosestObject,
+                                                () -> -m_driverController.getLeftY(),
+                                                () -> -m_driverController.getLeftX(),
+                                                () -> -m_driverController.getRightX(),
                                                 m_robotDrive),
                                         Set.of(m_robotDrive)),
                                 m_intake.setVelocityThenStopCommand(IntakeConstants.kIntakeVelocity)
@@ -378,6 +389,18 @@ public class RobotContainer {
                                 m_intake.setVelocityCommand(IntakeConstants.kIntakeVelocity),
                                 m_shooter.fireAtSpeakerCommand(ShooterConstants.kFeederShootVelocity)),
                         m_shooter.stopFeederCommand()));
+
+        NamedCommands.registerCommand(
+                "TargetNote",
+                new InstantCommand(() -> BobotState.updateAimingMode(AimingMode.OBJECT_DETECTION)));
+
+        NamedCommands.registerCommand(
+                "TargetSpeaker",
+                new InstantCommand(() -> BobotState.updateAimingMode(AimingMode.SPEAKER)));
+
+        NamedCommands.registerCommand(
+                "TargetRotation",
+                new InstantCommand(() -> BobotState.updateAimingMode(AimingMode.NONE)));
     }
 
     /**

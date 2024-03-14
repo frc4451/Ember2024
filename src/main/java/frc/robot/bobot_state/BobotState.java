@@ -31,6 +31,8 @@ public class BobotState extends VirtualSubsystem {
 
     private static boolean isElevatorUp = false;
 
+    private static AimingMode aimingMode = AimingMode.NONE;
+
     static {
         shootingInterpolator.addEntries(
                 // // Subwoofer (calculated: 92cm from wall)
@@ -106,6 +108,14 @@ public class BobotState extends VirtualSubsystem {
         return shootingCalculation;
     }
 
+    public static void updateAimingMode(AimingMode newAimingMode) {
+        aimingMode = newAimingMode;
+    }
+
+    public static AimingMode getAimingMode() {
+        return aimingMode;
+    }
+
     @Override
     public void periodic() {
         double distanceFromSpeaker = OffsetTags.SPEAKER_AIM.getDistanceFrom(robotPose);
@@ -130,6 +140,10 @@ public class BobotState extends VirtualSubsystem {
                     .distinct()
                     .sorted()
                     .toArray());
+        }
+
+        {
+            Logger.recordOutput(logRoot + "AimingMode", BobotState.getAimingMode());
         }
     }
 
