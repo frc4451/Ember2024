@@ -8,13 +8,19 @@
         {
           "type": "named",
           "data": {
-            "name": "TargetNote"
+            "name": "TargetRotation"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "RCT1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "TargetNote"
           }
         },
         {
