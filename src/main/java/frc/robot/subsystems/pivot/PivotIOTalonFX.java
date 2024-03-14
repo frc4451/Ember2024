@@ -5,13 +5,15 @@ import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.Constants.PivotConstants;
 import frc.robot.Constants.PhoenixConstants;
+import frc.robot.Constants.PivotConstants;
 
 public class PivotIOTalonFX implements PivotIO {
     private static final double kRadiansPerRotation = 2.0 * Math.PI / PivotConstants.kPivotReduction;
@@ -23,11 +25,17 @@ public class PivotIOTalonFX implements PivotIO {
     private final StatusSignal<Double> temperatureCelsiusLeader = pivotLeader.getDeviceTemp();
     private final StatusSignal<Double> currentAmperageLeader = pivotLeader.getSupplyCurrent();
     private final StatusSignal<Double> positionRotationsLeader = pivotLeader.getPosition();
+    private final StatusSignal<Double> velocityRotPerSecLeader = pivotLeader.getVelocity();
 
     private final StatusSignal<Double> appliedVoltageFollower = pivotFollower.getMotorVoltage();
     private final StatusSignal<Double> temperatureCelsiusFollower = pivotFollower.getDeviceTemp();
     private final StatusSignal<Double> currentAmperageFollower = pivotFollower.getSupplyCurrent();
     private final StatusSignal<Double> positionRotationsFollower = pivotFollower.getPosition();
+    private final StatusSignal<Double> velocityRotPerSecFollower = pivotFollower.getVelocity();
+
+    private final VelocityVoltage velocity = new VelocityVoltage(0);
+
+    private final PositionVoltage position = new PositionVoltage(0);
 
     public PivotIOTalonFX() {
         TalonFXConfiguration config = new TalonFXConfiguration()
@@ -47,10 +55,12 @@ public class PivotIOTalonFX implements PivotIO {
                 temperatureCelsiusLeader,
                 currentAmperageLeader,
                 positionRotationsLeader,
+                velocityRotPerSecLeader,
                 appliedVoltageFollower,
                 temperatureCelsiusFollower,
                 currentAmperageFollower,
-                positionRotationsFollower);
+                positionRotationsFollower,
+                velocityRotPerSecLeader);
         this.pivotFollower.optimizeBusUtilization();
         this.pivotLeader.optimizeBusUtilization();
     }
@@ -62,19 +72,23 @@ public class PivotIOTalonFX implements PivotIO {
                 temperatureCelsiusLeader,
                 currentAmperageLeader,
                 positionRotationsLeader,
+                velocityRotPerSecLeader,
                 appliedVoltageFollower,
                 temperatureCelsiusFollower,
                 currentAmperageFollower,
-                positionRotationsFollower);
+                positionRotationsFollower,
+                velocityRotPerSecFollower);
         inputs.appliedVoltageLeader = appliedVoltageLeader.getValueAsDouble();
         inputs.temperatureCelsiusLeader = temperatureCelsiusLeader.getValueAsDouble();
         inputs.currentAmperageLeader = currentAmperageLeader.getValueAsDouble();
         inputs.positionRadLeader = positionRotationsLeader.getValueAsDouble() * kRadiansPerRotation;
+        inputs.velocityRadPerSecLeader = velocityRotPerSecLeader.getValueAsDouble() * kRadiansPerRotation;
 
         inputs.appliedVoltageFollower = appliedVoltageFollower.getValueAsDouble();
         inputs.temperatureCelsiusFollower = temperatureCelsiusFollower.getValueAsDouble();
         inputs.currentAmperageFollower = currentAmperageFollower.getValueAsDouble();
         inputs.positionRadFollower = positionRotationsFollower.getValueAsDouble() * kRadiansPerRotation;
+        inputs.velocityRadPerSecFollower = velocityRotPerSecFollower.getValueAsDouble() * kRadiansPerRotation;
     }
 
     @Override
@@ -96,5 +110,15 @@ public class PivotIOTalonFX implements PivotIO {
     @Override
     public void setPercentOutput(double percent) {
         this.pivotLeader.set(percent);
+    }
+
+    @Override
+    public void setVelocity(double velocityRotPerSecond) {
+        this.pivotLeader.setControl(velocity.withVelocity(velocityRotPerSecond));
+    }
+
+    @Override
+    public void setPosition(double positionRad) {
+        this.pivotLeader.setControl(position.withPosition(positionRad / kRadiansPerRotation));
     }
 }

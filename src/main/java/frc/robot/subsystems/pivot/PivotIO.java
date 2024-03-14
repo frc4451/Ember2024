@@ -11,11 +11,13 @@ public interface PivotIO {
         public double currentAmperageLeader = 0.0;
         public double temperatureCelsiusLeader = 0.0;
         public double positionRadLeader = 0.0;
+        public double velocityRadPerSecLeader = 0.0;
 
         public double appliedVoltageFollower = 0.0;
         public double currentAmperageFollower = 0.0;
         public double temperatureCelsiusFollower = 0.0;
         public double positionRadFollower = 0.0;
+        public double velocityRadPerSecFollower = 0.0;
     }
 
     public default void updateInputs(PivotIOInputs inputs) {
@@ -25,6 +27,12 @@ public interface PivotIO {
     }
 
     public default void setPercentOutput(double percentDecimal) {
+    }
+
+    public default void setVelocity(double velocityRadPerSecond) {
+    }
+
+    public default void setPosition(double positionRad) {
     }
 
     public default void setAngle(Rotation2d angle) {

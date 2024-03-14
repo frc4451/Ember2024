@@ -176,21 +176,14 @@ public final class Constants {
     }
 
     public static final class PivotConstants {
-
         public static final double kPivotReduction = 80.0;
 
         public static final int kPivotLeaderCanId = 6;
         public static final int kPivotFollowerCanId = 7;
-        public static final double kPivotVelocityRadiansPerSecond = Units.degreesToRadians(15.0);
-
-        public static final double kPivotP = 0.3;
-        public static final double kPivotI = 0.0;
-        public static final double kPivotD = 0.0;
 
         // TrapezoidProfile Constraints
-        public static final double kMaxVelocityRadiansPerSecond = Units.degreesToRadians(10.0);
-        public static final double kMaxAccelerationRadiansPerSecondSquared = Units.degreesToRadians(10.0);
-        public static final double kTrapezoidProfileT = 5.0; // Don't know what this does exactly. Used it because MechanicalAdvantage used
+        public static final double kMaxVelocityRadiansPerSecond = Units.degreesToRadians(50.0);
+        public static final double kMaxAccelerationRadiansPerSecondSquared = Units.degreesToRadians(50.0);
     }
 
     public static final class IntakeConstants {

@@ -5,7 +5,6 @@ import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -27,25 +26,34 @@ public class PivotSubsystem extends SubsystemBase {
     private final PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
 
     private Rotation2d angle = new Rotation2d();
-    private Rotation2d setpoint = new Rotation2d();
 
-    private final PIDController pidController = new PIDController(
-            PivotConstants.kPivotP,
-            PivotConstants.kPivotI,
-            PivotConstants.kPivotD);
+    /**
+     * Setpoint in degrees
+     */
+    private TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
 
-    private final TrapezoidProfile trapezoidProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(
-            PivotConstants.kMaxVelocityRadiansPerSecond, PivotConstants.kMaxAccelerationRadiansPerSecondSquared));
+    /**
+     * Goal in degrees
+     */
+    private TrapezoidProfile.State goal = new TrapezoidProfile.State();
 
-    private final TrapezoidProfile.State minState = new TrapezoidProfile.State(
-            PivotLocation.kSoftMin.angle.getRadians(), 0.0);
-    private final TrapezoidProfile.State maxState = new TrapezoidProfile.State(
-            PivotLocation.kElevatorUpSoftMax.angle.getRadians(), 0.0);
-    private TrapezoidProfile.State setpointState = new TrapezoidProfile.State();
+    private final TrapezoidProfile trapezoidProfile = new TrapezoidProfile(
+            new TrapezoidProfile.Constraints(
+                    Units.radiansToDegrees(PivotConstants.kMaxVelocityRadiansPerSecond),
+                    Units.radiansToDegrees(PivotConstants.kMaxAccelerationRadiansPerSecondSquared)));
+
+    // private final TrapezoidProfile.State minState = new TrapezoidProfile.State(
+    // PivotLocation.kSoftMin.angle.getRadians(),
+    // 0.0);
+
+    // private final TrapezoidProfile.State maxState = new TrapezoidProfile.State(
+    // PivotLocation.kElevatorUpSoftMax.angle.getRadians(),
+    // 0.0);
 
     // Mechanisms
     private final PivotVisualizer measuredVisualizer = new PivotVisualizer("Measured", Color.kBlack);
-    private final PivotVisualizer setpointVisualizer = new PivotVisualizer("Setpoint", Color.kGreen);
+    private final PivotVisualizer setpointVisualizer = new PivotVisualizer("Setpoint", Color.kYellow);
+    private final PivotVisualizer goalVisualizer = new PivotVisualizer("Goal", Color.kPurple);
 
     public PivotSubsystem() {
         switch (AdvantageKitConstants.getMode()) {
@@ -62,9 +70,9 @@ public class PivotSubsystem extends SubsystemBase {
                 break;
         }
 
-        this.pidController.setTolerance(Units.degreesToRadians(0.1));
         this.setAngle(PivotLocation.INITIAL.angle);
         this.setSetpoint(PivotLocation.INITIAL.angle);
+        this.setGoal(PivotLocation.INITIAL.angle);
     }
 
     @Override
@@ -74,20 +82,22 @@ public class PivotSubsystem extends SubsystemBase {
 
         // Make sure the motor actually stops when the robot disabled
         if (DriverStation.isDisabled()) {
-            this.setSetpoint(PivotLocation.INITIAL.angle);
+            this.setGoal(PivotLocation.INITIAL.angle);
             this.io.stop();
         }
 
         this.angle = new Rotation2d(this.inputs.positionRadLeader);
 
-        Logger.recordOutput("Pivot/Angle", getAngle().getDegrees());
-        Logger.recordOutput("Pivot/SetpointAngle", getSetpoint().getDegrees());
+        Logger.recordOutput("Pivot/Angle", angle.getDegrees());
+        Logger.recordOutput("Pivot/SetpointAngle", setpoint.position);
+        Logger.recordOutput("Pivot/GoalAngle", goal.position);
 
         Logger.recordOutput("Pivot/IsBelowElevatorThreshold", this.pivotIsBelowElevatorMax().getAsBoolean());
 
         // Log Mechanisms - This needs to be recorded in Radians
-        measuredVisualizer.update(getAngle().getRadians());
-        setpointVisualizer.update(getSetpoint().getRadians());
+        measuredVisualizer.update(angle.getRadians());
+        setpointVisualizer.update(Units.degreesToRadians(setpoint.position));
+        goalVisualizer.update(Units.degreesToRadians(goal.position));
     }
 
     public void setAngle(Rotation2d angle) {
@@ -98,58 +108,45 @@ public class PivotSubsystem extends SubsystemBase {
         return this.angle;
     }
 
-    public Rotation2d getSetpoint() {
-        return this.setpoint;
+    public TrapezoidProfile.State getGoal() {
+        return this.goal;
     }
 
     private void setSetpoint(Rotation2d angle) {
-        this.setpoint = angle;
-        this.pidController.setSetpoint(setpoint.getDegrees());
-        this.setpointState = new TrapezoidProfile.State(angle.getDegrees(), 0.0);
+        this.setpoint = new TrapezoidProfile.State(angle.getDegrees(), 0.0);
     }
 
-    public Command setSetpointCommand(Rotation2d angle) {
-        return new InstantCommand(() -> this.setSetpoint(angle));
+    private void setGoal(Rotation2d angle) {
+        this.goal = new TrapezoidProfile.State(angle.getDegrees(), 0.0);
     }
 
-    public Command setSetpointCurrentCommand() {
-        return new InstantCommand(() -> this.setSetpoint(this.angle));
+    public Command setGoalCommand(Rotation2d angle) {
+        return new InstantCommand(() -> this.setGoal(angle));
     }
 
-    private void pid() {
-        double output = this.pidController.calculate(this.getAngle().getDegrees());
-        setVoltage(output);
+    private void setEverythingCurrent() {
+        setSetpoint(getAngle());
+        setGoal(getAngle());
     }
 
-    public Command pidCommand() {
-        return new RunCommand(this::pid, this);
+    public Command setEverythingCurrentCommand() {
+        return new InstantCommand(this::setEverythingCurrentCommand);
     }
 
-    public Command runTrapezoidPercentCommand(double percentDecimal) {
-        return new RunCommand(
-                () -> io.setPercentOutput(
-                        trapezoidProfile.calculate(
-                                Constants.loopback, Math.signum(percentDecimal) > 0 ? maxState: minState,
-                                new TrapezoidProfile.State(
-                                        setpoint.getDegrees(),
-                                        0.0)).velocity * Math.abs(percentDecimal)),
-                this);
+    private void runTrapezoidProfile() {
+        setpoint = trapezoidProfile.calculate(
+                Constants.loopback,
+                setpoint,
+                goal);
+        io.setPosition(Units.degreesToRadians(setpoint.position));
     }
 
     public Command runTrapezoidProfileCommand() {
-        return new RunCommand(() -> {
-            io.setPercentOutput(
-                    trapezoidProfile.calculate(
-                            Constants.loopback,
-                            setpointState,
-                            new TrapezoidProfile.State(
-                                    setpoint.getDegrees(),
-                                    0.0)).velocity);
-        }, this);
+        return new RunCommand(this::runTrapezoidProfile, this);
     }
 
     public void setVoltage(double voltage) {
-        this.io.setVoltage(MathUtil.clamp(voltage, -6.0, 6.0));
+        this.io.setVoltage(MathUtil.clamp(voltage, -12.0, 12.0));
     }
 
     public double getPivotUpperLimit() {
@@ -166,26 +163,26 @@ public class PivotSubsystem extends SubsystemBase {
      */
     public Command movePivotOutOfTheElevatorsWay() {
         return new RunCommand(() -> {
-            setSetpoint(
+            setGoal(
                     Rotation2d.fromDegrees(MathUtil.clamp(
                             this.angle.getDegrees(),
                             PivotLocation.INITIAL.angle.getDegrees(),
                             PivotLocation.kElevatorDownSoftMax.angle.getDegrees())));
-            pid();
+            runTrapezoidProfile();
         }, this);
     }
 
     public Command movePivotToAmpScoringPosition() {
         return new RunCommand(() -> {
-            setSetpoint(PivotLocation.kAmpScoringPosition.angle);
-            pid();
+            setGoal(PivotLocation.kAmpScoringPosition.angle);
+            runTrapezoidProfile();
         }, this);
     }
 
     public Command movePivotToTrapScoringPosition() {
         return new RunCommand(() -> {
-            setSetpoint(PivotLocation.kTrapScoringPosition.angle);
-            pid();
+            setGoal(PivotLocation.kTrapScoringPosition.angle);
+            runTrapezoidProfile();
         }, this);
     }
 
@@ -202,14 +199,14 @@ public class PivotSubsystem extends SubsystemBase {
 
     public Command pivotToSpeakerCommand() {
         return new RunCommand(() -> {
-            setSetpoint(Rotation2d.fromDegrees(BobotState.getShootingCalculation().angleDegrees()));
-            pid();
+            setGoal(Rotation2d.fromDegrees(BobotState.getShootingCalculation().angleDegrees()));
+            runTrapezoidProfile();
         }, this);
     }
 
-    public Command controlSetpointToSpeakerCommand() {
+    public Command controlGoalToSpeakerCommand() {
         return new RunCommand(() -> {
-            setSetpoint(Rotation2d.fromDegrees(BobotState.getShootingCalculation().angleDegrees()));
+            setGoal(Rotation2d.fromDegrees(BobotState.getShootingCalculation().angleDegrees()));
         });
     }
 
