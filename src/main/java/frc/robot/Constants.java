@@ -254,5 +254,7 @@ public final class Constants {
     public static final class PhoenixConstants {
         public static final int kDefaultStatusSignalFrequencyHz = 50;
         public static final int kStatusSignalFrequencyHz = 25;
+
+        public static final String kCANivoreName = "SUSBus";
     }
 }

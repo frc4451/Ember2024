@@ -14,7 +14,7 @@ import frc.robot.Constants.AmpTrapConstants;
 import frc.robot.Constants.PhoenixConstants;
 
 public class AmpTrapIOTalonFX implements AmpTrapIO {
-    private final TalonFX roller = new TalonFX(AmpTrapConstants.kCanId);
+    private final TalonFX roller = new TalonFX(AmpTrapConstants.kCanId, PhoenixConstants.kCANivoreName);
 
     private final StatusSignal<Double> appliedVoltage = roller.getMotorVoltage();
     private final StatusSignal<Double> temperatureCelsius = roller.getDeviceTemp();

@@ -18,8 +18,9 @@ import frc.robot.Constants.PivotConstants;
 public class PivotIOTalonFX implements PivotIO {
     private static final double kRadiansPerRotation = 2.0 * Math.PI / PivotConstants.kPivotReduction;
 
-    private final TalonFX pivotLeader = new TalonFX(PivotConstants.kPivotLeaderCanId);
-    private final TalonFX pivotFollower = new TalonFX(PivotConstants.kPivotFollowerCanId);
+    private final TalonFX pivotLeader = new TalonFX(PivotConstants.kPivotLeaderCanId, PhoenixConstants.kCANivoreName);
+    private final TalonFX pivotFollower = new TalonFX(PivotConstants.kPivotFollowerCanId,
+            PhoenixConstants.kCANivoreName);
 
     private final StatusSignal<Double> appliedVoltageLeader = pivotLeader.getMotorVoltage();
     private final StatusSignal<Double> temperatureCelsiusLeader = pivotLeader.getDeviceTemp();
