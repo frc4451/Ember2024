@@ -45,6 +45,7 @@ import frc.robot.subsystems.blinkin.BlinkinSubsystem;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.elevator.ElevatorSubsystem;
+import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.pivot.PivotSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -88,6 +89,8 @@ public class RobotContainer {
     public final PivotSubsystem m_pivot = new PivotSubsystem();
 
     public final ShooterSubsystem m_shooter = new ShooterSubsystem();
+
+    public final FeederSubsystem m_feeder = new FeederSubsystem();
 
     public final AmpTrapSubsystem m_ampTrap = new AmpTrapSubsystem();
 
@@ -143,28 +146,27 @@ public class RobotContainer {
         m_driverController.leftTrigger()
                 .whileTrue(
                         m_intake.setVelocityThenStopCommand(IntakeConstants.kIntakeVelocity)
-                                .alongWith(m_shooter
-                                        .setVelocityFeederBeambreakCommand(ShooterConstants.kFeederIntakeVelocity)));
+                                .alongWith(m_feeder.setVelocityBeambreakCommand(
+                                        ShooterConstants.kFeederIntakeVelocity)));
 
         m_driverController.rightTrigger()
-                .and(m_shooter.beambreakIsObstructed().negate())
+                .and(m_feeder.beambreakIsObstructed().negate())
                 .whileTrue(
                         new ParallelCommandGroup(
-                                // Commands.defer(
-                                // () -> new PathfindToTarget(
-                                // m_vision::getClosestObject,
-                                // m_robotDrive),
-                                // Set.of(m_robotDrive)),
                                 Commands.defer(
                                         () -> new AimAtNote(
                                                 m_vision::getClosestObject,
-                                                () -> -m_driverController.getLeftY(),
-                                                () -> -m_driverController.getLeftX(),
-                                                () -> -m_driverController.getRightX(),
+                                                () -> -m_driverController
+                                                        .getLeftY(),
+                                                () -> -m_driverController
+                                                        .getLeftX(),
+                                                () -> -m_driverController
+                                                        .getRightX(),
                                                 m_robotDrive),
                                         Set.of(m_robotDrive)),
-                                m_intake.setVelocityThenStopCommand(IntakeConstants.kIntakeVelocity)
-                                        .alongWith(m_shooter.setVelocityFeederBeambreakCommand(
+                                m_intake.setVelocityThenStopCommand(
+                                        IntakeConstants.kIntakeVelocity)
+                                        .alongWith(m_feeder.setVelocityBeambreakCommand(
                                                 ShooterConstants.kFeederIntakeVelocity))));
 
         m_driverController.leftBumper()
@@ -177,18 +179,21 @@ public class RobotContainer {
         m_operatorController.leftTrigger()
                 .whileTrue(new ParallelCommandGroup(
                         m_pivot.controlGoalToSpeakerCommand(),
-                        m_shooter.shootAtSpeakerCommand()))
+                        m_shooter.rampUpSpeedToSpeakerCommand()))
                 .onFalse(m_shooter.stopCommand());
 
         m_operatorController.leftTrigger().and(m_operatorController.rightTrigger())
+                .onTrue(m_feeder.setVelocityCommand(ShooterConstants.kFeederShootVelocity))
                 .whileTrue(new ParallelCommandGroup(
                         m_pivot.controlGoalToSpeakerCommand(),
-                        m_shooter.fireAtSpeakerCommand(ShooterConstants.kFeederShootVelocity)))
-                .onFalse(m_shooter.stopCommand());
+                        m_shooter.rampUpSpeedToSpeakerCommand()))
+                .onFalse(new ParallelCommandGroup(
+                        m_shooter.stopCommand(),
+                        m_feeder.stopCommand()));
 
         m_operatorController.rightTrigger()
-                .onTrue(m_shooter.setVelocityFeederCommand(ShooterConstants.kFeederShootVelocity))
-                .onFalse(m_shooter.stopCommand());
+                .onTrue(m_feeder.setVelocityCommand(ShooterConstants.kFeederShootVelocity))
+                .onFalse(m_feeder.stopCommand());
 
         m_operatorController.leftY()
                 .whileTrue(m_climber.runPercentOutputCommand(() -> -m_operatorController.getLeftY()))
@@ -202,7 +207,7 @@ public class RobotContainer {
         // 15 ft
         m_operatorController.povUp()
                 .onTrue(
-                        m_shooter.setVelocityShooterCommand(85.0, 75.0)
+                        m_shooter.setVelocityCommand(85.0, 75.0)
                                 .alongWith(m_pivot.setGoalCommand(Rotation2d.fromDegrees(27.875))))
                 .onFalse(m_shooter.stopCommand());
         // up against the subwoofer
@@ -214,12 +219,12 @@ public class RobotContainer {
         // .onFalse(m_shooter.stopCommand());
         // 10ft shot
         m_operatorController.povLeft()
-                .onTrue(m_shooter.setVelocityShooterCommand(85.0, 75.0)
+                .onTrue(m_shooter.setVelocityCommand(85.0, 75.0)
                         .alongWith(m_pivot.setGoalCommand(Rotation2d.fromDegrees(36))))
                 .onFalse(m_shooter.stopCommand());
         // 13ft shot
         m_operatorController.povRight()
-                .onTrue(m_shooter.setVelocityShooterCommand(85.0, 75.0)
+                .onTrue(m_shooter.setVelocityCommand(85.0, 75.0)
                         .alongWith(m_pivot.setGoalCommand(Rotation2d.fromDegrees(31.5))))
                 .onFalse(m_shooter.stopCommand());
 
@@ -245,7 +250,8 @@ public class RobotContainer {
         m_operatorController.x()
                 .onTrue(m_pivot.controlOutOfTheElevatorsWay()
                         .until(m_pivot.isBelowElevatorConflictTreshold())
-                        .andThen(m_elevator.setSetpointCommand(ElevatorConstants.kMinHeightInches)));
+                        .andThen(m_elevator.setSetpointCommand(
+                                ElevatorConstants.kMinHeightInches)));
 
         // Move the Pivot out of the elevators way, then move the elevator to AMP score
         // mode, then move pivot to feed the AMP.
@@ -316,7 +322,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("RunIntakeReal",
                 new SequentialCommandGroup(
                         new ParallelDeadlineGroup(
-                                m_shooter.setVelocityFeederBeambreakCommand(ShooterConstants.kFeederIntakeVelocity),
+                                m_feeder.setVelocityBeambreakCommand(ShooterConstants.kFeederIntakeVelocity),
                                 m_intake.setVelocityCommand(IntakeConstants.kIntakeVelocity)),
                         m_intake.stopCommand()));
 
@@ -325,13 +331,13 @@ public class RobotContainer {
                 "Interpolate",
                 new ParallelCommandGroup(
                         m_pivot.controlGoalToSpeakerCommand(),
-                        m_shooter.shootAtSpeakerCommand()));
+                        m_shooter.rampUpSpeedToSpeakerCommand()));
 
         NamedCommands.registerCommand(
                 "InterpolateSetpoint",
                 new ParallelCommandGroup(
                         m_pivot.controlGoalToSpeakerCommand(),
-                        m_shooter.shootAtSpeakerCommand()));
+                        m_shooter.rampUpSpeedToSpeakerCommand()));
 
         NamedCommands.registerCommand(
                 "AimAtSpeaker",
@@ -345,7 +351,7 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("InterpolatePivotSetpoint", m_pivot.controlGoalToSpeakerCommand());
 
-        NamedCommands.registerCommand("RampShooter", m_shooter.shootAtSpeakerCommand());
+        NamedCommands.registerCommand("RampShooter", m_shooter.rampUpSpeedToSpeakerCommand());
 
         NamedCommands.registerCommand("PivotPID", m_pivot.runTrapezoidProfileCommand());
 
@@ -354,15 +360,17 @@ public class RobotContainer {
                 new SequentialCommandGroup(
                         new ParallelDeadlineGroup(
                                 new WaitCommand(1),
-                                m_shooter.fireAtSpeakerCommand(ShooterConstants.kFeederShootVelocity)),
-                        m_shooter.stopFeederCommand()));
+                                m_feeder.setVelocityCommand(ShooterConstants.kFeederShootVelocity),
+                                m_shooter.rampUpSpeedToSpeakerCommand()),
+                        m_feeder.stopCommand()));
 
         NamedCommands.registerCommand(
                 "FIRE!",
                 new ParallelCommandGroup(
                         m_pivot.controlGoalToSpeakerCommand(),
                         m_intake.setVelocityCommand(IntakeConstants.kIntakeVelocity),
-                        m_shooter.fireAtSpeakerCommand(ShooterConstants.kFeederShootVelocity)));
+                        m_shooter.rampUpSpeedToSpeakerCommand(),
+                        m_feeder.setVelocityCommand(ShooterConstants.kFeederShootVelocity)));
 
         NamedCommands.registerCommand(
                 "FireOne",
@@ -371,8 +379,9 @@ public class RobotContainer {
                                 new WaitCommand(1),
                                 m_pivot.controlGoalToSpeakerCommand(),
                                 m_intake.setVelocityCommand(IntakeConstants.kIntakeVelocity),
-                                m_shooter.fireAtSpeakerCommand(ShooterConstants.kFeederShootVelocity)),
-                        m_shooter.stopFeederCommand()));
+                                m_shooter.rampUpSpeedToSpeakerCommand(),
+                                m_feeder.setVelocityCommand(ShooterConstants.kFeederShootVelocity)),
+                        m_feeder.stopCommand()));
 
         NamedCommands.registerCommand(
                 "TargetNote",
