@@ -39,7 +39,7 @@ public class NoteAngleTracker extends TargetAngleTracker {
             this.targetRotation = BobotState
                     .getRobotPose()
                     .getRotation()
-                    .rotateBy(Rotation2d.fromDegrees(-target.getYaw()));
+                    .plus(Rotation2d.fromDegrees(-target.getYaw()));
 
         });
 

@@ -16,7 +16,6 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.VisionConstants;
@@ -191,7 +190,7 @@ public class VisionSubsystem extends VirtualSubsystem {
             // Add estimated position and deviation to be used by SwerveDrivePoseEstimator
             EstimatedPose estimatedPose = cam.inputs.estimatedPose;
 
-            if (estimatedPose.isPresent && !DriverStation.isAutonomousEnabled()) {
+            if (estimatedPose.isPresent) {
                 // Find Vision Measurement and add it for our Queue if it exists
                 AprilTagAlgorithms
                         .findVisionMeasurement(estimatedPose.asEstimatedRobotPose())

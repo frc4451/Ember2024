@@ -16,21 +16,45 @@
     },
     {
       "anchor": {
-        "x": 7.8533718520365134,
+        "x": 8.28,
         "y": 4.080125580562503
       },
       "prevControl": {
-        "x": 6.909250645780758,
-        "y": 4.435703697204281
+        "x": 7.6849748868791865,
+        "y": 5.444359777608444
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "RCT2 End"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.65,
+      "rotationDegrees": -55.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.65,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "TargetNote"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.5,
     "maxAcceleration": 3.5,

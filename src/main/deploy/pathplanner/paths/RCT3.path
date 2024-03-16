@@ -3,12 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.8533718520365134,
+        "x": 8.28,
         "y": 4.080125580562503
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.81729078802858,
+        "x": 7.243918935992066,
         "y": 2.829471515138744
       },
       "isLocked": false,
@@ -46,7 +46,25 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 1.8,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "TargetSpeaker"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.5,
     "maxAcceleration": 3.5,
