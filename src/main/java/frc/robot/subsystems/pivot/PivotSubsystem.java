@@ -53,7 +53,7 @@ public class PivotSubsystem extends SubsystemBase {
     // Mechanisms
     private final PivotVisualizer measuredVisualizer = new PivotVisualizer("Measured", Color.kBlack);
     private final PivotVisualizer setpointVisualizer = new PivotVisualizer("Setpoint", Color.kYellow);
-    private final PivotVisualizer goalVisualizer = new PivotVisualizer("Goal", Color.kPurple);
+    private final PivotVisualizer goalVisualizer = new PivotVisualizer("Goal", Color.kBlue);
 
     public PivotSubsystem() {
         switch (AdvantageKitConstants.getMode()) {
@@ -130,7 +130,7 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public Command setEverythingCurrentCommand() {
-        return new InstantCommand(this::setEverythingCurrentCommand);
+        return new InstantCommand(this::setEverythingCurrent);
     }
 
     private void runTrapezoidProfile() {
