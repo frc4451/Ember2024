@@ -238,21 +238,19 @@ public class RobotContainer {
 
         // Move the Pivot before raising or lowering the Elevator
         m_operatorController.y()
-                .onTrue(
-                        m_pivot.controlOutOfTheElevatorsWay()
-                                .until(m_pivot.isBelowElevatorMax())
-                                .andThen(m_elevator.setSetpointCommand(ElevatorConstants.kMaxHeightInches)));
+                .and(m_elevator.elevatorIsAtTrap().negate())
+                .onTrue(m_elevator.setSetpointCommand(ElevatorConstants.kMaxHeightInches));
 
-        // // Get the Pivot out of the way before lowering the Elevator
+        // Get the Pivot out of the way before lowering the Elevator
         m_operatorController.x()
                 .onTrue(m_pivot.controlOutOfTheElevatorsWay()
-                        .until(m_pivot.isBelowElevatorMax())
+                        .until(m_pivot.isBelowElevatorConflictTreshold())
                         .andThen(m_elevator.setSetpointCommand(ElevatorConstants.kMinHeightInches)));
 
         // Move the Pivot out of the elevators way, then move the elevator to AMP score
         // mode, then move pivot to feed the AMP.
         m_operatorController.b()
-                .and(m_elevator.elevatorIsDown())
+                .and(m_elevator.elevatorIsAtAmp().negate())
                 .onTrue(m_elevator.setSetpointCommand(ElevatorConstants.kAmpScoreHeightInches));
 
         // Assuming that the Operator set the setpoint, we move the pivot to fit
