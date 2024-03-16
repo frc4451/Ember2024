@@ -17,7 +17,7 @@ public class SpeakerAngleTracker extends TargetAngleTracker {
     private Pose3d targetPose = VisionConstants.FIELD_LAYOUT.getTagPose(GarageUtils.getSpeakerTag()).get();
 
     public SpeakerAngleTracker() {
-        super(1.0, 0.0, 0.0, Math.PI, true);
+        super();
     }
 
     public boolean getHasSeenTag() {
@@ -57,7 +57,6 @@ public class SpeakerAngleTracker extends TargetAngleTracker {
     public void log() {
         String logRoot = "TargetAngle/Speaker/";
         Logger.recordOutput(logRoot + "TargetPose", this.targetPose);
-        Logger.recordOutput(logRoot + "Offset", this.offset);
         Logger.recordOutput(logRoot + "TargetAngleRad", this.getRotationDifference().getRadians());
         Logger.recordOutput(logRoot + "TargetAngleDegrees", this.getRotationDifference().getDegrees());
         Logger.recordOutput(logRoot + "HasSeenTag", this.hasSeenTag);

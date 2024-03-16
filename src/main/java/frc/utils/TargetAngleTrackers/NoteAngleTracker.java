@@ -15,7 +15,7 @@ public class NoteAngleTracker extends TargetAngleTracker {
     private Supplier<Optional<PhotonTrackedTarget>> objectDetectionSupplier;
 
     public NoteAngleTracker(Supplier<Optional<PhotonTrackedTarget>> objectDetectionSupplier) {
-        super(5.0, 0.0, 0.0, 0.0, true);
+        super();
         this.objectDetectionSupplier = objectDetectionSupplier;
     }
 
