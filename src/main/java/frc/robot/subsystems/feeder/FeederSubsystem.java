@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AdvantageKitConstants;
+import frc.robot.Constants.FeederConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.reusable_io.beambreak.BeambreakDigitalInput;
 import frc.robot.reusable_io.beambreak.BeambreakIO;
@@ -100,7 +101,7 @@ public class FeederSubsystem extends SubsystemBase {
 
     public Command feedIntoAmpCommand() {
         return new RunCommand(() -> {
-            setVelocity(ShooterConstants.kFeederShootVelocity);
+            setVelocity(FeederConstants.kShootVelocity);
         }, this).andThen(stopCommand());
     }
 }

@@ -9,11 +9,11 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import frc.robot.Constants.FeederConstants;
 import frc.robot.Constants.PhoenixConstants;
-import frc.robot.Constants.ShooterConstants;
 
 public class FeederIOTalonFX implements FeederIO {
-    private final TalonFX feeder = new TalonFX(ShooterConstants.kFeederCanID, PhoenixConstants.kCANivoreName);
+    private final TalonFX feeder = new TalonFX(FeederConstants.kCanID, PhoenixConstants.kCANivoreName);
 
     private final StatusSignal<Double> voltage = feeder.getMotorVoltage();
     private final StatusSignal<Double> amperage = feeder.getSupplyCurrent();

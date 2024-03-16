@@ -27,9 +27,9 @@ import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.AdvantageKitConstants.Mode;
 import frc.robot.Constants.AmpTrapConstants;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.FeederConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.bobot_state.AimingMode;
 import frc.robot.bobot_state.BobotState;
 import frc.robot.commands.AimAtNote;
@@ -147,7 +147,7 @@ public class RobotContainer {
                 .whileTrue(
                         m_intake.setVelocityThenStopCommand(IntakeConstants.kIntakeVelocity)
                                 .alongWith(m_feeder.setVelocityBeambreakCommand(
-                                        ShooterConstants.kFeederIntakeVelocity)));
+                                        FeederConstants.kIntakeVelocity)));
 
         m_driverController.rightTrigger()
                 .and(m_feeder.beambreakIsObstructed().negate())
@@ -167,7 +167,7 @@ public class RobotContainer {
                                 m_intake.setVelocityThenStopCommand(
                                         IntakeConstants.kIntakeVelocity)
                                         .alongWith(m_feeder.setVelocityBeambreakCommand(
-                                                ShooterConstants.kFeederIntakeVelocity))));
+                                                FeederConstants.kIntakeVelocity))));
 
         m_driverController.leftBumper()
                 .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get().pathfindCommand()));
@@ -183,7 +183,7 @@ public class RobotContainer {
                 .onFalse(m_shooter.stopCommand());
 
         m_operatorController.leftTrigger().and(m_operatorController.rightTrigger())
-                .onTrue(m_feeder.setVelocityCommand(ShooterConstants.kFeederShootVelocity))
+                .onTrue(m_feeder.setVelocityCommand(FeederConstants.kShootVelocity))
                 .whileTrue(new ParallelCommandGroup(
                         m_pivot.controlGoalToSpeakerCommand(),
                         m_shooter.rampUpSpeedToSpeakerCommand()))
@@ -192,7 +192,7 @@ public class RobotContainer {
                         m_feeder.stopCommand()));
 
         m_operatorController.rightTrigger()
-                .onTrue(m_feeder.setVelocityCommand(ShooterConstants.kFeederShootVelocity))
+                .onTrue(m_feeder.setVelocityCommand(FeederConstants.kShootVelocity))
                 .onFalse(m_feeder.stopCommand());
 
         m_operatorController.leftY()
@@ -230,7 +230,7 @@ public class RobotContainer {
 
         // Fire the shooter, works with presets as well
         // m_operatorController.rightTrigger()
-        // .whileTrue(m_shooter.setVelocityFeederCommand(ShooterConstants.kFeederShootVelocity));
+        // .whileTrue(m_shooter.setVelocityFeederCommand(FeederConstants.kFeederShootVelocity));
 
         // Keep auto-aim active, but fire when ready.
         // m_operatorController
@@ -239,7 +239,7 @@ public class RobotContainer {
         // .whileTrue(
         // new ParallelCommandGroup(
         // m_pivot.pivotToSpeakerCommand(),
-        // m_shooter.fireAtSpeakerCommand(ShooterConstants.kFeederShootVelocity)));
+        // m_shooter.fireAtSpeakerCommand(FeederConstants.kFeederShootVelocity)));
 
         // Move the Pivot before raising or lowering the Elevator
         m_operatorController.y()
@@ -322,7 +322,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("RunIntakeReal",
                 new SequentialCommandGroup(
                         new ParallelDeadlineGroup(
-                                m_feeder.setVelocityBeambreakCommand(ShooterConstants.kFeederIntakeVelocity),
+                                m_feeder.setVelocityBeambreakCommand(FeederConstants.kIntakeVelocity),
                                 m_intake.setVelocityCommand(IntakeConstants.kIntakeVelocity)),
                         m_intake.stopCommand()));
 
@@ -360,7 +360,7 @@ public class RobotContainer {
                 new SequentialCommandGroup(
                         new ParallelDeadlineGroup(
                                 new WaitCommand(1),
-                                m_feeder.setVelocityCommand(ShooterConstants.kFeederShootVelocity),
+                                m_feeder.setVelocityCommand(FeederConstants.kShootVelocity),
                                 m_shooter.rampUpSpeedToSpeakerCommand()),
                         m_feeder.stopCommand()));
 
@@ -370,7 +370,7 @@ public class RobotContainer {
                         m_pivot.controlGoalToSpeakerCommand(),
                         m_intake.setVelocityCommand(IntakeConstants.kIntakeVelocity),
                         m_shooter.rampUpSpeedToSpeakerCommand(),
-                        m_feeder.setVelocityCommand(ShooterConstants.kFeederShootVelocity)));
+                        m_feeder.setVelocityCommand(FeederConstants.kShootVelocity)));
 
         NamedCommands.registerCommand(
                 "FireOne",
@@ -380,7 +380,7 @@ public class RobotContainer {
                                 m_pivot.controlGoalToSpeakerCommand(),
                                 m_intake.setVelocityCommand(IntakeConstants.kIntakeVelocity),
                                 m_shooter.rampUpSpeedToSpeakerCommand(),
-                                m_feeder.setVelocityCommand(ShooterConstants.kFeederShootVelocity)),
+                                m_feeder.setVelocityCommand(FeederConstants.kShootVelocity)),
                         m_feeder.stopCommand()));
 
         NamedCommands.registerCommand(

@@ -209,11 +209,13 @@ public final class Constants {
     public static final class ShooterConstants {
         public static final int kLeftShooterCanID = 3;
         public static final int kRightShooterCanID = 4;
-        public static final int kFeederCanID = 2;
         public static final int kBeambreakChannel = 1;
+    }
 
-        public static final double kFeederIntakeVelocity = 20.0;
-        public static final double kFeederShootVelocity = 50.0;
+    public static final class FeederConstants {
+        public static final int kCanID = 2;
+        public static final double kIntakeVelocity = 20.0;
+        public static final double kShootVelocity = 50.0;
     }
 
     public static final class ClimberConstants {
@@ -253,7 +255,7 @@ public final class Constants {
 
     public static final class PhoenixConstants {
         public static final int kDefaultStatusSignalFrequencyHz = 50;
-        public static final int kStatusSignalFrequencyHz = 25;
+        public static final int kStatusSignalFrequencyHz = 50;
 
         public static final String kCANivoreName = "SUSBus";
     }
