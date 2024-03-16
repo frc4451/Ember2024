@@ -232,18 +232,19 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     private void addVisionMeasurements() {
-        Pose2d currentPose = getPose();
+        // Pose2d currentPose = getPose();
 
         VisionMeasurement visionMeasurement;
         while ((visionMeasurement = m_visionMeasurementSupplier.get()) != null) {
             Pose2d visionPose = visionMeasurement.estimation().estimatedPose.toPose2d();
             // Ignore the vision pose's rotation
-            Pose2d visionPoseWithoutRotation = new Pose2d(visionPose.getTranslation(), currentPose.getRotation());
+            // Pose2d visionPoseWithoutRotation = new Pose2d(visionPose.getTranslation(),
+            // currentPose.getRotation());
             double timestampSeconds = visionMeasurement.estimation().timestampSeconds;
             var confidence = visionMeasurement.confidence();
 
-            m_combinedPoseEstimator.addVisionMeasurement(visionPoseWithoutRotation, timestampSeconds, confidence);
-            m_visionOnlyPoseEstimator.addVisionMeasurement(visionPoseWithoutRotation, timestampSeconds, confidence);
+            m_combinedPoseEstimator.addVisionMeasurement(visionPose, timestampSeconds, confidence);
+            m_visionOnlyPoseEstimator.addVisionMeasurement(visionPose, timestampSeconds, confidence);
         }
     }
 

@@ -84,6 +84,6 @@ public class AimAtNote extends Command {
                 ySupplier.getAsDouble(),
                 theta / DriveConstants.kMaxAngularSpeed,
                 false,
-                true);
+                false);
     }
 }
