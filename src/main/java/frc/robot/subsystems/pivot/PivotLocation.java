@@ -9,9 +9,9 @@ public enum PivotLocation {
     kSoftMin(Rotation2d.fromDegrees(28.0)),
     kElevatorDownSoftMax(Rotation2d.fromDegrees(40.0)),
     kElevatorDownHardMax(Rotation2d.fromDegrees(42.0)),
-    kAmpScoringPosition(Rotation2d.fromDegrees(82.0)),
-    kTrapScoringPosition(Rotation2d.fromDegrees(82.0)),
-    kElevatorUpSoftMax(Rotation2d.fromDegrees(82.0)),
+    kAmpScoringPosition(Rotation2d.fromDegrees(84.75)),
+    kTrapScoringPosition(Rotation2d.fromDegrees(84.75)),
+    kElevatorUpSoftMax(Rotation2d.fromDegrees(84.75)),
     ;
 
     public Rotation2d angle;

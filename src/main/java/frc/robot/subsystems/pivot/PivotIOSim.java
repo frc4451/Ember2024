@@ -63,12 +63,6 @@ public class PivotIOSim implements PivotIO {
         appliedVoltage = MathUtil.clamp(voltage, -12.0, 12.0);
     }
 
-    // @Override
-    // public void setVelocity(double velocityRotPerSecond) {
-    // closedLoop = true;
-    // this.velocityRadPerSecond = velocityRotPerSecond;
-    // }
-
     @Override
     public void setPosition(double positionRad) {
         closedLoop = true;

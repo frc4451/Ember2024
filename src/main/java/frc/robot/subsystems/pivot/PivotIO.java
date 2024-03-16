@@ -29,9 +29,6 @@ public interface PivotIO {
     public default void setPercentOutput(double percentDecimal) {
     }
 
-    public default void setVelocity(double velocityRadPerSecond) {
-    }
-
     public default void setPosition(double positionRad) {
     }
 

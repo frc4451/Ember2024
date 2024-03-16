@@ -245,7 +245,8 @@ public class RobotContainer {
         m_operatorController.x()
                 .onTrue(m_pivot.controlOutOfTheElevatorsWay()
                         .until(m_pivot.isBelowElevatorConflictTreshold())
-                        .andThen(m_elevator.setSetpointCommand(ElevatorConstants.kMinHeightInches)));
+                        .andThen(m_elevator.setSetpointCommand(
+                                ElevatorConstants.kMinHeightInches)));
 
         // Move the Pivot out of the elevators way, then move the elevator to AMP score
         // mode, then move pivot to feed the AMP.
@@ -265,7 +266,7 @@ public class RobotContainer {
                 .and(m_elevator.elevatorIsAtAmp())
                 .and(m_pivot.isNearAmpScoringAngle())
                 .whileTrue(m_shooter.shootIntoAmpCommand())
-                .onTrue(m_ampTrap.setVelocityCommand(AmpTrapConstants.kShootSpeed))
+                .onTrue(m_ampTrap.setVelocityCommand(AmpTrapConstants.kAmpSpeed))
                 .onFalse(m_shooter.stopCommand().alongWith(m_ampTrap.stopCommand()));
 
         // Trap
@@ -287,12 +288,8 @@ public class RobotContainer {
                 .and(m_elevator.elevatorIsAtTrap())
                 .and(m_pivot.isNearTrapScoringAngle())
                 .whileTrue(m_shooter.shootIntoAmpCommand())
-                .onTrue(m_ampTrap.setVelocityCommand(AmpTrapConstants.kShootSpeed))
+                .onTrue(m_ampTrap.setVelocityCommand(AmpTrapConstants.kTrapSpeed))
                 .onFalse(m_shooter.stopCommand().alongWith(m_ampTrap.stopCommand()));
-
-        m_operatorController.povDown()
-                .onTrue(m_ampTrap.setVelocityCommand(AmpTrapConstants.kShootSpeed))
-                .onFalse(m_ampTrap.stopCommand());
 
         // @TODO add controls for Trap, should look similar to the AMP scoring controls
 

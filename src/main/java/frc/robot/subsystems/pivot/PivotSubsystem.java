@@ -92,7 +92,7 @@ public class PivotSubsystem extends SubsystemBase {
         Logger.recordOutput("Pivot/SetpointAngle", setpoint.position);
         Logger.recordOutput("Pivot/GoalAngle", goal.position);
 
-        Logger.recordOutput("Pivot/IsBelowElevatorThreshold", this.isBelowElevatorConflictTreshold().getAsBoolean());
+        Logger.recordOutput("Pivot/IsBelowElevatorThreshold", this.isBelowElevatorConflictTresholdBoolean());
 
         // Log Mechanisms - This needs to be recorded in Radians
         measuredVisualizer.update(angle.getRadians());
@@ -200,7 +200,14 @@ public class PivotSubsystem extends SubsystemBase {
      * The Pivot cannot exceed 42degrees when the elevator is down.
      */
     public Trigger isBelowElevatorConflictTreshold() {
-        return new Trigger(() -> this.getAngle().getDegrees() <= PivotLocation.kElevatorDownHardMax.angle.getDegrees());
+        return new Trigger(this::isBelowElevatorConflictTresholdBoolean);
+    }
+
+    /**
+     * The Pivot cannot exceed 42degrees when the elevator is down.
+     */
+    private boolean isBelowElevatorConflictTresholdBoolean() {
+        return this.getAngle().getDegrees() <= PivotLocation.kElevatorDownHardMax.angle.getDegrees();
     }
 
     public Trigger isNearAmpScoringAngle() {

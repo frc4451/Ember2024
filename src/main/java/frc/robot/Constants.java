@@ -182,8 +182,8 @@ public final class Constants {
         public static final int kPivotFollowerCanId = 7;
 
         // TrapezoidProfile Constraints
-        public static final double kMaxVelocityRadiansPerSecond = Units.degreesToRadians(20.0);
-        public static final double kMaxAccelerationRadiansPerSecondSquared = Units.degreesToRadians(20.0);
+        public static final double kMaxVelocityRadiansPerSecond = Units.degreesToRadians(85.0);
+        public static final double kMaxAccelerationRadiansPerSecondSquared = kMaxVelocityRadiansPerSecond;
     }
 
     public static final class IntakeConstants {
@@ -201,7 +201,8 @@ public final class Constants {
 
         public static final int kCanId = 9;
 
-        public static final double kShootSpeed = 75.0;
+        public static final double kAmpSpeed = 75.0;
+        public static final double kTrapSpeed = 40.5;
 
         public static final int kBeambreakChannel = 2;
     }

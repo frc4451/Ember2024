@@ -3,10 +3,10 @@ package frc.robot.subsystems.pivot;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -34,8 +34,6 @@ public class PivotIOTalonFX implements PivotIO {
     private final StatusSignal<Double> positionRotationsFollower = pivotFollower.getPosition();
     private final StatusSignal<Double> velocityRotPerSecFollower = pivotFollower.getVelocity();
 
-    private final VelocityVoltage velocity = new VelocityVoltage(0);
-
     private final PositionVoltage position = new PositionVoltage(0);
 
     public PivotIOTalonFX() {
@@ -44,7 +42,15 @@ public class PivotIOTalonFX implements PivotIO {
                         .withInverted(InvertedValue.Clockwise_Positive)
                         .withNeutralMode(NeutralModeValue.Coast))
                 .withClosedLoopRamps(new ClosedLoopRampsConfigs()
-                        .withDutyCycleClosedLoopRampPeriod(1.0));
+                        .withDutyCycleClosedLoopRampPeriod(1.0))
+                .withSlot0(new Slot0Configs()
+                        .withKV(0.12)
+                        .withKP(4.0)
+                        .withKI(0)
+                        .withKD(0));
+
+        position.Slot = 0;
+
         this.pivotLeader.getConfigurator().apply(config);
         this.pivotFollower.getConfigurator().apply(config);
 
@@ -98,11 +104,6 @@ public class PivotIOTalonFX implements PivotIO {
     }
 
     @Override
-    public void stop() {
-        this.setVoltage(0.0);
-    }
-
-    @Override
     public void setAngle(Rotation2d angle) {
         this.pivotLeader.setPosition(angle.getRadians() / kRadiansPerRotation);
         this.pivotFollower.setPosition(angle.getRadians() / kRadiansPerRotation);
@@ -111,11 +112,6 @@ public class PivotIOTalonFX implements PivotIO {
     @Override
     public void setPercentOutput(double percent) {
         this.pivotLeader.set(percent);
-    }
-
-    @Override
-    public void setVelocity(double velocityRotPerSecond) {
-        this.pivotLeader.setControl(velocity.withVelocity(velocityRotPerSecond));
     }
 
     @Override
