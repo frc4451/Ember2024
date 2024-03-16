@@ -17,12 +17,9 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -30,11 +27,11 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.VisionConstants;
 import frc.robot.bobot_state.BobotState;
 import frc.robot.subsystems.vision.VisionSubsystem.VisionMeasurement;
 import frc.utils.GarageUtils;
-import frc.utils.GeomUtils;
+import frc.utils.TargetAngleTrackers.NoteAngleTracker;
+import frc.utils.TargetAngleTrackers.SpeakerAngleTracker;
 
 public class DriveSubsystem extends SubsystemBase {
     // Swerve Modules
@@ -77,7 +74,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     private final Supplier<VisionMeasurement> m_visionMeasurementSupplier;
     private final Supplier<Optional<PhotonTrackedTarget>> m_visionObjectSupplier;
-    private final PIDController ppThetaController;
+    private final SpeakerAngleTracker speakerAngleTracker;
+    private final NoteAngleTracker noteAngleTracker;
 
     /** Creates a new DriveSubsystem. */
     public DriveSubsystem(Supplier<VisionMeasurement> visionMeasurementSupplier,
@@ -85,9 +83,8 @@ public class DriveSubsystem extends SubsystemBase {
         m_visionMeasurementSupplier = visionMeasurementSupplier;
         m_visionObjectSupplier = visionObjectSupplier;
 
-        ppThetaController = new PIDController(5.0, 0.0, 0.0);
-        ppThetaController.enableContinuousInput(-Math.PI, Math.PI);
-        ppThetaController.setTolerance(0.1);
+        speakerAngleTracker = new SpeakerAngleTracker();
+        noteAngleTracker = new NoteAngleTracker(m_visionObjectSupplier);
 
         // Configure AutoBuilder for PathPlanner
         AutoBuilder.configureHolonomic(
@@ -108,32 +105,15 @@ public class DriveSubsystem extends SubsystemBase {
                 () -> {
                     switch (BobotState.getAimingMode()) {
                         case OBJECT_DETECTION:
-                            Optional<PhotonTrackedTarget> maybeTarget = m_visionObjectSupplier.get();
-                            if (maybeTarget.isEmpty()) {
-                                return Optional.empty();
-                            }
-                            PhotonTrackedTarget target = maybeTarget.get();
-                            Transform2d robotToNote = GeomUtils.getTransformFromNote(target);
-
-                            double ppThetaRad = ppThetaController.calculate(robotToNote.getRotation().getRadians(), 0);
-
-                            return Optional.of(Rotation2d.fromRadians(ppThetaRad / DriveConstants.kMaxAngularSpeed));
+                            this.noteAngleTracker.update();
+                            return this.noteAngleTracker.getHasSeenNote()
+                                    ? Optional.of(this.noteAngleTracker.getRotationDifference())
+                                    : Optional.empty();
                         case SPEAKER:
-                            Pose3d robotPose = new Pose3d(BobotState.getRobotPose());
-                            Pose3d targetPose = VisionConstants.FIELD_LAYOUT.getTagPose(
-                                    GarageUtils.isBlueAlliance()
-                                            ? VisionConstants.BLUE_SPEAKER_CENTER
-                                            : VisionConstants.RED_SPEAKER_CENTER)
-                                    .get();
-
-                            double yawErrorRad = targetPose.relativeTo(robotPose)
-                                    .getTranslation()
-                                    .toTranslation2d()
-                                    .getAngle()
-                                    .getRadians();
-                            double targetRad = ppThetaController.calculate(yawErrorRad, 0);
-
-                            return Optional.of(Rotation2d.fromRadians(targetRad / DriveConstants.kMaxAngularSpeed));
+                            this.speakerAngleTracker.update();
+                            return this.speakerAngleTracker.getHasSeenTag()
+                                    ? Optional.of(this.speakerAngleTracker.getRotationDifference())
+                                    : Optional.empty();
 
                         default:
                             return Optional.empty();

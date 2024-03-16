@@ -2,6 +2,7 @@ package frc.utils;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.VisionConstants;
 import frc.robot.Constants.PathPlannerConstants;
 
 public class GarageUtils {
@@ -31,5 +32,11 @@ public class GarageUtils {
         boolean canMoveUp = (percentDecimal > 0.0 && position < max);
         boolean canMoveDown = (percentDecimal < 0.0 && position > min);
         return (canMoveUp || canMoveDown) ? percentDecimal : 0.0;
+    }
+
+    public static int getSpeakerTag() {
+        return GarageUtils.isBlueAlliance()
+                ? VisionConstants.BLUE_SPEAKER_CENTER
+                : VisionConstants.RED_SPEAKER_CENTER;
     }
 }

@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.pivot.PivotLocation;
 import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
@@ -94,6 +95,10 @@ public class BobotState extends VirtualSubsystem {
 
     public static Pose2d getRobotPose() {
         return robotPose;
+    }
+
+    public static Pose3d getRobotPose3d() {
+        return new Pose3d(BobotState.getRobotPose());
     }
 
     public static void updateVisibleAprilTags(Set<TargetWithSource> trackedAprilTags) {
