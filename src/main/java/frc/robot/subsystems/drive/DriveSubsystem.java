@@ -114,7 +114,7 @@ public class DriveSubsystem extends SubsystemBase {
                             return this.speakerAngleTracker.getHasSeenTag()
                                     ? Optional.of(this.speakerAngleTracker.getRotationDifference())
                                     : Optional.empty();
-
+                        case NONE:
                         default:
                             return Optional.empty();
                     }

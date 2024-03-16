@@ -6,15 +6,16 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.VisionConstants;
 import frc.robot.bobot_state.BobotState;
 import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
 import frc.robot.subsystems.vision.apriltag.AprilTagAlgorithms;
+import frc.robot.subsystems.vision.apriltag.OffsetTags;
 import frc.utils.GarageUtils;
 
 public class SpeakerAngleTracker extends TargetAngleTracker {
     private boolean hasSeenTag = false;
-    private Pose3d targetPose = VisionConstants.FIELD_LAYOUT.getTagPose(GarageUtils.getSpeakerTag()).get();
+    private OffsetTags tag = OffsetTags.SPEAKER_AIM;
+    private Pose3d targetPose = tag.getPose();
 
     public SpeakerAngleTracker() {
         super();
@@ -33,7 +34,9 @@ public class SpeakerAngleTracker extends TargetAngleTracker {
                 .relativeTo(BobotState.getRobotPose3d())
                 .getTranslation()
                 .toTranslation2d()
-                .getAngle();
+                .getAngle()
+                .plus(BobotState.getRobotPose().getRotation())
+                .plus(new Rotation2d(Math.PI));
     }
 
     public void update() {
@@ -51,6 +54,7 @@ public class SpeakerAngleTracker extends TargetAngleTracker {
                             this.hasSeenTag = true;
                             this.targetPose = targetWithSource.getTargetPoseFrom(robotPose);
                         });
+
         this.log();
     }
 
@@ -60,6 +64,5 @@ public class SpeakerAngleTracker extends TargetAngleTracker {
         Logger.recordOutput(logRoot + "TargetAngleRad", this.getRotationDifference().getRadians());
         Logger.recordOutput(logRoot + "TargetAngleDegrees", this.getRotationDifference().getDegrees());
         Logger.recordOutput(logRoot + "HasSeenTag", this.hasSeenTag);
-
     }
 }
