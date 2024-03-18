@@ -66,7 +66,7 @@ public class AimAtNote extends Command {
                     ySupplier.getAsDouble(),
                     thetaSupplier.getAsDouble(),
                     false,
-                    true);
+                    false);
             return;
         }
 
