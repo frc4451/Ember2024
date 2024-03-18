@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 2.9541670194451504,
-        "y": 2.9074591482516294
+        "x": 2.85,
+        "y": 3.0999999999999996
       },
       "prevControl": {
-        "x": 2.6751263263907297,
-        "y": 3.081823125276875
+        "x": 2.5701441282683795,
+        "y": 3.2748733571969573
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "WaltonPreload"
+      "linkedName": "WendysShot"
     }
   ],
   "rotationTargets": [],
@@ -39,7 +39,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -32.0,
+    "rotation": -37.23000000000002,
     "rotateFast": false
   },
   "reversed": false,

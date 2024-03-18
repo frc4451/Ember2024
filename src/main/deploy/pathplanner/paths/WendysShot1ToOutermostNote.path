@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.1822030310782643,
-        "y": 1.8057835915626106
+        "x": 2.85,
+        "y": 1.5999999999999996
       },
       "isLocked": false,
       "linkedName": "WendysShot"
@@ -20,7 +20,7 @@
         "y": 0.76
       },
       "prevControl": {
-        "x": 7.279999999999999,
+        "x": 3.2799999999999994,
         "y": 0.76
       },
       "nextControl": null,

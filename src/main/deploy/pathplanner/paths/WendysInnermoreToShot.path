@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.27,
-        "y": 2.43
+        "x": 8.26,
+        "y": 2.49
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.030054186775039,
-        "y": 0.9561620523241048
+        "x": 7.020054186775039,
+        "y": 1.0161620523241048
       },
       "isLocked": false,
       "linkedName": "WendysInnermore"
@@ -39,7 +39,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -46.5,
+    "rotation": -38.860000000000014,
     "rotateFast": false
   },
   "reversed": false,

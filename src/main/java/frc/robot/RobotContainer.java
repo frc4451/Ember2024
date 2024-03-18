@@ -203,6 +203,11 @@ public class RobotContainer {
                         m_shooter.setVelocityShooterCommand(85.0, 75.0)
                                 .alongWith(m_pivot.setGoalCommand(Rotation2d.fromDegrees(27.875))))
                 .onFalse(m_shooter.stopCommand());
+        m_operatorController.povDown()
+                .onTrue(
+                        m_shooter.setVelocityShooterCommand(60.0, 60.0)
+                                .alongWith(m_pivot.setGoalCommand(Rotation2d.fromDegrees(42))))
+                .onFalse(m_shooter.stopCommand());
         // up against the subwoofer
         // m_operatorController.povDown()
         // .whileTrue(m_pivot.runTrapezoidProfileCommand())

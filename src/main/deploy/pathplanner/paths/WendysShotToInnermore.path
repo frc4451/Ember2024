@@ -17,18 +17,24 @@
     {
       "anchor": {
         "x": 8.26,
-        "y": 2.43
+        "y": 2.49
       },
       "prevControl": {
         "x": 5.6945948691897375,
-        "y": 1.0416755566844464
+        "y": 1.1016755566844465
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "WendysInnermore"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.85,
+      "rotationDegrees": 22.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
