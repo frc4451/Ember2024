@@ -54,8 +54,6 @@ public class SpeakerAngleTracker extends TargetAngleTracker {
                             this.hasSeenTag = true;
                             this.targetPose = targetWithSource.getTargetPoseFrom(robotPose);
                         });
-
-        this.log();
     }
 
     public void log() {

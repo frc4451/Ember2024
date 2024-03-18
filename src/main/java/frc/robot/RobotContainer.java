@@ -79,9 +79,7 @@ public class RobotContainer {
 
     public final VisionSubsystem m_vision = new VisionSubsystem();
 
-    public final DriveSubsystem m_robotDrive = new DriveSubsystem(
-            m_vision::pollLatestVisionMeasurement,
-            m_vision::getClosestObject);
+    public final DriveSubsystem m_robotDrive = new DriveSubsystem(m_vision::pollLatestVisionMeasurement);
 
     public final IntakeSubsystem m_intake = new IntakeSubsystem();
 

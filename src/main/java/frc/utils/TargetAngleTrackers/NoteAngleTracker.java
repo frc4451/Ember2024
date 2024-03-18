@@ -12,11 +12,9 @@ import frc.robot.bobot_state.BobotState;
 public class NoteAngleTracker extends TargetAngleTracker {
     private boolean hasSeenNote = false;
     private Rotation2d targetRotation = new Rotation2d();
-    private Supplier<Optional<PhotonTrackedTarget>> objectDetectionSupplier;
 
-    public NoteAngleTracker(Supplier<Optional<PhotonTrackedTarget>> objectDetectionSupplier) {
+    public NoteAngleTracker() {
         super();
-        this.objectDetectionSupplier = objectDetectionSupplier;
     }
 
     public Rotation2d getRotationDifference() {
@@ -32,7 +30,7 @@ public class NoteAngleTracker extends TargetAngleTracker {
     }
 
     public void update() {
-        Optional<PhotonTrackedTarget> maybeTarget = objectDetectionSupplier.get();
+        Optional<PhotonTrackedTarget> maybeTarget = BobotState.getClosestObject();
 
         maybeTarget.ifPresent((PhotonTrackedTarget target) -> {
             this.hasSeenNote = true;
@@ -42,8 +40,6 @@ public class NoteAngleTracker extends TargetAngleTracker {
                     .plus(Rotation2d.fromDegrees(-target.getYaw()));
 
         });
-
-        this.log();
     }
 
     public void log() {

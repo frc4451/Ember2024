@@ -73,18 +73,10 @@ public class DriveSubsystem extends SubsystemBase {
             m_wheelOnlyPoseEstimator);
 
     private final Supplier<VisionMeasurement> m_visionMeasurementSupplier;
-    private final Supplier<Optional<PhotonTrackedTarget>> m_visionObjectSupplier;
-    private final SpeakerAngleTracker speakerAngleTracker;
-    private final NoteAngleTracker noteAngleTracker;
 
     /** Creates a new DriveSubsystem. */
-    public DriveSubsystem(Supplier<VisionMeasurement> visionMeasurementSupplier,
-            Supplier<Optional<PhotonTrackedTarget>> visionObjectSupplier) {
+    public DriveSubsystem(Supplier<VisionMeasurement> visionMeasurementSupplier) {
         m_visionMeasurementSupplier = visionMeasurementSupplier;
-        m_visionObjectSupplier = visionObjectSupplier;
-
-        speakerAngleTracker = new SpeakerAngleTracker();
-        noteAngleTracker = new NoteAngleTracker(m_visionObjectSupplier);
 
         // Configure AutoBuilder for PathPlanner
         AutoBuilder.configureHolonomic(
@@ -101,25 +93,7 @@ public class DriveSubsystem extends SubsystemBase {
                 () -> GarageUtils.isRedAlliance(),
                 this);
 
-        PPHolonomicDriveController.setRotationTargetOverride(
-                () -> {
-                    switch (BobotState.getAimingMode()) {
-                        case OBJECT_DETECTION:
-                            this.noteAngleTracker.update();
-                            return this.noteAngleTracker.getHasSeenNote()
-                                    ? Optional.of(this.noteAngleTracker.getRotationDifference())
-                                    : Optional.empty();
-                        case SPEAKER:
-                            this.speakerAngleTracker.update();
-                            return this.speakerAngleTracker.getHasSeenTag()
-                                    ? Optional.of(this.speakerAngleTracker.getRotationDifference())
-                                    : Optional.empty();
-                        case NONE:
-                        default:
-                            return Optional.empty();
-                    }
-
-                });
+        PPHolonomicDriveController.setRotationTargetOverride(BobotState::VARC);
 
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
