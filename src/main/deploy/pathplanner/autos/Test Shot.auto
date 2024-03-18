@@ -1,12 +1,6 @@
 {
   "version": 1.0,
-  "startingPose": {
-    "position": {
-      "x": 1.35,
-      "y": 6.5
-    },
-    "rotation": 0
-  },
+  "startingPose": null,
   "command": {
     "type": "sequential",
     "data": {
@@ -22,7 +16,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "ShootNote1"
+                        "pathName": "ShootNote1Subwoofer"
                       }
                     },
                     {

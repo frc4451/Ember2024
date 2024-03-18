@@ -70,7 +70,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public Command setVelocityFeederCommand(double velocityRotPerSecondFeeder) {
         return new InstantCommand(
-                () -> setVelocityFeeder(velocityRotPerSecondFeeder), this);
+                () -> setVelocityFeeder(velocityRotPerSecondFeeder)); // HACK: require `this`
     }
 
     public Command setVelocityFeederBeambreakCommand(double velocityRotPerSecondFeeder) {

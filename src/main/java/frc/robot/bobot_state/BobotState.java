@@ -8,6 +8,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.subsystems.pivot.PivotLocation;
 import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
 import frc.robot.subsystems.vision.apriltag.OffsetTags;
 import frc.utils.VirtualSubsystem;
@@ -42,7 +43,7 @@ public class BobotState extends VirtualSubsystem {
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Double.MIN_VALUE,
-                        36.0,
+                        PivotLocation.kElevatorDownSoftMax.angle.getDegrees(),
                         85.0,
                         70.0),
 
@@ -57,12 +58,6 @@ public class BobotState extends VirtualSubsystem {
                         36.0,
                         85.0,
                         70.0),
-
-                // new ShootingInterpolator.DistanceAngleSpeedEntry(
-                // Units.feetToMeters(12),
-                // 34.0,
-                // 85.0,
-                // 70.0),
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(13),

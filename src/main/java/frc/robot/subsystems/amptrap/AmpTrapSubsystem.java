@@ -25,7 +25,9 @@ public class AmpTrapSubsystem extends SubsystemBase {
     public AmpTrapSubsystem() {
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
-                io = new AmpTrapIOTalonFX();
+                // io = new AmpTrapIOTalonFX();
+                io = new AmpTrapIO() {
+                };
                 beambreak = new BeambreakDigitalInput(AmpTrapConstants.kBeambreakChannel);
                 break;
             case SIM:
@@ -58,28 +60,23 @@ public class AmpTrapSubsystem extends SubsystemBase {
     }
 
     public void runPercent(double percent) {
-        io.setVelocity(percent);
+        io.setPercentOutput(percent);
     }
 
     public Command runPercentCommand(double percent) {
         return new RunCommand(() -> runPercent(percent), this);
     }
 
-    public void runVelocity(double velocityRotPerSecond) {
+    public void setVelocity(double velocityRotPerSecond) {
         io.setVelocity(velocityRotPerSecond);
     }
 
-    public Command runVelocityCommand(double velocityRotPerSecond) {
-        return new RunCommand(() -> runVelocity(velocityRotPerSecond), this);
-    }
-
-    public void stop() {
-        this.io.stop();
-        this.runVelocity(0);
+    public Command setVelocityCommand(double velocityRotPerSecond) {
+        return new InstantCommand(() -> setVelocity(velocityRotPerSecond), this);
     }
 
     public Command stopCommand() {
-        return new InstantCommand(() -> stop(), this);
+        return new InstantCommand(io::stop, this);
     }
 
     /** This is specifically for sim testing, as beambreaks are not simulated */
@@ -91,11 +88,5 @@ public class AmpTrapSubsystem extends SubsystemBase {
 
     public Trigger beambreakIsObtructed() {
         return new Trigger(() -> this.beambreakInputs.isObstructed);
-    }
-
-    public Command scoreIntoAmpCommand() {
-        return new RunCommand(() -> {
-            this.runPercentCommand(50);
-        }, this).andThen(this.stopCommand());
     }
 }

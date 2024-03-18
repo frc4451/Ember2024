@@ -13,13 +13,15 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.urcl.URCL;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.subsystems.pivot.PivotLocation;
-import frc.robot.subsystems.vision.VisionSubsystem.VisionMeasurement;
+import frc.utils.GarageUtils;
+import frc.utils.GeomUtils;
 import frc.utils.VirtualSubsystem;
 
 /**
@@ -141,17 +143,10 @@ public class Robot extends LoggedRobot {
     @Override
     public void disabledPeriodic() {
         if (m_robotContainer.m_driverController.getHID().getBButtonPressed()) {
+            Pose2d pose = new Pose2d(0, 0, new Rotation2d(GarageUtils.isBlueAlliance() ? 0 : Math.PI));
             m_robotContainer.m_robotDrive.zeroHeading();
-            m_robotContainer.m_robotDrive.resetPose(new Pose2d());
+            m_robotContainer.m_robotDrive.resetPose(pose);
             m_robotContainer.m_pivot.setAngle(PivotLocation.INITIAL.angle);
-        }
-
-        // Fun fact this doesn't work (yet?)
-        if (m_robotContainer.m_driverController.getHID().getAButtonPressed()) {
-            VisionMeasurement measurement = m_robotContainer.m_vision.pollLatestVisionMeasurement();
-            if (measurement != null) {
-                m_robotContainer.m_robotDrive.resetPose(measurement.estimation().estimatedPose.toPose2d());
-            }
         }
     }
 
@@ -207,5 +202,13 @@ public class Robot extends LoggedRobot {
     @Override
     public void simulationPeriodic() {
         VirtualSubsystem.runSimulationPeriodically();
+    }
+
+    @Override
+    public void disabledExit() {
+        Pose2d pose = GeomUtils.withRotation(
+                m_robotContainer.m_robotDrive.getPose(),
+                new Rotation2d(GarageUtils.isBlueAlliance() ? 0 : Math.PI));
+        m_robotContainer.m_robotDrive.resetPose(pose);
     }
 }

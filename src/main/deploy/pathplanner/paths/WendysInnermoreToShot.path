@@ -3,38 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4583935305750524,
-        "y": 5.551483304597447
+        "x": 8.198995286879464,
+        "y": 2.5
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5311346007307418,
-        "y": 5.870830972431175
+        "x": 7.030310727288123,
+        "y": 1.6876217085767502
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "WendysInnermore"
     },
     {
       "anchor": {
-        "x": 2.25580673383569,
-        "y": 4.418197725284339
+        "x": 2.85,
+        "y": 3.09
       },
       "prevControl": {
-        "x": 1.5146896960460592,
-        "y": 4.532215731098129
+        "x": 3.5100099982122677,
+        "y": 1.8242908047930018
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "WendysShot"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 1,
-      "rotationDegrees": -25.0,
-      "rotateFast": true
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -45,11 +39,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -30.0,
+    "rotation": -46.5,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Ember Tuning",
+  "folder": "Wendys",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0
