@@ -1,8 +1,6 @@
 package frc.utils.TargetAngleTrackers;
 
 import java.util.Optional;
-import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.targeting.PhotonTrackedTarget;
 

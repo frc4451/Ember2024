@@ -5,12 +5,9 @@
 package frc.robot.subsystems.drive;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
-import org.photonvision.targeting.PhotonTrackedTarget;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -30,8 +27,6 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.bobot_state.BobotState;
 import frc.robot.subsystems.vision.VisionSubsystem.VisionMeasurement;
 import frc.utils.GarageUtils;
-import frc.utils.TargetAngleTrackers.NoteAngleTracker;
-import frc.utils.TargetAngleTrackers.SpeakerAngleTracker;
 
 public class DriveSubsystem extends SubsystemBase {
     // Swerve Modules

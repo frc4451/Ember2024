@@ -35,7 +35,7 @@ public class BobotState extends VirtualSubsystem {
 
     private static Set<TargetWithSource> visibleAprilTags = new HashSet<>();
 
-    private static Optional<PhotonTrackedTarget> closestObject;
+    private static Optional<PhotonTrackedTarget> closestObject = Optional.empty();
 
     private static boolean isElevatorUp = false;
 
