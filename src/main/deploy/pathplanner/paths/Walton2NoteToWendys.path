@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3721671887788225,
-        "y": 4.55
+        "x": 2.6,
+        "y": 4.12
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.4223124665671127,
-        "y": 4.1046482092964185
+        "x": 2.1987977309287956,
+        "y": 3.7940896904016035
       },
       "isLocked": false,
-      "linkedName": "WaltonStart"
+      "linkedName": "WaltonNote"
     },
     {
       "anchor": {
@@ -20,8 +20,8 @@
         "y": 3.09
       },
       "prevControl": {
-        "x": 2.5701441282683795,
-        "y": 3.264873357196957
+        "x": 2.141788728021901,
+        "y": 3.1354951598792087
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,7 +39,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -37.23000000000002,
+    "rotation": -39.087324977424664,
     "rotateFast": false
   },
   "reversed": false,

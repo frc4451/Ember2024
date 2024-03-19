@@ -1,6 +1,12 @@
 {
   "version": 1.0,
-  "startingPose": null,
+  "startingPose": {
+    "position": {
+      "x": 1.3721671887788225,
+      "y": 4.55
+    },
+    "rotation": 0
+  },
   "command": {
     "type": "sequential",
     "data": {
@@ -26,7 +32,7 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "WaltonBackup"
+                              "pathName": "Walton2GoToShoot"
                             }
                           },
                           {

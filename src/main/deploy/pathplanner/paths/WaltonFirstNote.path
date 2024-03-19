@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 2.85,
-        "y": 3.0999999999999996
+        "y": 3.09
       },
       "prevControl": null,
       "nextControl": {
         "x": 1.7668289447690007,
-        "y": 3.0999999999999996
+        "y": 3.09
       },
       "isLocked": false,
       "linkedName": "WendysShot"
@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 2.6,
-        "y": 4.06
+        "y": 4.12
       },
       "prevControl": {
         "x": 1.7569779584003618,
-        "y": 4.389693223830892
+        "y": 4.449693223830892
       },
       "nextControl": null,
       "isLocked": false,

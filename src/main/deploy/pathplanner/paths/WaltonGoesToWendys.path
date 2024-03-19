@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 2.6,
-        "y": 4.06
+        "y": 4.12
       },
       "prevControl": null,
       "nextControl": {
         "x": 1.4006716902322698,
-        "y": 4.0333869556628
+        "y": 4.0933869556628
       },
       "isLocked": false,
       "linkedName": "WaltonNote"
@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 2.85,
-        "y": 3.0999999999999996
+        "y": 3.09
       },
       "prevControl": {
         "x": 2.141794231529903,
-        "y": 2.864685831967073
+        "y": 2.8546858319670734
       },
       "nextControl": null,
       "isLocked": false,

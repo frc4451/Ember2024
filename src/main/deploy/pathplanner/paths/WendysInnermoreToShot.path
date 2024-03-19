@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.26,
-        "y": 2.49
+        "x": 8.36,
+        "y": 2.7
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.020054186775039,
-        "y": 1.0161620523241048
+        "x": 7.120054186775039,
+        "y": 1.2261620523241048
       },
       "isLocked": false,
       "linkedName": "WendysInnermore"
@@ -21,7 +21,7 @@
       },
       "prevControl": {
         "x": 3.5100099982122677,
-        "y": 1.8242908047930018
+        "y": 1.8242908047930015
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
   "reversed": false,
   "folder": "Wendys",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 22.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

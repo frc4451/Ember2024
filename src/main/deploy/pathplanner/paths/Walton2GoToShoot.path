@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3721671887788225,
+        "x": 1.37,
         "y": 4.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.4223124665671127,
-        "y": 4.1046482092964185
+        "x": 1.785482459853809,
+        "y": 4.631981486185195
       },
       "isLocked": false,
-      "linkedName": "WaltonStart"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.85,
-        "y": 3.09
+        "x": 2.25580673383569,
+        "y": 4.55
       },
       "prevControl": {
-        "x": 2.5701441282683795,
-        "y": 3.264873357196957
+        "x": 2.042022972934835,
+        "y": 4.589224734005024
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "WendysShot"
+      "linkedName": "Walton2FirstShot"
     }
   ],
   "rotationTargets": [],
@@ -39,7 +39,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -37.23000000000002,
+    "rotation": -33.69006752597983,
     "rotateFast": false
   },
   "reversed": false,

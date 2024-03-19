@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3721671887788225,
-        "y": 4.55
+        "x": 2.46,
+        "y": 4.1
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.4223124665671127,
-        "y": 4.1046482092964185
+        "x": 1.9280049671210457,
+        "y": 3.905116699122287
       },
       "isLocked": false,
-      "linkedName": "WaltonStart"
+      "linkedName": "McNote4"
     },
     {
       "anchor": {
         "x": 2.85,
-        "y": 3.09
+        "y": 3.0999999999999996
       },
       "prevControl": {
-        "x": 2.5701441282683795,
-        "y": 3.264873357196957
+        "x": 1.85,
+        "y": 3.0999999999999996
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,11 +39,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -37.23000000000002,
+    "rotation": -36.26999999999998,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Walton",
+  "folder": "Ember Tuning",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0
