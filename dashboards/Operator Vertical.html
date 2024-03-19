@@ -2,13 +2,12 @@
     tab-name="TeleOperated"
     slot="tab"
     source-provider="NetworkTables"
-    selected=""
 ><garage-toggle-sendable
         source-provider="NetworkTables"
         source-key="/SmartDashboard/LaneAssist"
         style="flex-direction: column; width: 299.661px; height: 1180px; transform: translate(0px, 0px);"
         options="[&quot;On&quot;,&quot;Off&quot;]"
-        selected="On"
+        selected="Aim at Speaker"
     ></garage-toggle-sendable><frc-field-wrapper
         source-key="/SmartDashboard/Field"
         source-provider="NetworkTables"
@@ -27,6 +26,7 @@
         source-key="/AdvantageKit/RealOutputs/BobotState/ShootingCalculation/DistanceFeet"
         min="NaN"
         max="NaN"
+        placeholder=""
     ><input
             slot="input"
             value="0"
@@ -59,6 +59,7 @@
         source-key="/AdvantageKit/RealOutputs/BobotState/ShootingCalculation/AngleDegrees"
         min="NaN"
         max="NaN"
+        placeholder=""
     ><input
             slot="input"
             value="0"
@@ -90,6 +91,7 @@
         source-key="/AdvantageKit/RealOutputs/BobotState/ShootingCalculation/LeftSpeedRotPerSec"
         min="NaN"
         max="NaN"
+        placeholder=""
     ><input
             slot="input"
             value="0"
@@ -120,6 +122,7 @@
         source-key="/AdvantageKit/RealOutputs/BobotState/ShootingCalculation/RightSpeedRotPerSec"
         min="NaN"
         max="NaN"
+        placeholder=""
     ><input
             slot="input"
             value="0"
@@ -150,4 +153,37 @@
     slot="tab"
     tab-name="Autonomous"
     source-provider="NetworkTables"
-></dashboard-tab>
+></dashboard-tab><dashboard-tab
+    tab-name="Vision"
+    slot="tab"
+    source-provider="NetworkTables"
+    selected=""
+><frc-boolean-box
+        source-provider="NetworkTables"
+        source-key="/AdvantageKit/AprilTagCamera/FrontLeft//IsConnected"
+        label="Front Left"
+    ></frc-boolean-box><frc-boolean-box
+        source-provider="NetworkTables"
+        style="transform: translate(409px, 1.5px);"
+        source-key="/AdvantageKit/AprilTagCamera/FrontRight//IsConnected"
+        label="Front Right"
+    ></frc-boolean-box><frc-boolean-box
+        source-provider="NetworkTables"
+        style="transform: translate(0px, 317px);"
+        source-key="/AdvantageKit/AprilTagCamera/BackLeft//IsConnected"
+        label="Back Left"
+    ></frc-boolean-box><frc-boolean-box
+        source-provider="NetworkTables"
+        style="transform: translate(411px, 315px);"
+        source-key="/AdvantageKit/AprilTagCamera/BackRight//IsConnected"
+        label="Back Right"
+    ></frc-boolean-box><frc-boolean-box
+        source-provider="NetworkTables"
+        style="transform: translate(193.5px, 0px);"
+        source-key="/AdvantageKit/ObjectDetection/ObjectDetection//IsConnected"
+        label="Object Detection"
+    ></frc-boolean-box><frc-label
+        text="Are Cameras Connected?"
+        source-provider="NetworkTables"
+        style="transform: translate(144.5px, 189.5px);"
+    ></frc-label></dashboard-tab>

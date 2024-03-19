@@ -9,6 +9,7 @@ public interface ObjectDetectionIO {
         public PhotonPipelineResult frame = new PhotonPipelineResult();
         public boolean isDuplicateFrame = false;
         public boolean hasExceededTargetlessThreshold = false;
+        public boolean isConnected = false;
     }
 
     public default void updateInputs(ObjectDetectionIOInputs inputs) {

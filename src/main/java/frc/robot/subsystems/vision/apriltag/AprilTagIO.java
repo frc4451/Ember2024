@@ -8,6 +8,7 @@ public interface AprilTagIO {
     public static class AprilTagIOInputs {
         public PhotonPipelineResult frame = new PhotonPipelineResult();
         public boolean isDuplicateFrame = false;
+        public boolean isConnected = false;
 
         public EstimatedPose estimatedPose = new EstimatedPose();
     }
