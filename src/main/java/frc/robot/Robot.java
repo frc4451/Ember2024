@@ -5,6 +5,7 @@
 package frc.robot;
 
 import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -83,6 +84,9 @@ public class Robot extends LoggedRobot {
         DriverStation.silenceJoystickConnectionWarning(true);
 
         // Start AdvantageKit Logger
+        // On protobufs: "This may cause high loop overruns,
+        // please monitor performance or save the value in a different format."
+        LogTable.disableProtobufWarning();
         Logger.registerURCL(URCL.startExternal());
         Logger.start();
 
