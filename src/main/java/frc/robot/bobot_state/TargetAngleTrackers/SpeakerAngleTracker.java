@@ -1,8 +1,6 @@
-package frc.utils.TargetAngleTrackers;
+package frc.robot.bobot_state.TargetAngleTrackers;
 
 import java.util.Set;
-
-import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -54,13 +52,5 @@ public class SpeakerAngleTracker extends TargetAngleTracker {
                             this.hasSeenTag = true;
                             this.targetPose = targetWithSource.getTargetPoseFrom(robotPose);
                         });
-    }
-
-    public void log() {
-        String logRoot = "TargetAngle/Speaker/";
-        Logger.recordOutput(logRoot + "TargetPose", this.targetPose);
-        Logger.recordOutput(logRoot + "TargetAngleRad", this.getRotationDifference().getRadians());
-        Logger.recordOutput(logRoot + "TargetAngleDegrees", this.getRotationDifference().getDegrees());
-        Logger.recordOutput(logRoot + "HasSeenTag", this.hasSeenTag);
     }
 }

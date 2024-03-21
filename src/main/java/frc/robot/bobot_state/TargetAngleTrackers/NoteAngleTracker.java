@@ -1,7 +1,7 @@
-package frc.utils.TargetAngleTrackers;
+package frc.robot.bobot_state.TargetAngleTrackers;
 
 import java.util.Optional;
-import org.littletonrobotics.junction.Logger;
+
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -36,15 +36,6 @@ public class NoteAngleTracker extends TargetAngleTracker {
                     .getRobotPose()
                     .getRotation()
                     .plus(Rotation2d.fromDegrees(-target.getYaw()));
-
         });
-    }
-
-    public void log() {
-        String logRoot = "TargetAngle/Note/";
-        Logger.recordOutput(logRoot + "TargetRotation", this.targetRotation);
-        Logger.recordOutput(logRoot + "TargetAngleRad", this.getRotationDifference().getRadians());
-        Logger.recordOutput(logRoot + "TargetAngleDegrees", this.getRotationDifference().getDegrees());
-        Logger.recordOutput(logRoot + "HasSeenNote", this.hasSeenNote);
     }
 }

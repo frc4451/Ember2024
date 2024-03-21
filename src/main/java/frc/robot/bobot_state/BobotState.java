@@ -12,12 +12,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.bobot_state.TargetAngleTrackers.NoteAngleTracker;
+import frc.robot.bobot_state.TargetAngleTrackers.SpeakerAngleTracker;
 import frc.robot.subsystems.pivot.PivotLocation;
 import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
 import frc.robot.subsystems.vision.apriltag.OffsetTags;
 import frc.utils.VirtualSubsystem;
-import frc.utils.TargetAngleTrackers.NoteAngleTracker;
-import frc.utils.TargetAngleTrackers.SpeakerAngleTracker;
 
 /**
  * Class full of static variables and methods that store robot state we'd need
@@ -198,9 +198,25 @@ public class BobotState extends VirtualSubsystem {
             speakerAngleTracker.update();
             noteAngleTracker.update();
             Logger.recordOutput(logRoot + "AimingMode", BobotState.getAimingMode());
-            speakerAngleTracker.log();
-            noteAngleTracker.log();
 
+            {
+                String calcRoot = logRoot + "AngleTracking/Speaker/";
+                Logger.recordOutput(calcRoot + "TargetPose", speakerAngleTracker.getTargetPose());
+                Logger.recordOutput(calcRoot + "TargetAngleRad",
+                        speakerAngleTracker.getRotationDifference().getRadians());
+                Logger.recordOutput(calcRoot + "TargetAngleDegrees",
+                        speakerAngleTracker.getRotationDifference().getDegrees());
+                Logger.recordOutput(calcRoot + "HasSeenTag", speakerAngleTracker.getHasSeenTag());
+            }
+
+            {
+                String calcRoot = logRoot + "AngleTracking/Note/";
+                Logger.recordOutput(calcRoot + "TargetAngleRad",
+                        noteAngleTracker.getRotationDifference().getRadians());
+                Logger.recordOutput(calcRoot + "TargetAngleDegrees",
+                        noteAngleTracker.getRotationDifference().getDegrees());
+                Logger.recordOutput(calcRoot + "HasSeenNote", noteAngleTracker.getHasSeenNote());
+            }
         }
     }
 
