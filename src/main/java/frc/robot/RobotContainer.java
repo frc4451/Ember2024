@@ -38,6 +38,7 @@ import frc.robot.commands.PositionWithSpeaker;
 import frc.robot.commands.PositionWithStageSingleClimb;
 import frc.robot.commands.StrafeAndAimToSpeaker;
 import frc.robot.commands.TeleopDrive;
+import frc.robot.commands.WheelRadiusCharacterization;
 import frc.robot.pathplanner.PathPlannerUtils;
 import frc.robot.pathplanner.paths.PathPlannerPoses;
 import frc.robot.subsystems.amptrap.AmpTrapSubsystem;
@@ -135,6 +136,21 @@ public class RobotContainer {
         m_elevator.setDefaultCommand(m_elevator.pidCommand());
         // Build an auto chooser. You can make a default auto by passing in their name
         m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
+
+        m_autoChooser.addOption(
+                "Drive Wheel Radius Characterization",
+                // Since we don't anything in the drive subsystem to easily orient the
+                // swerve modules correctly, we just run the command for a second to set them.
+                // After that we can actually run the characterization.
+                new SequentialCommandGroup(
+                        new ParallelDeadlineGroup(
+                                new WaitCommand(1.0),
+                                new WheelRadiusCharacterization(
+                                        m_robotDrive,
+                                        WheelRadiusCharacterization.Direction.COUNTER_CLOCKWISE)),
+                        new WheelRadiusCharacterization(
+                                m_robotDrive,
+                                WheelRadiusCharacterization.Direction.COUNTER_CLOCKWISE)));
     }
 
     private void configureDriverBindings() {

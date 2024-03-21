@@ -89,6 +89,11 @@ public final class Constants {
                 new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
                 new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
 
+        // The radius of the drivetrain (distance from center to each module) (meters)
+        public static final double kRadius = Math.hypot(
+                DriveConstants.kWheelBase / 2,
+                DriveConstants.kTrackWidth / 2);
+
         // Angular offsets of the modules relative to the chassis in radians
         public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
         public static final double kFrontRightChassisAngularOffset = 0;

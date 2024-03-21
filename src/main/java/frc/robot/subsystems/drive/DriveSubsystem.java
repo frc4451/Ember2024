@@ -4,10 +4,12 @@
 
 package frc.robot.subsystems.drive;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -24,6 +26,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ModuleConstants;
 import frc.robot.bobot_state.BobotState;
 import frc.robot.subsystems.vision.VisionSubsystem.VisionMeasurement;
 import frc.utils.GarageUtils;
@@ -332,5 +335,25 @@ public class DriveSubsystem extends SubsystemBase {
      */
     public double getTurnRate() {
         return m_gyroInputs.yawVelocityRadPerSec;
+    }
+
+    /** Get the position of all drive wheels in radians. */
+    public double[] getWheelRadiusCharacterizationPosition() {
+        return Arrays.stream(m_moduleInputs)
+                // Convert from our meter estimate back into raw motor radians
+                .mapToDouble(
+                        // This is kinda hacky because we only measure meters in the IO,
+                        // but want radians & I don't wanna add thinks to the IO layer.
+                        // (And also because it's like 10 PM & idk if we're gonna even use this)
+                        // To explain the logic:
+                        // 1) We divide by the driving encoder position factor,
+                        // this is to get everything out of meters and into raw motors rotations
+                        // 2) Apply driving motor reduction to get wheel rotations
+                        // 3) Convert into radians (multiply by 2π)
+                        inputs -> inputs.drivePositionMeters
+                                / ModuleConstants.kDrivingEncoderPositionFactor
+                                / ModuleConstants.kDrivingMotorReduction
+                                * 2.0 * Math.PI)
+                .toArray();
     }
 }
