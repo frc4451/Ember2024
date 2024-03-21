@@ -4,10 +4,14 @@
 
 package frc.robot.subsystems.drive;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
+
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -22,6 +26,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ModuleConstants;
 import frc.robot.bobot_state.BobotState;
 import frc.robot.subsystems.vision.VisionSubsystem.VisionMeasurement;
 import frc.utils.GarageUtils;
@@ -42,17 +47,34 @@ public class DriveSubsystem extends SubsystemBase {
 
     // Odometry for tracking robot pose
     private Rotation2d m_trackedRotation = new Rotation2d();
-    private final SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
+    private final SwerveDrivePoseEstimator m_combinedPoseEstimator = new SwerveDrivePoseEstimator(
             DriveConstants.kDriveKinematics,
             m_trackedRotation,
             getModulePositions(),
             new Pose2d());
 
-    private final Supplier<VisionMeasurement> m_visionSupplier;
+    private final SwerveDrivePoseEstimator m_visionOnlyPoseEstimator = new SwerveDrivePoseEstimator(
+            DriveConstants.kDriveKinematics,
+            m_trackedRotation,
+            getModulePositions(),
+            new Pose2d());
+
+    private final SwerveDrivePoseEstimator m_wheelOnlyPoseEstimator = new SwerveDrivePoseEstimator(
+            DriveConstants.kDriveKinematics,
+            m_trackedRotation,
+            getModulePositions(),
+            new Pose2d());
+
+    private final List<SwerveDrivePoseEstimator> m_poseEstimators = List.of(
+            m_combinedPoseEstimator,
+            m_visionOnlyPoseEstimator,
+            m_wheelOnlyPoseEstimator);
+
+    private final Supplier<VisionMeasurement> m_visionMeasurementSupplier;
 
     /** Creates a new DriveSubsystem. */
-    public DriveSubsystem(Supplier<VisionMeasurement> visionSupplier) {
-        m_visionSupplier = visionSupplier;
+    public DriveSubsystem(Supplier<VisionMeasurement> visionMeasurementSupplier) {
+        m_visionMeasurementSupplier = visionMeasurementSupplier;
 
         // Configure AutoBuilder for PathPlanner
         AutoBuilder.configureHolonomic(
@@ -68,6 +90,8 @@ public class DriveSubsystem extends SubsystemBase {
                         new ReplanningConfig()),
                 () -> GarageUtils.isRedAlliance(),
                 this);
+
+        PPHolonomicDriveController.setRotationTargetOverride(BobotState::VARC);
 
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
@@ -159,28 +183,40 @@ public class DriveSubsystem extends SubsystemBase {
             m_trackedRotation = m_trackedRotation.plus(new Rotation2d(speeds.omegaRadiansPerSecond * 0.02));
         }
 
-        m_poseEstimator.update(m_trackedRotation, positions);
+        m_combinedPoseEstimator.update(m_trackedRotation, positions);
+        m_wheelOnlyPoseEstimator.update(m_trackedRotation, positions);
         addVisionMeasurements();
 
-        Pose2d pose = getPose();
+        Pose2d combinedPose = getPose();
+        Pose2d visionOnlyPose = m_visionOnlyPoseEstimator.getEstimatedPosition();
+        Pose2d wheelOnlyPose = m_wheelOnlyPoseEstimator.getEstimatedPosition();
 
-        BobotState.updateRobotPose(pose);
+        BobotState.updateRobotPose(combinedPose);
 
-        Logger.recordOutput("Odometry/Robot", pose);
-        Logger.recordOutput("Odometry/RotationDeg", pose.getRotation().getDegrees());
+        Logger.recordOutput("Odometry/Combined/Pose", combinedPose);
+        Logger.recordOutput("Odometry/Combined/RotationDeg", combinedPose.getRotation().getDegrees());
+
+        Logger.recordOutput("Odometry/VisionOnly/Pose", visionOnlyPose);
+        Logger.recordOutput("Odometry/VisionOnly/RotationDeg", visionOnlyPose.getRotation().getDegrees());
+
+        Logger.recordOutput("Odometry/WheelOnly/Pose", wheelOnlyPose);
+        Logger.recordOutput("Odometry/WheelOnly/RotationDeg", wheelOnlyPose.getRotation().getDegrees());
     }
 
     private void addVisionMeasurements() {
-        Pose2d currentPose = getPose();
+        // Pose2d currentPose = getPose();
 
         VisionMeasurement visionMeasurement;
-        while ((visionMeasurement = m_visionSupplier.get()) != null) {
+        while ((visionMeasurement = m_visionMeasurementSupplier.get()) != null) {
             Pose2d visionPose = visionMeasurement.estimation().estimatedPose.toPose2d();
-            m_poseEstimator.addVisionMeasurement(
-                    // Ignore the vision pose's rotation
-                    new Pose2d(visionPose.getTranslation(), currentPose.getRotation()),
-                    visionMeasurement.estimation().timestampSeconds,
-                    visionMeasurement.confidence());
+            // Ignore the vision pose's rotation
+            // Pose2d visionPoseWithoutRotation = new Pose2d(visionPose.getTranslation(),
+            // currentPose.getRotation());
+            double timestampSeconds = visionMeasurement.estimation().timestampSeconds;
+            var confidence = visionMeasurement.confidence();
+
+            m_combinedPoseEstimator.addVisionMeasurement(visionPose, timestampSeconds, confidence);
+            m_visionOnlyPoseEstimator.addVisionMeasurement(visionPose, timestampSeconds, confidence);
         }
     }
 
@@ -190,7 +226,7 @@ public class DriveSubsystem extends SubsystemBase {
      * @return The pose.
      */
     public Pose2d getPose() {
-        return m_poseEstimator.getEstimatedPosition();
+        return m_combinedPoseEstimator.getEstimatedPosition();
     }
 
     /**
@@ -199,7 +235,9 @@ public class DriveSubsystem extends SubsystemBase {
      * @param pose The pose to which to set the odometry.
      */
     public void resetPose(Pose2d pose) {
-        m_poseEstimator.resetPosition(m_trackedRotation, getModulePositions(), pose);
+        m_poseEstimators.forEach(poseEstimator -> {
+            poseEstimator.resetPosition(m_trackedRotation, getModulePositions(), pose);
+        });
     }
 
     /**
@@ -297,5 +335,25 @@ public class DriveSubsystem extends SubsystemBase {
      */
     public double getTurnRate() {
         return m_gyroInputs.yawVelocityRadPerSec;
+    }
+
+    /** Get the position of all drive wheels in radians. */
+    public double[] getWheelRadiusCharacterizationPosition() {
+        return Arrays.stream(m_moduleInputs)
+                // Convert from our meter estimate back into raw motor radians
+                .mapToDouble(
+                        // This is kinda hacky because we only measure meters in the IO,
+                        // but want radians & I don't wanna add thinks to the IO layer.
+                        // (And also because it's like 10 PM & idk if we're gonna even use this)
+                        // To explain the logic:
+                        // 1) We divide by the driving encoder position factor,
+                        // this is to get everything out of meters and into raw motors rotations
+                        // 2) Apply driving motor reduction to get wheel rotations
+                        // 3) Convert into radians (multiply by 2π)
+                        inputs -> inputs.drivePositionMeters
+                                / ModuleConstants.kDrivingEncoderPositionFactor
+                                / ModuleConstants.kDrivingMotorReduction
+                                * 2.0 * Math.PI)
+                .toArray();
     }
 }

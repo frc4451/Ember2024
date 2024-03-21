@@ -17,7 +17,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
             * Math.PI
             / ElevatorConstants.kElevatorReduction;
 
-    private final TalonFX io = new TalonFX(ElevatorConstants.kElevatorCanID);
+    private final TalonFX io = new TalonFX(ElevatorConstants.kElevatorCanID, PhoenixConstants.kCANivoreName);
 
     private final StatusSignal<Double> appliedVoltage = io.getMotorVoltage();
     private final StatusSignal<Double> velocityRotPerSec = io.getVelocity();
@@ -44,7 +44,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         velocityVoltage.Slot = 0;
 
         StatusSignal.setUpdateFrequencyForAll(
-                PhoenixConstants.defaultStatusSignalFrequencyHz,
+                PhoenixConstants.kStatusSignalFrequencyHz,
                 appliedVoltage,
                 velocityRotPerSec,
                 temperatureCelsius,

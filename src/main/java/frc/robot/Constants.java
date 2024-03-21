@@ -89,6 +89,11 @@ public final class Constants {
                 new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
                 new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
 
+        // The radius of the drivetrain (distance from center to each module) (meters)
+        public static final double kRadius = Math.hypot(
+                DriveConstants.kWheelBase / 2,
+                DriveConstants.kTrackWidth / 2);
+
         // Angular offsets of the modules relative to the chassis in radians
         public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
         public static final double kFrontRightChassisAngularOffset = 0;
@@ -175,18 +180,19 @@ public final class Constants {
         public static final double kFreeSpeedRpm = 6784;
     }
 
-    public static final class IntakeConstants {
-        public static final int kBeambreakChannel = 0;
-
+    public static final class PivotConstants {
         public static final double kPivotReduction = 80.0;
 
         public static final int kPivotLeaderCanId = 6;
         public static final int kPivotFollowerCanId = 7;
-        public static final double kPivotVelocityRadiansPerSecond = Units.degreesToRadians(15.0);
 
-        public static final double kPivotP = 0.3;
-        public static final double kPivotI = 0.0;
-        public static final double kPivotD = 0.0;
+        // TrapezoidProfile Constraints
+        public static final double kMaxVelocityRadiansPerSecond = Units.degreesToRadians(120.0);
+        public static final double kMaxAccelerationRadiansPerSecondSquared = kMaxVelocityRadiansPerSecond;
+    }
+
+    public static final class IntakeConstants {
+        public static final int kBeambreakChannel = 0;
 
         public static final int kIntakeCanId = 1;
         public static final double kIntakeVelocity = 20.0;
@@ -198,19 +204,10 @@ public final class Constants {
                 .withSupplyCurrentThreshold(35.0)
                 .withSupplyTimeThreshold(0.5);
 
-        // public static final double kPivotMinDegrees = 10.0;
-        // public static final double kPivotMaxDegrees = 167.25;
-
-        public static final double kPivotReduction = 5.0;
-
         public static final int kCanId = 9;
-        public static final double kPivotVelocityRadiansPerSecond = Units.degreesToRadians(15.0);
 
-        public static final double kPivotP = 0.3;
-        public static final double kPivotI = 0.0;
-        public static final double kPivotD = 0.0;
-
-        public static final double kShootSpeed = 50.0;
+        public static final double kAmpSpeed = 75.0;
+        public static final double kTrapSpeed = 40.5;
 
         public static final int kBeambreakChannel = 2;
     }
@@ -243,7 +240,7 @@ public final class Constants {
 
     public static final class ElevatorConstants {
         public static final double kMinHeightInches = 0.0;
-        public static final double kMaxHeightInches = 22.5;
+        public static final double kMaxHeightInches = 23.5;
 
         public static final double kAmpScoreHeightInches = 15.0;
         public static final double kTrapScoreHeightInches = kMaxHeightInches;
@@ -261,6 +258,9 @@ public final class Constants {
     }
 
     public static final class PhoenixConstants {
-        public static final int defaultStatusSignalFrequencyHz = 50;
+        public static final int kDefaultStatusSignalFrequencyHz = 50;
+        public static final int kStatusSignalFrequencyHz = 25;
+
+        public static final String kCANivoreName = "SUSBus";
     }
 }

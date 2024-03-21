@@ -13,9 +13,9 @@ import frc.robot.Constants.PhoenixConstants;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterIOTalonFX implements ShooterIO {
-    private final TalonFX left = new TalonFX(ShooterConstants.kLeftShooterCanID);
-    private final TalonFX right = new TalonFX(ShooterConstants.kRightShooterCanID);
-    private final TalonFX feeder = new TalonFX(ShooterConstants.kFeederCanID);
+    private final TalonFX left = new TalonFX(ShooterConstants.kLeftShooterCanID, PhoenixConstants.kCANivoreName);
+    private final TalonFX right = new TalonFX(ShooterConstants.kRightShooterCanID, PhoenixConstants.kCANivoreName);
+    private final TalonFX feeder = new TalonFX(ShooterConstants.kFeederCanID, PhoenixConstants.kCANivoreName);
 
     private final StatusSignal<Double> leftVoltage = left.getMotorVoltage();
     private final StatusSignal<Double> rightVoltage = right.getMotorVoltage();
@@ -67,7 +67,7 @@ public class ShooterIOTalonFX implements ShooterIO {
         velocity.Slot = 0;
 
         StatusSignal.setUpdateFrequencyForAll(
-                PhoenixConstants.defaultStatusSignalFrequencyHz,
+                PhoenixConstants.kStatusSignalFrequencyHz,
                 leftVoltage,
                 rightVoltage,
                 feederVoltage,

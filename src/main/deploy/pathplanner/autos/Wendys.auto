@@ -1,6 +1,12 @@
 {
   "version": 1.0,
-  "startingPose": null,
+  "startingPose": {
+    "position": {
+      "x": 1.3721671887788225,
+      "y": 4.55
+    },
+    "rotation": 0
+  },
   "command": {
     "type": "sequential",
     "data": {
@@ -70,7 +76,7 @@
                           {
                             "type": "named",
                             "data": {
-                              "name": "RunIntakeReal"
+                              "name": "InterpolateSetpoint"
                             }
                           }
                         ]
@@ -95,7 +101,7 @@
                           {
                             "type": "named",
                             "data": {
-                              "name": "InterpolateSetpoint"
+                              "name": "RunIntakeReal"
                             }
                           }
                         ]
@@ -114,7 +120,7 @@
                           {
                             "type": "named",
                             "data": {
-                              "name": "RunIntakeReal"
+                              "name": "InterpolateSetpoint"
                             }
                           }
                         ]

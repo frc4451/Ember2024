@@ -110,6 +110,6 @@ public class ObjectDetectionPhotonSim implements ObjectDetectionIO {
         inputs.frame = frame;
         inputs.isDuplicateFrame = isDuplicateFrame;
         inputs.hasExceededTargetlessThreshold = hasExceededTargetsLostThreshold;
-
+        inputs.isConnected = camera.isConnected();
     }
 }

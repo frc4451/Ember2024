@@ -1,13 +1,19 @@
 package frc.robot.bobot_state;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.littletonrobotics.junction.Logger;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.bobot_state.TargetAngleTrackers.NoteAngleTracker;
+import frc.robot.bobot_state.TargetAngleTrackers.SpeakerAngleTracker;
 import frc.robot.subsystems.pivot.PivotLocation;
 import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
 import frc.robot.subsystems.vision.apriltag.OffsetTags;
@@ -29,7 +35,14 @@ public class BobotState extends VirtualSubsystem {
 
     private static Set<TargetWithSource> visibleAprilTags = new HashSet<>();
 
+    private static Optional<PhotonTrackedTarget> closestObject = Optional.empty();
+
     private static boolean isElevatorUp = false;
+
+    private static AimingMode aimingMode = AimingMode.NONE;
+
+    private static final SpeakerAngleTracker speakerAngleTracker = new SpeakerAngleTracker();
+    private static final NoteAngleTracker noteAngleTracker = new NoteAngleTracker();
 
     static {
         shootingInterpolator.addEntries(
@@ -94,6 +107,10 @@ public class BobotState extends VirtualSubsystem {
         return robotPose;
     }
 
+    public static Pose3d getRobotPose3d() {
+        return new Pose3d(BobotState.getRobotPose());
+    }
+
     public static void updateVisibleAprilTags(Set<TargetWithSource> trackedAprilTags) {
         visibleAprilTags = trackedAprilTags;
     }
@@ -102,8 +119,53 @@ public class BobotState extends VirtualSubsystem {
         return visibleAprilTags;
     }
 
+    public static void updateClosestObject(Optional<PhotonTrackedTarget> target) {
+        closestObject = target;
+    }
+
+    public static Optional<PhotonTrackedTarget> getClosestObject() {
+        return closestObject;
+    }
+
     public static ShootingInterpolator.InterpolatedCalculation getShootingCalculation() {
         return shootingCalculation;
+    }
+
+    public static void updateAimingMode(AimingMode newAimingMode) {
+        aimingMode = newAimingMode;
+    }
+
+    public static AimingMode getAimingMode() {
+        return aimingMode;
+    }
+
+    public static SpeakerAngleTracker getSpeakerAngleTracker() {
+        return speakerAngleTracker;
+    }
+
+    public static NoteAngleTracker getNoteAngleTracker() {
+        return noteAngleTracker;
+    }
+
+    /**
+     * Vision Assisted Rotation Correction (VARC) for PathPlanner rotation overrides
+     *
+     * https://pathplanner.dev/pplib-override-target-rotation.html
+     */
+    public static Optional<Rotation2d> VARC() {
+        switch (BobotState.getAimingMode()) {
+            case OBJECT_DETECTION:
+                return BobotState.getNoteAngleTracker().getHasSeenNote()
+                        ? Optional.of(BobotState.getNoteAngleTracker().getRotationDifference())
+                        : Optional.empty();
+            case SPEAKER:
+                return BobotState.getSpeakerAngleTracker().getHasSeenTag()
+                        ? Optional.of(BobotState.getSpeakerAngleTracker().getRotationDifference())
+                        : Optional.empty();
+            case NONE:
+            default:
+                return Optional.empty();
+        }
     }
 
     @Override
@@ -130,6 +192,31 @@ public class BobotState extends VirtualSubsystem {
                     .distinct()
                     .sorted()
                     .toArray());
+        }
+
+        {
+            speakerAngleTracker.update();
+            noteAngleTracker.update();
+            Logger.recordOutput(logRoot + "AimingMode", BobotState.getAimingMode());
+
+            {
+                String calcRoot = logRoot + "AngleTracking/Speaker/";
+                Logger.recordOutput(calcRoot + "TargetPose", speakerAngleTracker.getTargetPose());
+                Logger.recordOutput(calcRoot + "TargetAngleRad",
+                        speakerAngleTracker.getRotationDifference().getRadians());
+                Logger.recordOutput(calcRoot + "TargetAngleDegrees",
+                        speakerAngleTracker.getRotationDifference().getDegrees());
+                Logger.recordOutput(calcRoot + "HasSeenTag", speakerAngleTracker.getHasSeenTag());
+            }
+
+            {
+                String calcRoot = logRoot + "AngleTracking/Note/";
+                Logger.recordOutput(calcRoot + "TargetAngleRad",
+                        noteAngleTracker.getRotationDifference().getRadians());
+                Logger.recordOutput(calcRoot + "TargetAngleDegrees",
+                        noteAngleTracker.getRotationDifference().getDegrees());
+                Logger.recordOutput(calcRoot + "HasSeenNote", noteAngleTracker.getHasSeenNote());
+            }
         }
     }
 

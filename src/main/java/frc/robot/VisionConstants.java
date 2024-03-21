@@ -38,7 +38,7 @@ public final class VisionConstants {
     public static final List<VisionSource> APRIL_TAG_SOURCES = List.of(
             // FL
             new VisionSource(
-                    "ElevatorRight",
+                    "FrontLeft",
                     new Transform3d(
                             new Translation3d(
                                     Units.inchesToMeters(13.14), // forward+
@@ -50,7 +50,7 @@ public final class VisionConstants {
                                     Units.degreesToRadians(-30)))),
             // FR
             new VisionSource(
-                    "ElevatorLeft",
+                    "FrontRight",
                     new Transform3d(
                             new Translation3d(
                                     Units.inchesToMeters(13.14), // forward+
@@ -62,7 +62,7 @@ public final class VisionConstants {
                                     Units.degreesToRadians(30)))),
             // RL
             new VisionSource(
-                    "Arducam_OV9281_USB_Camera",
+                    "BackLeft",
                     new Transform3d(
                             new Translation3d(
                                     Units.inchesToMeters(-12.05), // forward+
@@ -74,7 +74,7 @@ public final class VisionConstants {
                                     Units.degreesToRadians(180 + 30)))),
             // RR
             new VisionSource(
-                    "RG_Camera_2",
+                    "BackRight",
                     new Transform3d(
                             new Translation3d(
                                     Units.inchesToMeters(-12.05), // forward+
@@ -86,7 +86,7 @@ public final class VisionConstants {
                                     Units.degreesToRadians(180 - 30)))));
 
     public static final VisionSource OBJECT_DETECTION_SOURCE = new VisionSource(
-            "Arducam_OV9782_USB_Camera",
+            "ObjectDetection",
             new Transform3d(
                     new Translation3d(
                             Units.inchesToMeters(-13.59), // forward+
@@ -143,11 +143,13 @@ public final class VisionConstants {
     public static final Set<Integer> ALL_TAGS = Stream.concat(RED_TAG_FIDS.stream(), BLUE_TAG_FIDS.stream())
             .collect(Collectors.toSet());
 
+    public static final Set<Integer> ANDERSON_TAGS = Set.of(1, 2, 5, 6, 9, 10, 11, 12, 13, 14, 15, 16);
+
     // Shorthand for generating all possible combinations of April Tags
     public static final List<Set<Integer>> POSSIBLE_FRAME_FID_COMBOS = List.of(RED_TAG_FIDS, BLUE_TAG_FIDS);
 
     // This is a guess, feel free to update.
-    public static final int MAX_FRAME_FIDS = 8;
+    public static final int MAX_FRAME_FIDS = 16;
     public static final double POSE_AMBIGUITY_CUTOFF = .05;
 
     /***********************************************************************

@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 8.28,
-        "y": 0.6900000000000001
+        "y": 0.76
       },
       "prevControl": null,
       "nextControl": {
         "x": 7.054306437501762,
-        "y": 0.9607927638077493
+        "y": 1.0307927638077492
       },
       "isLocked": false,
       "linkedName": "WendysOutermostNote"
@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 2.85,
-        "y": 3.0999999999999996
+        "y": 3.09
       },
       "prevControl": {
-        "x": 3.780797561595124,
-        "y": 2.53264837863009
+        "x": 3.7808339677172613,
+        "y": 2.522708110858057
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,7 +39,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -46.5,
+    "rotation": -38.860000000000014,
     "rotateFast": false
   },
   "reversed": false,

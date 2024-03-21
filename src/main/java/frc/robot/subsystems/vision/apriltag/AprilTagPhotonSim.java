@@ -89,6 +89,7 @@ public class AprilTagPhotonSim implements AprilTagIO {
         inputs.frame = frame;
         inputs.isDuplicateFrame = isDuplicateFrame;
         inputs.estimatedPose = estimatedPose;
+        inputs.isConnected = camera.isConnected();
     }
 
     public void updateFieldPoseEstimate() {

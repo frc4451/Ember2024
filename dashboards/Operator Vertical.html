@@ -1,14 +1,13 @@
 <dashboard-tab
     tab-name="TeleOperated"
     slot="tab"
-    selected=""
     source-provider="NetworkTables"
 ><garage-toggle-sendable
         source-provider="NetworkTables"
         source-key="/SmartDashboard/LaneAssist"
         style="flex-direction: column; width: 299.661px; height: 1180px; transform: translate(0px, 0px);"
         options="[&quot;On&quot;,&quot;Off&quot;]"
-        selected="Speaker Center"
+        selected="Aim at Speaker"
     ></garage-toggle-sendable><frc-field-wrapper
         source-key="/SmartDashboard/Field"
         source-provider="NetworkTables"
@@ -16,16 +15,7 @@
         game="Crescendo"
         grid-size="1"
     >
-    </frc-field-wrapper><frc-camera-wrapper
-        source-provider="NetworkTables"
-        style="transform: translate(299.667px, 0px); width: 420.323px; height: 308.5px;"
-        source-key="/CameraPublisher/Arducam_OV9782_USB_Camera-processed"
-        streams="[]"
-        background-color="black"
-        wait-image="./no-camera-stream.jpg"
-        hide-crosshair=""
-        crosshair-color="white"
-    ></frc-camera-wrapper><vaadin-number-field
+    </frc-field-wrapper><vaadin-number-field
         label="Shooter Distance (Feet)"
         value="0"
         has-value=""
@@ -34,24 +24,24 @@
         style="transform: translate(299.5px, 529px); width: 168px; height: 77px;"
         readonly=""
         source-key="/AdvantageKit/RealOutputs/BobotState/ShootingCalculation/DistanceFeet"
-        placeholder=""
         min="NaN"
         max="NaN"
+        placeholder=""
     ><input
             slot="input"
             value="0"
             type="number"
-            id="vaadin-number-field-35"
+            id="vaadin-number-field-2"
             aria-labelledby="label-vaadin-number-field-35"
             aria-describedby=""
-            min="undefined"
-            max="undefined"
+            min="NaN"
+            max="NaN"
             step="any"
             readonly=""
         ><label
             slot="label"
             id="label-vaadin-number-field-35"
-            for="vaadin-number-field-35"
+            for="vaadin-number-field-2"
         >Shooter Distance (Feet)</label>
         <div
             slot="error-message"
@@ -67,24 +57,24 @@
         style="transform: translate(471.5px, 530px); width: 250px; height: 97px;"
         readonly=""
         source-key="/AdvantageKit/RealOutputs/BobotState/ShootingCalculation/AngleDegrees"
-        placeholder=""
         min="NaN"
         max="NaN"
+        placeholder=""
     ><input
             slot="input"
             value="0"
             type="number"
-            id="vaadin-number-field-221"
+            id="vaadin-number-field-3"
             aria-labelledby="label-vaadin-number-field-221"
             aria-describedby=""
-            min="undefined"
-            max="undefined"
+            min="NaN"
+            max="NaN"
             step="any"
             readonly=""
         ><label
             slot="label"
             id="label-vaadin-number-field-221"
-            for="vaadin-number-field-221"
+            for="vaadin-number-field-3"
         >Pivot Interpolated Angle</label>
         <div
             slot="error-message"
@@ -99,23 +89,23 @@
         source-provider="NetworkTables"
         style="transform: translate(300px, 604.5px); width: 173px; height: 77px;"
         source-key="/AdvantageKit/RealOutputs/BobotState/ShootingCalculation/LeftSpeedRotPerSec"
-        placeholder=""
         min="NaN"
         max="NaN"
+        placeholder=""
     ><input
             slot="input"
             value="0"
             type="number"
-            id="vaadin-number-field-232"
+            id="vaadin-number-field-4"
             aria-labelledby="label-vaadin-number-field-232"
             aria-describedby=""
-            min="undefined"
-            max="undefined"
+            min="NaN"
+            max="NaN"
             step="any"
         ><label
             slot="label"
             id="label-vaadin-number-field-232"
-            for="vaadin-number-field-232"
+            for="vaadin-number-field-4"
         >Left Shooter Speed</label>
         <div
             slot="error-message"
@@ -130,31 +120,70 @@
         source-provider="NetworkTables"
         style="transform: translate(474px, 605px); width: 246.5px; height: 77px;"
         source-key="/AdvantageKit/RealOutputs/BobotState/ShootingCalculation/RightSpeedRotPerSec"
-        placeholder=""
         min="NaN"
         max="NaN"
+        placeholder=""
     ><input
             slot="input"
             value="0"
             type="number"
-            id="vaadin-number-field-233"
+            id="vaadin-number-field-5"
             aria-labelledby="label-vaadin-number-field-233"
             aria-describedby=""
-            min="undefined"
-            max="undefined"
+            min="NaN"
+            max="NaN"
             step="any"
         ><label
             slot="label"
             id="label-vaadin-number-field-233"
-            for="vaadin-number-field-233"
+            for="vaadin-number-field-5"
         >Right Shooter Speed</label>
         <div
             slot="error-message"
             id="error-message-vaadin-number-field-187"
             hidden=""
         ></div>
-    </vaadin-number-field></dashboard-tab><dashboard-tab
+    </vaadin-number-field><frc-boolean-box
+        source-provider="NetworkTables"
+        style="transform: translate(296px, 282px);"
+        source-key="/AdvantageKit/RealOutputs/ObjectDetection/ObjectDetection/HasNotes"
+        value=""
+        label="Sees Note"
+    ></frc-boolean-box></dashboard-tab><dashboard-tab
     slot="tab"
     tab-name="Autonomous"
     source-provider="NetworkTables"
-></dashboard-tab>
+></dashboard-tab><dashboard-tab
+    tab-name="Vision"
+    slot="tab"
+    source-provider="NetworkTables"
+    selected=""
+><frc-boolean-box
+        source-provider="NetworkTables"
+        source-key="/AdvantageKit/AprilTagCamera/FrontLeft//IsConnected"
+        label="Front Left"
+    ></frc-boolean-box><frc-boolean-box
+        source-provider="NetworkTables"
+        style="transform: translate(409px, 1.5px);"
+        source-key="/AdvantageKit/AprilTagCamera/FrontRight//IsConnected"
+        label="Front Right"
+    ></frc-boolean-box><frc-boolean-box
+        source-provider="NetworkTables"
+        style="transform: translate(0px, 317px);"
+        source-key="/AdvantageKit/AprilTagCamera/BackLeft//IsConnected"
+        label="Back Left"
+    ></frc-boolean-box><frc-boolean-box
+        source-provider="NetworkTables"
+        style="transform: translate(411px, 315px);"
+        source-key="/AdvantageKit/AprilTagCamera/BackRight//IsConnected"
+        label="Back Right"
+    ></frc-boolean-box><frc-boolean-box
+        source-provider="NetworkTables"
+        style="transform: translate(193.5px, 0px);"
+        source-key="/AdvantageKit/ObjectDetection/ObjectDetection//IsConnected"
+        label="Object Detection"
+    ></frc-boolean-box><frc-label
+        text="Are Cameras Connected?"
+        source-provider="NetworkTables"
+        style="transform: translate(144.5px, 189.5px);"
+    ></frc-label></dashboard-tab>

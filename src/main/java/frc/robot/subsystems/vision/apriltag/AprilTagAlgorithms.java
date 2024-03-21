@@ -65,7 +65,7 @@ public class AprilTagAlgorithms {
             PhotonPipelineResult frame,
             PhotonPoseEstimator estimator) {
         // Check if our frame has invalid targets
-        if (AprilTagFiltering.shouldIgnoreFrame(frame, AprilTagFiltering.getAllowedIDs())) {
+        if (AprilTagFiltering.shouldIgnoreFrame(frame, VisionConstants.ALL_TAGS)) {
             return Optional.empty();
         } else {
             return estimator.update(frame);

@@ -18,7 +18,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     private final VelocityVoltage velocityVoltage = new VelocityVoltage(0);
 
     public IntakeIOTalonFX(int deviceId, boolean isInverted) {
-        talon = new TalonFX(deviceId);
+        talon = new TalonFX(deviceId, PhoenixConstants.kCANivoreName);
         voltage = talon.getSupplyVoltage();
         velocity = talon.getVelocity();
 
@@ -37,7 +37,7 @@ public class IntakeIOTalonFX implements IntakeIO {
                                 .withKD(0)));
         velocityVoltage.Slot = 0;
 
-        StatusSignal.setUpdateFrequencyForAll(PhoenixConstants.defaultStatusSignalFrequencyHz, voltage, velocity);
+        StatusSignal.setUpdateFrequencyForAll(PhoenixConstants.kStatusSignalFrequencyHz, voltage, velocity);
         talon.optimizeBusUtilization();
     }
 

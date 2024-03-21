@@ -5,6 +5,7 @@
 package frc.robot;
 
 import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -83,6 +84,9 @@ public class Robot extends LoggedRobot {
         DriverStation.silenceJoystickConnectionWarning(true);
 
         // Start AdvantageKit Logger
+        // On protobufs: "This may cause high loop overruns,
+        // please monitor performance or save the value in a different format."
+        LogTable.disableProtobufWarning();
         Logger.registerURCL(URCL.startExternal());
         Logger.start();
 
@@ -156,6 +160,11 @@ public class Robot extends LoggedRobot {
      */
     @Override
     public void autonomousInit() {
+        Pose2d pose = GeomUtils.withRotation(
+                m_robotContainer.m_robotDrive.getPose(),
+                new Rotation2d(GarageUtils.isBlueAlliance() ? 0 : Math.PI));
+        m_robotContainer.m_robotDrive.resetPose(pose);
+
         m_robotContainer.m_pivot.setAngle(PivotLocation.INITIAL.angle);
 
         m_autoCommand = m_robotContainer.m_autoChooser.get();
@@ -206,9 +215,5 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledExit() {
-        Pose2d pose = GeomUtils.withRotation(
-                m_robotContainer.m_robotDrive.getPose(),
-                new Rotation2d(GarageUtils.isBlueAlliance() ? 0 : Math.PI));
-        m_robotContainer.m_robotDrive.resetPose(pose);
     }
 }

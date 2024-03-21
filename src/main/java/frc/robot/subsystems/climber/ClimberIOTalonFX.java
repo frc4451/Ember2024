@@ -17,7 +17,7 @@ public class ClimberIOTalonFX implements ClimberIO {
             * Math.PI
             / ClimberConstants.kClimberReduction;
 
-    private final TalonFX io = new TalonFX(ClimberConstants.kClimberCanId);
+    private final TalonFX io = new TalonFX(ClimberConstants.kClimberCanId, PhoenixConstants.kCANivoreName);
 
     private final StatusSignal<Double> appliedVoltage = io.getMotorVoltage();
     private final StatusSignal<Double> velocityRotPerSec = io.getVelocity();
@@ -44,7 +44,7 @@ public class ClimberIOTalonFX implements ClimberIO {
         velocityVoltage.Slot = 0;
 
         StatusSignal.setUpdateFrequencyForAll(
-                PhoenixConstants.defaultStatusSignalFrequencyHz,
+                PhoenixConstants.kStatusSignalFrequencyHz,
                 appliedVoltage,
                 currentAmperage,
                 temperatureCelsius,

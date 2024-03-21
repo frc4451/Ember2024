@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.37,
+        "y": 4.55
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.785482459853809,
+        "y": 4.631981486185195
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.25580673383569,
+        "y": 4.55
+      },
+      "prevControl": {
+        "x": 2.042022972934835,
+        "y": 4.589224734005024
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Walton2FirstShot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -33.69006752597983,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Walton",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

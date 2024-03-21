@@ -8,33 +8,27 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5311346007307418,
-        "y": 5.870830972431175
+        "x": 1.55744644822623,
+        "y": 5.145062512347247
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.25580673383569,
-        "y": 4.418197725284339
+        "x": 2.46,
+        "y": 4.1
       },
       "prevControl": {
-        "x": 1.5146896960460592,
-        "y": 4.532215731098129
+        "x": 1.4600486288084515,
+        "y": 4.090138192247759
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "McNote4"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 1,
-      "rotationDegrees": -25.0,
-      "rotateFast": true
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -45,7 +39,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -30.0,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,

@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.6,
+        "y": 4.12
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.1987977309287956,
+        "y": 3.7940896904016035
+      },
+      "isLocked": false,
+      "linkedName": "WaltonNote"
+    },
+    {
+      "anchor": {
+        "x": 2.85,
+        "y": 3.09
+      },
+      "prevControl": {
+        "x": 2.141788728021901,
+        "y": 3.1354951598792087
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "WendysShot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -39.087324977424664,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Walton",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

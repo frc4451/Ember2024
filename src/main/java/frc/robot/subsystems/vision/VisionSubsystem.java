@@ -240,6 +240,8 @@ public class VisionSubsystem extends VirtualSubsystem {
 
             closetObject = Optional.of(object);
         }
+
+        BobotState.updateClosestObject(closetObject);
     }
 
     public Optional<PhotonTrackedTarget> getClosestObject() {

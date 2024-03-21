@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.46,
+        "y": 4.1
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.9280049671210457,
+        "y": 3.905116699122287
+      },
+      "isLocked": false,
+      "linkedName": "McNote4"
+    },
+    {
+      "anchor": {
+        "x": 2.85,
+        "y": 3.0999999999999996
+      },
+      "prevControl": {
+        "x": 1.85,
+        "y": 3.0999999999999996
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "WendysShot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -36.26999999999998,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Ember Tuning",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

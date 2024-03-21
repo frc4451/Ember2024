@@ -7,6 +7,9 @@
 
 package frc.utils;
 
+import org.photonvision.PhotonUtils;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -15,6 +18,8 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
+import frc.robot.VisionConstants;
 
 /**
  * Geometry utilities for working with translations, rotations, transforms, and
@@ -159,5 +164,34 @@ public class GeomUtils {
      */
     public static Pose2d withRotation(Pose2d pose, Rotation2d rotation) {
         return new Pose2d(pose.getTranslation(), rotation);
+    }
+
+    /**
+     * Assuming that the `PhotonTrackedTarget` provided is a Note, calculate
+     * the distance/rotation from the Note and return that
+     *
+     * @param target - PhotonTrackedTarget from Object Detection Camera
+     * @return transform from robot-to-note
+     */
+    public static Transform2d getTransformFromNote(PhotonTrackedTarget target) {
+        Transform3d robotToCamera = VisionConstants.OBJECT_DETECTION_SOURCE.robotToCamera();
+
+        // The distance in a straight line from the camera to the target
+        double distanceToTargetMeters = PhotonUtils.calculateDistanceToTargetMeters(
+                robotToCamera.getZ(),
+                Units.inchesToMeters(2),
+                -robotToCamera.getRotation().getY(),
+                Units.degreesToRadians(target.getPitch()));
+
+        Translation2d cameraToTarget = PhotonUtils.estimateCameraToTargetTranslation(
+                distanceToTargetMeters,
+                Rotation2d.fromDegrees(target.getYaw()));
+
+        // The transform to the target from the robot
+        Transform2d robotToTarget = new Transform2d(
+                robotToCamera.getTranslation().toTranslation2d().plus(cameraToTarget),
+                robotToCamera.getRotation().toRotation2d().plus(cameraToTarget.getAngle()));
+
+        return robotToTarget;
     }
 }
