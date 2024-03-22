@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 2.57,
-        "y": 6.86
+        "x": 2.9,
+        "y": 7.0
       },
       "prevControl": {
-        "x": 2.5267452858161943,
-        "y": 6.834919535473256
+        "x": 2.8567452858161944,
+        "y": 6.974919535473256
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "McNote2"
     }
   ],
   "rotationTargets": [],

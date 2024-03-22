@@ -154,6 +154,13 @@ public class RobotContainer {
     }
 
     private void configureDriverBindings() {
+        m_driverController.x()
+                .whileTrue(
+                        m_intake.setVelocityThenStopCommand(-IntakeConstants.kIntakeVelocity)
+                                .alongWith(m_shooter
+                                        .setVelocityFeederCommand(-ShooterConstants.kFeederIntakeVelocity)))
+                .onFalse(m_shooter.stopFeederCommand());
+
         m_driverController.leftTrigger()
                 .whileTrue(
                         m_intake.setVelocityThenStopCommand(IntakeConstants.kIntakeVelocity)
