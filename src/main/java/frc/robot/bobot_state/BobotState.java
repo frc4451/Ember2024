@@ -153,19 +153,12 @@ public class BobotState extends VirtualSubsystem {
      * https://pathplanner.dev/pplib-override-target-rotation.html
      */
     public static Optional<Rotation2d> VARC() {
-        switch (BobotState.getAimingMode()) {
-            case OBJECT_DETECTION:
-                return BobotState.getNoteAngleTracker().getHasSeenNote()
-                        ? Optional.of(BobotState.getNoteAngleTracker().getRotationDifference())
-                        : Optional.empty();
-            case SPEAKER:
-                return BobotState.getSpeakerAngleTracker().getHasSeenTag()
-                        ? Optional.of(BobotState.getSpeakerAngleTracker().getRotationDifference())
-                        : Optional.empty();
-            case NONE:
-            default:
-                return Optional.empty();
-        }
+        return switch (BobotState.getAimingMode()) {
+            case OBJECT_DETECTION -> BobotState.getNoteAngleTracker().getRotationTarget();
+            case SPEAKER -> BobotState.getSpeakerAngleTracker().getRotationTarget();
+            case NONE -> Optional.empty();
+            default -> Optional.empty();
+        };
     }
 
     @Override
@@ -203,18 +196,26 @@ public class BobotState extends VirtualSubsystem {
                 String calcRoot = logRoot + "AngleTracking/Speaker/";
                 Logger.recordOutput(calcRoot + "TargetPose", speakerAngleTracker.getTargetPose());
                 Logger.recordOutput(calcRoot + "TargetAngleRad",
-                        speakerAngleTracker.getRotationDifference().getRadians());
+                        speakerAngleTracker.getRotationTarget()
+                                .map(Rotation2d::getRadians)
+                                .orElse(Double.NaN));
                 Logger.recordOutput(calcRoot + "TargetAngleDegrees",
-                        speakerAngleTracker.getRotationDifference().getDegrees());
+                        speakerAngleTracker.getRotationTarget()
+                                .map(Rotation2d::getDegrees)
+                                .orElse(Double.NaN));
                 Logger.recordOutput(calcRoot + "HasSeenTag", speakerAngleTracker.getHasSeenTag());
             }
 
             {
                 String calcRoot = logRoot + "AngleTracking/Note/";
                 Logger.recordOutput(calcRoot + "TargetAngleRad",
-                        noteAngleTracker.getRotationDifference().getRadians());
+                        noteAngleTracker.getRotationTarget()
+                                .map(Rotation2d::getRadians)
+                                .orElse(Double.NaN));
                 Logger.recordOutput(calcRoot + "TargetAngleDegrees",
-                        noteAngleTracker.getRotationDifference().getDegrees());
+                        noteAngleTracker.getRotationTarget()
+                                .map(Rotation2d::getRadians)
+                                .orElse(Double.NaN));
                 Logger.recordOutput(calcRoot + "HasSeenNote", noteAngleTracker.getHasSeenNote());
             }
         }

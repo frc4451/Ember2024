@@ -1,5 +1,6 @@
 package frc.robot.bobot_state.TargetAngleTrackers;
 
+import java.util.Optional;
 import java.util.Set;
 
 import edu.wpi.first.math.geometry.Pose3d;
@@ -14,6 +15,7 @@ public class SpeakerAngleTracker extends TargetAngleTracker {
     private boolean hasSeenTag = false;
     private OffsetTags tag = OffsetTags.SPEAKER_AIM;
     private Pose3d targetPose = tag.getPose();
+    private Optional<Rotation2d> rotationTarget;
 
     public SpeakerAngleTracker() {
         super();
@@ -27,14 +29,8 @@ public class SpeakerAngleTracker extends TargetAngleTracker {
         return targetPose;
     }
 
-    public Rotation2d getRotationDifference() {
-        return targetPose
-                .relativeTo(BobotState.getRobotPose3d())
-                .getTranslation()
-                .toTranslation2d()
-                .getAngle()
-                .plus(BobotState.getRobotPose().getRotation())
-                .plus(new Rotation2d(Math.PI));
+    public Optional<Rotation2d> getRotationTarget() {
+        return rotationTarget;
     }
 
     public void update() {
@@ -52,5 +48,13 @@ public class SpeakerAngleTracker extends TargetAngleTracker {
                             this.hasSeenTag = true;
                             this.targetPose = targetWithSource.getTargetPoseFrom(robotPose);
                         });
+        rotationTarget = Optional.of(
+                targetPose
+                        .relativeTo(BobotState.getRobotPose3d())
+                        .getTranslation()
+                        .toTranslation2d()
+                        .getAngle()
+                        .plus(BobotState.getRobotPose().getRotation())
+                        .plus(new Rotation2d(Math.PI)));
     }
 }

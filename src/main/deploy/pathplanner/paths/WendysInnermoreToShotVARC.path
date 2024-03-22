@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.28,
+        "y": 2.45
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.040054186775039,
+        "y": 0.9761620523241048
+      },
+      "isLocked": false,
+      "linkedName": "WendysInnermoreVARC"
+    },
+    {
+      "anchor": {
+        "x": 2.85,
+        "y": 3.09
+      },
+      "prevControl": {
+        "x": 3.5100099982122677,
+        "y": 1.8242908047930015
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "WendysShot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -38.860000000000014,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Wendys",
+  "previewStartingState": {
+    "rotation": 22.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}
