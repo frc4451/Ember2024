@@ -221,7 +221,7 @@ public class RobotContainer {
                 .onFalse(m_shooter.stopCommand());
         m_operatorController.povDown()
                 .onTrue(
-                        m_shooter.setVelocityShooterCommand(47.8, 47.8)
+                        m_shooter.setVelocityShooterCommand(54.9, 54.9)
                                 .alongWith(m_pivot.setGoalCommand(Rotation2d.fromDegrees(42))))
                 .onFalse(m_shooter.stopCommand());
         // up against the subwoofer
