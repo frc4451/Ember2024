@@ -32,7 +32,7 @@ public class IntakeIOTalonFX implements IntakeIO {
                                                 : InvertedValue.CounterClockwise_Positive))
                         .withSlot0(new Slot0Configs()
                                 .withKV(0.12)
-                                .withKP(0.1)
+                                .withKP(1)
                                 .withKI(0)
                                 .withKD(0)));
         velocityVoltage.Slot = 0;

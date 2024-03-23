@@ -199,7 +199,8 @@ public final class Constants {
         public static final int kBeambreakChannel = 0;
 
         public static final int kIntakeCanId = 1;
-        public static final double kIntakeVelocity = 25.0;
+        public static final double kIntakeVelocity = 30.0;
+        public static final double kIntakeReverseVelocity = -50.0;
     }
 
     public static final class AmpTrapConstants {
@@ -222,7 +223,8 @@ public final class Constants {
         public static final int kFeederCanID = 2;
         public static final int kBeambreakChannel = 1;
 
-        public static final double kFeederIntakeVelocity = 25.0;
+        public static final double kFeederIntakeVelocity = 22.0;
+        public static final double kFeederIntakeReverseVelocity = -50.0;
         public static final double kFeederShootVelocity = 50.0;
     }
 
