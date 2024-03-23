@@ -199,8 +199,11 @@ public final class Constants {
         public static final int kBeambreakChannel = 0;
 
         public static final int kIntakeCanId = 1;
-        public static final double kIntakeVelocity = 30.0;
-        public static final double kIntakeReverseVelocity = -50.0;
+        // public static final double kIntakeVelocity = 30.0;
+        // public static final double kIntakeReverseVelocity = -50.0;
+
+        public static final double kIntakePercent = 0.45;
+        public static final double kIntakeReversePercent = -0.50;
     }
 
     public static final class AmpTrapConstants {

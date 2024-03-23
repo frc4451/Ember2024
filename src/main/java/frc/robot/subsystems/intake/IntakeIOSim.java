@@ -28,6 +28,7 @@ public class IntakeIOSim implements IntakeIO {
         wheelSim.update(0.02); // 20 ms is the standard periodic loop time
 
         inputs.appliedVoltage = appliedVoltage;
+        inputs.appliedDutyCycle = appliedVoltage / 12.0;
         inputs.currentAmperage = wheelSim.getCurrentDrawAmps();
         inputs.velocityRotPerSecond = wheelSim.getAngularVelocityRPM() / 60.0;
     }
@@ -36,6 +37,11 @@ public class IntakeIOSim implements IntakeIO {
     public void setVelocity(double velocityRotPerSecond) {
         closedLoop = true;
         this.velocityRotPerSecond = velocityRotPerSecond;
+    }
+
+    @Override
+    public void setPercentOutput(double percentDecimal) {
+        setVelocity(12 * percentDecimal);
     }
 
     @Override

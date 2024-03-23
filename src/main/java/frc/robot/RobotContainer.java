@@ -156,16 +156,19 @@ public class RobotContainer {
     private void configureDriverBindings() {
         m_driverController.x()
                 .whileTrue(
-                        m_intake.setVelocityThenStopCommand(IntakeConstants.kIntakeReverseVelocity)
+                        m_intake.setPercentOutputThenStopCommand(
+                                IntakeConstants.kIntakeReversePercent)
                                 .alongWith(m_shooter
-                                        .setVelocityFeederCommand(ShooterConstants.kFeederIntakeReverseVelocity)))
+                                        .setVelocityFeederCommand(
+                                                ShooterConstants.kFeederIntakeReverseVelocity)))
                 .onFalse(m_shooter.stopFeederCommand());
 
         m_driverController.leftTrigger()
                 .whileTrue(
-                        m_intake.setVelocityThenStopCommand(IntakeConstants.kIntakeVelocity)
+                        m_intake.setPercentOutputThenStopCommand(IntakeConstants.kIntakePercent)
                                 .alongWith(m_shooter
-                                        .setVelocityFeederBeambreakCommand(ShooterConstants.kFeederIntakeVelocity)));
+                                        .setVelocityFeederBeambreakCommand(
+                                                ShooterConstants.kFeederIntakeVelocity)));
 
         m_driverController.rightTrigger()
                 .and(m_shooter.beambreakIsObstructed().negate())
@@ -179,14 +182,19 @@ public class RobotContainer {
                                 Commands.defer(
                                         () -> new AimAtNote(
                                                 m_vision::getClosestObject,
-                                                () -> -m_driverController.getLeftY(),
-                                                () -> -m_driverController.getLeftX(),
-                                                () -> -m_driverController.getRightX(),
+                                                () -> -m_driverController
+                                                        .getLeftY(),
+                                                () -> -m_driverController
+                                                        .getLeftX(),
+                                                () -> -m_driverController
+                                                        .getRightX(),
                                                 m_robotDrive),
                                         Set.of(m_robotDrive)),
-                                m_intake.setVelocityThenStopCommand(IntakeConstants.kIntakeVelocity)
-                                        .alongWith(m_shooter.setVelocityFeederBeambreakCommand(
-                                                ShooterConstants.kFeederIntakeVelocity))));
+                                m_intake.setPercentOutputThenStopCommand(
+                                        IntakeConstants.kIntakePercent)
+                                        .alongWith(m_shooter
+                                                .setVelocityFeederBeambreakCommand(
+                                                        ShooterConstants.kFeederIntakeVelocity))));
 
         m_driverController.leftBumper()
                 .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get().pathfindCommand()));
@@ -224,12 +232,14 @@ public class RobotContainer {
         m_operatorController.povUp()
                 .onTrue(
                         m_shooter.setVelocityShooterCommand(85.0, 75.0)
-                                .alongWith(m_pivot.setGoalCommand(Rotation2d.fromDegrees(27.875))))
+                                .alongWith(m_pivot.setGoalCommand(
+                                        Rotation2d.fromDegrees(27.875))))
                 .onFalse(m_shooter.stopCommand());
         m_operatorController.povDown()
                 .onTrue(
                         m_shooter.setVelocityShooterCommand(54.9, 54.9)
-                                .alongWith(m_pivot.setGoalCommand(Rotation2d.fromDegrees(42))))
+                                .alongWith(m_pivot.setGoalCommand(
+                                        Rotation2d.fromDegrees(42))))
                 .onFalse(m_shooter.stopCommand());
         // up against the subwoofer
         // m_operatorController.povDown()
@@ -339,8 +349,10 @@ public class RobotContainer {
         NamedCommands.registerCommand("RunIntakeReal",
                 new SequentialCommandGroup(
                         new ParallelDeadlineGroup(
-                                m_shooter.setVelocityFeederBeambreakCommand(ShooterConstants.kFeederIntakeVelocity),
-                                m_intake.setVelocityCommand(IntakeConstants.kIntakeVelocity)),
+                                m_shooter.setVelocityFeederBeambreakCommand(
+                                        ShooterConstants.kFeederIntakeVelocity),
+                                m_intake.setPercentOutputCommand(
+                                        IntakeConstants.kIntakePercent)),
                         m_intake.stopCommand()));
 
         // Run Interpolation in Parallel
@@ -377,14 +389,15 @@ public class RobotContainer {
                 new SequentialCommandGroup(
                         new ParallelDeadlineGroup(
                                 new WaitCommand(1),
-                                m_shooter.fireAtSpeakerCommand(ShooterConstants.kFeederShootVelocity)),
+                                m_shooter.fireAtSpeakerCommand(
+                                        ShooterConstants.kFeederShootVelocity)),
                         m_shooter.stopFeederCommand()));
 
         NamedCommands.registerCommand(
                 "FIRE!",
                 new ParallelCommandGroup(
                         m_pivot.controlGoalToSpeakerCommand(),
-                        m_intake.setVelocityCommand(IntakeConstants.kIntakeVelocity),
+                        m_intake.setPercentOutputCommand(IntakeConstants.kIntakePercent),
                         m_shooter.fireAtSpeakerCommand(ShooterConstants.kFeederShootVelocity)));
 
         NamedCommands.registerCommand(
@@ -393,8 +406,10 @@ public class RobotContainer {
                         new ParallelDeadlineGroup(
                                 new WaitCommand(1),
                                 m_pivot.controlGoalToSpeakerCommand(),
-                                m_intake.setVelocityCommand(IntakeConstants.kIntakeVelocity),
-                                m_shooter.fireAtSpeakerCommand(ShooterConstants.kFeederShootVelocity)),
+                                m_intake.setPercentOutputCommand(
+                                        IntakeConstants.kIntakePercent),
+                                m_shooter.fireAtSpeakerCommand(
+                                        ShooterConstants.kFeederShootVelocity)),
                         m_shooter.stopFeederCommand()));
 
         NamedCommands.registerCommand(

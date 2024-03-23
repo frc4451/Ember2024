@@ -4,28 +4,28 @@
     {
       "anchor": {
         "x": 8.28,
-        "y": 5.66
+        "y": 5.65
       },
       "prevControl": null,
       "nextControl": {
         "x": 7.139049549930932,
-        "y": 6.260756074845483
+        "y": 6.250756074845484
       },
       "isLocked": false,
       "linkedName": "B2"
     },
     {
       "anchor": {
-        "x": 3.2677165354330717,
-        "y": 6.983602856094601
+        "x": 3.04,
+        "y": 7.07
       },
       "prevControl": {
-        "x": 4.778455112465782,
-        "y": 7.382665876442864
+        "x": 4.5507385770327105,
+        "y": 7.469063020348264
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "center15ft"
+      "linkedName": "McNote2"
     }
   ],
   "rotationTargets": [],

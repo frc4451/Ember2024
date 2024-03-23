@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.9,
-        "y": 7.0
+        "x": 3.04,
+        "y": 7.07
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.1583834278779672,
-        "y": 6.983602856094601
+        "x": 1.2983834278779673,
+        "y": 7.053602856094601
       },
       "isLocked": false,
       "linkedName": "McNote2"
