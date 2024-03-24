@@ -30,6 +30,7 @@ import frc.robot.Constants.ModuleConstants;
 import frc.robot.bobot_state.BobotState;
 import frc.robot.subsystems.vision.VisionSubsystem.VisionMeasurement;
 import frc.utils.GarageUtils;
+import frc.utils.GeomUtils;
 
 public class DriveSubsystem extends SubsystemBase {
     // Swerve Modules
@@ -80,7 +81,7 @@ public class DriveSubsystem extends SubsystemBase {
         AutoBuilder.configureHolonomic(
                 this::getPose,
                 this::resetPose,
-                () -> DriveConstants.kDriveKinematics.toChassisSpeeds(getModuleStates()),
+                this::getVelocity,
                 this::runVelocity,
                 new HolonomicPathFollowerConfig(
                         new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
@@ -192,6 +193,8 @@ public class DriveSubsystem extends SubsystemBase {
         Pose2d wheelOnlyPose = m_wheelOnlyPoseEstimator.getEstimatedPosition();
 
         BobotState.updateRobotPose(combinedPose);
+        Pose2d predictedPose = combinedPose.exp(GeomUtils.toTwist2d(getVelocity()));
+        BobotState.updatePredictedPose(predictedPose);
 
         Logger.recordOutput("Odometry/Combined/Pose", combinedPose);
         Logger.recordOutput("Odometry/Combined/RotationDeg", combinedPose.getRotation().getDegrees());
@@ -201,6 +204,9 @@ public class DriveSubsystem extends SubsystemBase {
 
         Logger.recordOutput("Odometry/WheelOnly/Pose", wheelOnlyPose);
         Logger.recordOutput("Odometry/WheelOnly/RotationDeg", wheelOnlyPose.getRotation().getDegrees());
+
+        Logger.recordOutput("Odometry/Predicted/Pose", predictedPose);
+        Logger.recordOutput("Odometry/Predicted/RotationDeg", predictedPose.getRotation().getDegrees());
     }
 
     private void addVisionMeasurements() {
@@ -355,5 +361,9 @@ public class DriveSubsystem extends SubsystemBase {
                                 / ModuleConstants.kDrivingMotorReduction
                                 * 2.0 * Math.PI)
                 .toArray();
+    }
+
+    private ChassisSpeeds getVelocity() {
+        return DriveConstants.kDriveKinematics.toChassisSpeeds(getModuleStates());
     }
 }

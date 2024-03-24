@@ -33,6 +33,9 @@ public class BobotState extends VirtualSubsystem {
 
     private static Pose2d robotPose = new Pose2d();
 
+    /** {@link #robotPose} predicted ahead via a pose expontential of our current velocity */
+    private static Pose2d predictedPose = new Pose2d();
+
     private static Set<TargetWithSource> visibleAprilTags = new HashSet<>();
 
     private static Optional<PhotonTrackedTarget> closestObject = Optional.empty();
@@ -107,6 +110,14 @@ public class BobotState extends VirtualSubsystem {
         return robotPose;
     }
 
+    public static void updatePredictedPose(Pose2d pose) {
+        predictedPose = pose;
+    }
+
+    public static Pose2d getPredictedPose() {
+        return predictedPose;
+    }
+
     public static Pose3d getRobotPose3d() {
         return new Pose3d(BobotState.getRobotPose());
     }
@@ -163,7 +174,7 @@ public class BobotState extends VirtualSubsystem {
 
     @Override
     public void periodic() {
-        double distanceFromSpeaker = OffsetTags.SPEAKER_AIM.getDistanceFrom(robotPose);
+        double distanceFromSpeaker = OffsetTags.SPEAKER_AIM.getDistanceFrom(predictedPose);
         shootingCalculation = shootingInterpolator.calculateInterpolation(distanceFromSpeaker);
 
         {
