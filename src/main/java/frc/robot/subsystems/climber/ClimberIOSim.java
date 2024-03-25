@@ -23,8 +23,6 @@ public class ClimberIOSim implements ClimberIO {
         inputs.currentAmperage = sim.getCurrentDrawAmps();
         inputs.velocityInchesPerSecond = sim.getAngularVelocityRPM() / 60 * kInchesPerRotation;
         inputs.positionInches = sim.getAngularPositionRotations() * kInchesPerRotation;
-        inputs.velocityRadPerSecond = sim.getAngularVelocityRPM() / 60;
-        inputs.positionRad = sim.getAngularPositionRotations();
     }
 
     @Override
