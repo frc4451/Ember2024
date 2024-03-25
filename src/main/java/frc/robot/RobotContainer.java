@@ -35,7 +35,6 @@ import frc.robot.bobot_state.BobotState;
 import frc.robot.commands.AimAtNote;
 import frc.robot.commands.PositionWithAmp;
 import frc.robot.commands.PositionWithSpeaker;
-import frc.robot.commands.PositionWithStageSingleClimb;
 import frc.robot.commands.StrafeAndAimToSpeaker;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.commands.WheelRadiusCharacterization;
@@ -93,6 +92,11 @@ public class RobotContainer {
     public final ClimberSubsystem m_climber = new ClimberSubsystem();
 
     public final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
+
+    public final DriverAutomationFactory m_automation = new DriverAutomationFactory(
+            m_driverController,
+            m_operatorController,
+            m_robotDrive);
 
     public final BlinkinSubsystem m_blinkin = new BlinkinSubsystem();
 
@@ -154,7 +158,7 @@ public class RobotContainer {
     }
 
     private void configureDriverBindings() {
-        m_driverController.x()
+        m_driverController.povDown()
                 .whileTrue(
                         m_intake.setPercentOutputThenStopCommand(
                                 IntakeConstants.kIntakeReversePercent)
@@ -196,10 +200,40 @@ public class RobotContainer {
                                                 .setVelocityFeederBeambreakCommand(
                                                         ShooterConstants.kFeederIntakeVelocity))));
 
-        m_driverController.leftBumper()
-                .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get().pathfindCommand()));
+        // m_driverController.leftBumper()
+        // .whileTrue(Commands.deferredProxy(() ->
+        // m_laneAssistChooser.get().pathfindCommand()));
+        // m_driverController.rightBumper()
+        // .whileTrue(Commands.deferredProxy(() ->
+        // m_laneAssistChooser.get().aimingCommand()));
+
+        m_driverController.a() // .and(m_driverController.leftBumper().negate())
+                .whileTrue(m_automation.ampPath());
+
+        m_driverController.a().and(m_driverController.leftBumper())
+                .whileTrue(m_automation.ampAssist());
+
+        m_driverController.b() // .and(m_driverController.leftBumper().negate())
+                .whileTrue(m_automation.stageRightPath());
+
+        m_driverController.b().and(m_driverController.leftBumper())
+                .whileTrue(m_automation.stageRightAssist());
+
+        m_driverController.y() // .and(m_driverController.leftBumper().negate())
+                .whileTrue(m_automation.stageCenterPath());
+
+        m_driverController.y().and(m_driverController.leftBumper())
+                .whileTrue(m_automation.stageCenterAssist());
+
+        m_driverController.x() // .and(m_driverController.leftBumper().negate())
+                .whileTrue(m_automation.stageHumanPath());
+
+        m_driverController.x().and(m_driverController.leftBumper())
+                .whileTrue(m_automation.stageLeftPath());
+
         m_driverController.rightBumper()
-                .whileTrue(Commands.deferredProxy(() -> m_laneAssistChooser.get().aimingCommand()));
+                .whileTrue(m_automation.aimAtSpeakerAssist());
+
     }
 
     private void configureOperatorBindings() {
@@ -439,13 +473,6 @@ public class RobotContainer {
      * </p>
      */
     private void configureLaneChooser() {
-        Command speakerStrafeAndAimCommand = new ParallelCommandGroup(
-                Commands.defer(() -> new StrafeAndAimToSpeaker(
-                        () -> -m_driverController.getLeftY(),
-                        () -> -m_driverController.getLeftX(),
-                        m_robotDrive),
-                        Set.of(m_robotDrive)));
-
         Command speakerPosition10Command = new ParallelCommandGroup(
                 Commands.defer(() -> new PositionWithSpeaker(
                         () -> -m_driverController.getLeftX(),
@@ -460,35 +487,10 @@ public class RobotContainer {
                         OffsetTags.SPEAKER_15FT),
                         Set.of(m_robotDrive)));
 
-        Command ampCommand = Commands.defer(() -> new PositionWithAmp(
-                () -> -m_driverController.getLeftX(),
-                m_robotDrive,
-                OffsetTags.AMP),
-                Set.of(m_robotDrive));
-
         Command otherAmpCommand = Commands.defer(() -> new PositionWithAmp(
                 () -> -m_driverController.getLeftY(),
                 m_robotDrive,
                 OffsetTags.OTHER_AMP),
-                Set.of(m_robotDrive));
-
-        Command stageHumanCommand = Commands.defer(() -> new SequentialCommandGroup(
-                new PositionWithStageSingleClimb(
-                        () -> -m_driverController.getLeftY(),
-                        OffsetTags.STAGE_HUMAN,
-                        m_robotDrive)),
-                Set.of(m_robotDrive));
-
-        Command stageAmpCommand = Commands.defer(() -> new PositionWithStageSingleClimb(
-                () -> -m_driverController.getLeftY(),
-                OffsetTags.STAGE_AMP,
-                m_robotDrive),
-                Set.of(m_robotDrive));
-
-        Command stageCenterCommand = Commands.defer(() -> new PositionWithStageSingleClimb(
-                () -> -m_driverController.getLeftY(),
-                OffsetTags.STAGE_CENTER,
-                m_robotDrive),
                 Set.of(m_robotDrive));
 
         // Each command that we plan to use for 'Lane Assist' should be deferred
@@ -497,24 +499,19 @@ public class RobotContainer {
         m_laneAssistChooser = new LoggedDashboardChooser<>("LaneAssist", new SendableChooser<>());
 
         m_laneAssistCommands.put("Amp",
-                new LaneAssist(OffsetTags.AMP.getDeferredCommand(), ampCommand));
+                new LaneAssist(m_automation.ampPath(), m_automation.ampAssist()));
         m_laneAssistCommands.put("Other Amp",
                 new LaneAssist(OffsetTags.OTHER_AMP.getDeferredCommand(), otherAmpCommand));
         m_laneAssistCommands.put("Human Player",
-                new LaneAssist(PathPlannerPoses.HUMAN_PLAYER.getDeferredCommand(),
-                        new InstantCommand()));
+                new LaneAssist(PathPlannerPoses.HUMAN_PLAYER.getDeferredCommand(), new InstantCommand()));
         m_laneAssistCommands.put("Aim at Speaker",
-                new LaneAssist(Commands.none(), speakerStrafeAndAimCommand));
-        m_laneAssistCommands.put("Amp",
-                new LaneAssist(OffsetTags.AMP.getDeferredCommand(), ampCommand));
-        m_laneAssistCommands.put("Other Amp",
-                new LaneAssist(OffsetTags.OTHER_AMP.getDeferredCommand(), otherAmpCommand));
+                new LaneAssist(Commands.none(), m_automation.aimAtSpeakerAssist()));
         m_laneAssistCommands.put("Stage Center",
-                new LaneAssist(OffsetTags.STAGE_CENTER.getDeferredCommand(), stageCenterCommand));
+                new LaneAssist(m_automation.stageCenterPath(), m_automation.stageCenterAssist()));
         m_laneAssistCommands.put("Stage Human",
-                new LaneAssist(OffsetTags.STAGE_HUMAN.getDeferredCommand(), stageHumanCommand));
+                new LaneAssist(m_automation.stageHumanPath(), m_automation.stageHumanPath()));
         m_laneAssistCommands.put("Stage Amp",
-                new LaneAssist(OffsetTags.STAGE_AMP.getDeferredCommand(), stageAmpCommand));
+                new LaneAssist(m_automation.stageAmpPath(), m_automation.stageAmpAssist()));
         m_laneAssistCommands.put("Speaker (10 ft)",
                 new LaneAssist(OffsetTags.SPEAKER_10FT.getDeferredCommand(), speakerPosition10Command));
         m_laneAssistCommands.put("Speaker (15 ft)",
