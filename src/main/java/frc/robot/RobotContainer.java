@@ -226,10 +226,10 @@ public class RobotContainer {
                 .whileTrue(m_automation.stageCenterAssist());
 
         m_driverController.x() // .and(m_driverController.leftBumper().negate())
-                .whileTrue(m_automation.stageHumanPath());
+                .whileTrue(m_automation.stageLeftPath());
 
         m_driverController.x().and(m_driverController.leftBumper())
-                .whileTrue(m_automation.stageLeftPath());
+                .whileTrue(m_automation.stageLeftAssist());
 
         m_driverController.rightBumper()
                 .whileTrue(m_automation.aimAtSpeakerAssist());

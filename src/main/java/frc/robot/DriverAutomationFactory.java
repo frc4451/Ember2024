@@ -54,7 +54,7 @@ public class DriverAutomationFactory {
 
     public Command stageHumanAssist() {
         return Commands.defer(() -> new PositionWithStageSingleClimb(
-                () -> -driverController.getLeftY(),
+                () -> driverController.getLeftY(),
                 OffsetTags.STAGE_HUMAN,
                 drive),
                 Set.of(drive));
@@ -66,7 +66,7 @@ public class DriverAutomationFactory {
 
     public Command stageAmpAssist() {
         return Commands.defer(() -> new PositionWithStageSingleClimb(
-                () -> -driverController.getLeftY(),
+                () -> driverController.getLeftY(),
                 OffsetTags.STAGE_AMP,
                 drive),
                 Set.of(drive));
