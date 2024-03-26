@@ -133,7 +133,7 @@ public final class Constants {
          * Effective wheel diameter of wheel. See for the calculation
          * {@link frc.robot.commands.WheelRadiusCharacterization}
          */
-        public static final double kWheelDiameterMeters = Units.inchesToMeters(2.882484876219159);
+        public static final double kWheelDiameterMeters = Units.inchesToMeters(2.8520037786149888);
         public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
         // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
         // teeth on the bevel pinion
