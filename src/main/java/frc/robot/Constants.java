@@ -71,7 +71,7 @@ public final class Constants {
     public static final class DriveConstants {
         // Driving Parameters - Note that these are not the maximum capable speeds of
         // the robot, rather the allowed maximum speeds
-        public static final double kMaxSpeedMetersPerSecond = 4.8;
+        public static final double kMaxSpeedMetersPerSecond = 5.1;
         public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
         public static final double kDirectionSlewRate = 1.2; // radians per second
@@ -120,7 +120,7 @@ public final class Constants {
         // This changes the drive speed of the module (a pinion gear with more teeth
         // will result in a
         // robot that drives faster).
-        public static final int kDrivingMotorPinionTeeth = 13;
+        public static final int kDrivingMotorPinionTeeth = 14;
 
         // Invert the turning encoder, since the output shaft rotates in the opposite
         // direction of
