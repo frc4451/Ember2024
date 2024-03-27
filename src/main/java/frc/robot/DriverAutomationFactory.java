@@ -101,6 +101,12 @@ public class DriverAutomationFactory {
     }
 
     public Command stageRightAssist() {
-        return Commands.deferredProxy(() -> GarageUtils.isBlueAlliance() ? stageHumanAssist() : stageAmpAssist());
+        return Commands.deferredProxy(() -> GarageUtils.isBlueAlliance()
+                ? stageHumanAssist()
+                : stageAmpAssist());
+    }
+
+    public Command humanPlayerStationPath() {
+        return Commands.deferredProxy(() -> OffsetTags.HUMAN_PLAYER.getDeferredCommand());
     }
 }

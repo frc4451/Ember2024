@@ -234,6 +234,8 @@ public class RobotContainer {
         m_driverController.rightBumper()
                 .whileTrue(m_automation.aimAtSpeakerAssist());
 
+        m_driverController.start()
+                .whileTrue(m_automation.humanPlayerStationPath());
     }
 
     private void configureOperatorBindings() {
