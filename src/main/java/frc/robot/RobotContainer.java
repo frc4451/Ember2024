@@ -236,6 +236,10 @@ public class RobotContainer {
 
         m_driverController.start()
                 .whileTrue(m_automation.humanPlayerStationPath());
+
+        // start
+        // and
+        // left bumper
     }
 
     private void configureOperatorBindings() {
@@ -267,32 +271,23 @@ public class RobotContainer {
         // 15 ft
         m_operatorController.povUp()
                 .onTrue(
-                        m_shooter.setVelocityShooterCommand(85.0, 75.0)
-                                .alongWith(m_pivot.setGoalCommand(
-                                        Rotation2d.fromDegrees(27.875))))
+                        m_shooter.setVelocityShooterCommand(BobotState.kLeftShooterSpeed, BobotState.kRightShooterSpeed)
+                                .alongWith(m_pivot.setGoalCommand(Rotation2d.fromDegrees(26.9))))
                 .onFalse(m_shooter.stopCommand());
         m_operatorController.povDown()
                 .onTrue(
-                        m_shooter.setVelocityShooterCommand(54.9, 54.9)
-                                .alongWith(m_pivot.setGoalCommand(
-                                        Rotation2d.fromDegrees(42))))
+                        m_shooter.setVelocityShooterCommand(BobotState.kLeftShooterSpeed, BobotState.kRightShooterSpeed)
+                                .alongWith(m_pivot.setGoalCommand(Rotation2d.fromDegrees(26.9))))
                 .onFalse(m_shooter.stopCommand());
-        // up against the subwoofer
-        // m_operatorController.povDown()
-        // .whileTrue(m_pivot.runTrapezoidProfileCommand())
-        // .onTru e(
-        // m_shooter.setVelocityShooterCommand(60.0, 60.0)
-        // .alongWith(m_pivot.setSetpointStateCommand(Rotation2d.fromDegrees(55))))
-        // .onFalse(m_shooter.stopCommand());
         // 10ft shot
         m_operatorController.povLeft()
-                .onTrue(m_shooter.setVelocityShooterCommand(85.0, 75.0)
-                        .alongWith(m_pivot.setGoalCommand(Rotation2d.fromDegrees(36))))
+                .onTrue(m_shooter.setVelocityShooterCommand(BobotState.kLeftShooterSpeed, BobotState.kRightShooterSpeed)
+                        .alongWith(m_pivot.setGoalCommand(Rotation2d.fromDegrees(34))))
                 .onFalse(m_shooter.stopCommand());
         // 13ft shot
         m_operatorController.povRight()
-                .onTrue(m_shooter.setVelocityShooterCommand(85.0, 75.0)
-                        .alongWith(m_pivot.setGoalCommand(Rotation2d.fromDegrees(31.5))))
+                .onTrue(m_shooter.setVelocityShooterCommand(BobotState.kLeftShooterSpeed, BobotState.kRightShooterSpeed)
+                        .alongWith(m_pivot.setGoalCommand(Rotation2d.fromDegrees(28.5))))
                 .onFalse(m_shooter.stopCommand());
 
         // Fire the shooter, works with presets as well

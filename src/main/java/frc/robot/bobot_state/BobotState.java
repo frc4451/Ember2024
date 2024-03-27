@@ -14,7 +14,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.bobot_state.TargetAngleTrackers.NoteAngleTracker;
 import frc.robot.bobot_state.TargetAngleTrackers.SpeakerAngleTracker;
-import frc.robot.subsystems.pivot.PivotLocation;
 import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
 import frc.robot.subsystems.vision.apriltag.OffsetTags;
 import frc.utils.VirtualSubsystem;
@@ -31,9 +30,16 @@ public class BobotState extends VirtualSubsystem {
 
     private static ShootingInterpolator.InterpolatedCalculation shootingCalculation;
 
+    public static final double kLeftShooterSpeed = 88.0;
+
+    public static final double kRightShooterSpeed = 73.0;
+
     private static Pose2d robotPose = new Pose2d();
 
-    /** {@link #robotPose} predicted ahead via a pose expontential of our current velocity */
+    /**
+     * {@link #robotPose} predicted ahead via a pose expontential of our current
+     * velocity
+     */
     private static Pose2d predictedPose = new Pose2d();
 
     private static Set<TargetWithSource> visibleAprilTags = new HashSet<>();
@@ -49,57 +55,59 @@ public class BobotState extends VirtualSubsystem {
 
     static {
         shootingInterpolator.addEntries(
-                // // Subwoofer (calculated: 92cm from wall)
-                // new ShootingInterpolator.DistanceAngleSpeedEntry(
-                // 1.36,
-                // 55.0,
-                // 70.0,
-                // 50.0),
-                // 10ft
+                new ShootingInterpolator.DistanceAngleSpeedEntry(
+                        Units.feetToMeters(7),
+                        42.0,
+                        kLeftShooterSpeed,
+                        kRightShooterSpeed),
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
-                        Double.MIN_VALUE,
-                        PivotLocation.kElevatorDownSoftMax.angle.getDegrees(),
-                        88.0,
-                        73.0),
-
-                new ShootingInterpolator.DistanceAngleSpeedEntry(
-                        Units.feetToMeters(8.3),
+                        Units.feetToMeters(8),
                         40.0,
-                        88.0,
-                        73.0),
+                        kLeftShooterSpeed,
+                        kRightShooterSpeed),
+
+                new ShootingInterpolator.DistanceAngleSpeedEntry(
+                        Units.feetToMeters(9),
+                        37.0,
+                        kLeftShooterSpeed,
+                        kRightShooterSpeed),
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(10),
-                        36.0,
-                        88.0,
-                        73.0),
+                        34.0,
+                        kLeftShooterSpeed,
+                        kRightShooterSpeed),
+
+                new ShootingInterpolator.DistanceAngleSpeedEntry(
+                        Units.feetToMeters(11),
+                        31.5,
+                        kLeftShooterSpeed,
+                        kRightShooterSpeed),
+
+                new ShootingInterpolator.DistanceAngleSpeedEntry(
+                        Units.feetToMeters(12),
+                        30,
+                        kLeftShooterSpeed,
+                        kRightShooterSpeed),
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(13),
-                        31.5,
-                        88.0,
-                        73.0),
+                        28.5,
+                        kLeftShooterSpeed,
+                        kRightShooterSpeed),
+
+                new ShootingInterpolator.DistanceAngleSpeedEntry(
+                        Units.feetToMeters(14),
+                        27.5,
+                        kLeftShooterSpeed,
+                        kRightShooterSpeed),
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(15),
-                        27.875,
-                        85.0,
-                        70.0)
-
-        // // Empirically gathered 15ft shot (prototype)
-        // new ShootingInterpolator.DistanceAngleSpeedEntry(
-        // Units.feetToMeters(15),
-        // 31.0,
-        // 85.0,
-        // 75.0),
-        // // Empirically gathered 21ft shot (prototype)
-        // new ShootingInterpolator.DistanceAngleSpeedEntry(
-        // Units.feetToMeters(21),
-        // 26.0,
-        // 85.0,
-        // 70.0)
-        );
+                        26.9,
+                        kLeftShooterSpeed,
+                        kRightShooterSpeed));
     }
 
     public static void updateRobotPose(Pose2d pose) {
