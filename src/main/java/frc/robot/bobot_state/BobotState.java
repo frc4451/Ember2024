@@ -182,10 +182,16 @@ public class BobotState extends VirtualSubsystem {
 
     @Override
     public void periodic() {
-        double distanceFromSpeaker = OffsetTags.SPEAKER_AIM.getDistanceFrom(predictedPose);
-        shootingCalculation = shootingInterpolator.calculateInterpolation(distanceFromSpeaker);
+        {
+            String calcLogRoot = logRoot + "RobotOdometry/";
+            Logger.recordOutput(calcLogRoot + "Estimated", robotPose);
+            Logger.recordOutput(calcLogRoot + "Predicted", predictedPose);
+        }
 
         {
+            double distanceFromSpeaker = OffsetTags.SPEAKER_AIM.getDistanceFrom(predictedPose);
+            shootingCalculation = shootingInterpolator.calculateInterpolation(distanceFromSpeaker);
+
             String calcLogRoot = logRoot + "ShootingCalculation/";
             Logger.recordOutput(calcLogRoot + "DistanceMeters", distanceFromSpeaker);
             Logger.recordOutput(calcLogRoot + "DistanceFeet", Units.metersToFeet(distanceFromSpeaker));

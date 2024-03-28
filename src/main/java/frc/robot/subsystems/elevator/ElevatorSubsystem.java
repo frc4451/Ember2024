@@ -108,6 +108,13 @@ public class ElevatorSubsystem extends SubsystemBase {
                 1.0));
     }
 
+    public Trigger elevatorIsAtSubwooferShot() {
+        return new Trigger(() -> MathUtil.isNear(
+                ElevatorConstants.kSubwooferShotHeightInches,
+                this.inputs.positionInches,
+                2.0));
+    }
+
     public Trigger elevatorIsAtAmp() {
         return new Trigger(() -> MathUtil.isNear(
                 ElevatorConstants.kAmpScoreHeightInches,

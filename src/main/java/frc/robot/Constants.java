@@ -252,6 +252,7 @@ public final class Constants {
         public static final double kMaxHeightInches = 23.5;
 
         public static final double kAmpScoreHeightInches = 15.0;
+        public static final double kSubwooferShotHeightInches = 8.0;
         public static final double kTrapScoreHeightInches = kMaxHeightInches;
 
         public static final double kPivotClearanceHeightInches = 15.0;

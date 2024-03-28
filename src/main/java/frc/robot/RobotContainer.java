@@ -272,11 +272,20 @@ public class RobotContainer {
         // Subwoofer shot
         // This could be made into a singular command sequence.
         m_operatorController.povDown()
-                .and(m_elevator.elevatorIsAtAmp().negate())
-                .onTrue(m_elevator.setSetpointCommand(ElevatorConstants.kAmpScoreHeightInches));
+                .and(m_elevator.elevatorIsAtSubwooferShot().negate())
+                .onTrue(new ParallelCommandGroup(
+                        m_elevator.setSetpointCommand(ElevatorConstants.kSubwooferShotHeightInches),
+                        m_shooter.setVelocityShooterCommand(
+                                BobotState.kLeftShooterSpeed,
+                                BobotState.kRightShooterSpeed)));
         m_operatorController.povDown()
-                .and(m_elevator.elevatorIsAtAmp())
-                .onTrue(m_pivot.setGoalCommand(PivotLocation.kSubwooferScoringPosition.angle));
+                .and(m_elevator.elevatorIsAtSubwooferShot())
+                .onTrue(new ParallelCommandGroup(
+                        m_pivot.setGoalCommand(PivotLocation.kSubwooferScoringPosition.angle),
+                        m_shooter.setVelocityShooterCommand(
+                                BobotState.kLeftShooterSpeed,
+                                BobotState.kRightShooterSpeed)))
+                .onFalse(m_shooter.stopCommand());
 
         // 15 ft
         m_operatorController.povUp()
