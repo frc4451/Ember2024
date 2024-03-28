@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.17,
-        "y": 6.75
+        "x": 2.19,
+        "y": 6.67
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2199999999999998,
-        "y": 6.75
+        "x": 2.2399999999999998,
+        "y": 6.67
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "McShot1"
     },
     {
       "anchor": {
