@@ -46,6 +46,7 @@ import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.elevator.ElevatorSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.pivot.PivotLocation;
 import frc.robot.subsystems.pivot.PivotSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
@@ -268,17 +269,23 @@ public class RobotContainer {
                 .onFalse(m_pivot.setEverythingCurrentCommand());
 
         // presets
+        // Subwoofer shot
+        // This could be made into a singular command sequence.
+        m_operatorController.povDown()
+                .and(m_elevator.elevatorIsAtAmp().negate())
+                .onTrue(m_elevator.setSetpointCommand(ElevatorConstants.kAmpScoreHeightInches));
+        m_operatorController.povDown()
+                .and(m_elevator.elevatorIsAtAmp())
+                .onTrue(m_pivot.setGoalCommand(PivotLocation.kSubwooferScoringPosition.angle));
+
         // 15 ft
         m_operatorController.povUp()
                 .onTrue(
                         m_shooter.setVelocityShooterCommand(BobotState.kLeftShooterSpeed, BobotState.kRightShooterSpeed)
                                 .alongWith(m_pivot.setGoalCommand(Rotation2d.fromDegrees(26.9))))
                 .onFalse(m_shooter.stopCommand());
-        m_operatorController.povDown()
-                .onTrue(
-                        m_shooter.setVelocityShooterCommand(BobotState.kLeftShooterSpeed, BobotState.kRightShooterSpeed)
-                                .alongWith(m_pivot.setGoalCommand(Rotation2d.fromDegrees(26.9))))
-                .onFalse(m_shooter.stopCommand());
+
+        // 10ft shot
         // 10ft shot
         m_operatorController.povLeft()
                 .onTrue(m_shooter.setVelocityShooterCommand(BobotState.kLeftShooterSpeed, BobotState.kRightShooterSpeed)
