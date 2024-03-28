@@ -83,11 +83,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public Command setSetpointCommand(double positionInches) {
-        return new InstantCommand(() -> this.setSetpoint(positionInches), this);
+        return new InstantCommand(() -> this.setSetpoint(positionInches));
     }
 
     public Command setSetpointCurrentCommand() {
-        return new InstantCommand(() -> this.setSetpoint(this.inputs.positionInches), this);
+        return new InstantCommand(() -> this.setSetpoint(this.inputs.positionInches));
     }
 
     public Command pidCommand() {

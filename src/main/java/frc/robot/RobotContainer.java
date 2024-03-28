@@ -271,6 +271,18 @@ public class RobotContainer {
         // presets
         // Subwoofer shot
         // This could be made into a singular command sequence.
+        // m_operatorController.povDown()
+        // .onTrue(new ParallelCommandGroup(
+        // m_shooter.setVelocityShooterCommand(
+        // BobotState.kLeftShooterSpeed,
+        // BobotState.kRightShooterSpeed),
+        // m_elevator.setSetpointCommand(ElevatorConstants.kSubwooferShotHeightInches)))
+        // .whileTrue(Commands.waitUntil(m_elevator.elevatorIsAtSubwooferShot())
+        // .andThen(m_pivot.setGoalCommand(PivotLocation.kSubwooferScoringPosition.angle)))
+        // .onFalse(new ParallelCommandGroup(
+        // m_shooter.stopShooterCommand(),
+        // m_pivot.controlOutOfTheElevatorsWay()));
+
         m_operatorController.povDown()
                 .and(m_elevator.elevatorIsAtSubwooferShot().negate())
                 .onTrue(new ParallelCommandGroup(
@@ -470,6 +482,27 @@ public class RobotContainer {
         NamedCommands.registerCommand(
                 "TargetRotation",
                 new InstantCommand(() -> BobotState.updateAimingMode(AimingMode.NONE)));
+
+        NamedCommands.registerCommand(
+                "SubwayShot",
+                Commands.sequence(
+                        m_shooter.setVelocityShooterCommand(
+                                BobotState.kLeftShooterSpeed,
+                                BobotState.kRightShooterSpeed),
+                        m_elevator.setSetpointCommand(ElevatorConstants.kSubwooferShotHeightInches),
+                        Commands.waitUntil(m_elevator.elevatorIsAtSubwooferShot()),
+                        m_pivot.setGoalCommand(PivotLocation.kSubwooferScoringPosition.angle),
+                        Commands.waitSeconds(0.75),
+                        m_shooter.setVelocityFeederCommand(ShooterConstants.kFeederShootVelocity),
+                        Commands.waitSeconds(0.25)));
+
+        NamedCommands.registerCommand(
+                "SubwayReset",
+                Commands.sequence(
+                        m_shooter.stopCommand(),
+                        m_pivot.controlOutOfTheElevatorsWay()
+                                .until(m_pivot.isBelowElevatorConflictTreshold()),
+                        m_elevator.setSetpointCommand(ElevatorConstants.kMinHeightInches)));
     }
 
     /**
