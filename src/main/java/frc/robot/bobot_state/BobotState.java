@@ -9,7 +9,6 @@ import org.littletonrobotics.junction.Logger;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.bobot_state.TargetAngleTrackers.NoteAngleTracker;
@@ -124,10 +123,6 @@ public class BobotState extends VirtualSubsystem {
 
     public static Pose2d getPredictedPose() {
         return predictedPose;
-    }
-
-    public static Pose3d getRobotPose3d() {
-        return new Pose3d(BobotState.getRobotPose());
     }
 
     public static void updateVisibleAprilTags(Set<TargetWithSource> trackedAprilTags) {

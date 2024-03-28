@@ -34,7 +34,7 @@ public class SpeakerAngleTracker extends TargetAngleTracker {
     }
 
     public void update() {
-        Pose3d robotPose = BobotState.getRobotPose3d();
+        Pose3d robotPose = new Pose3d(BobotState.getRobotPose());
 
         Set<TargetWithSource> targets = BobotState.getVisibleAprilTags();
         AprilTagAlgorithms.filterTags(targets.stream(), GarageUtils.getSpeakerTag())
@@ -50,7 +50,7 @@ public class SpeakerAngleTracker extends TargetAngleTracker {
                         });
         rotationTarget = Optional.of(
                 targetPose
-                        .relativeTo(BobotState.getRobotPose3d())
+                        .relativeTo(robotPose)
                         .getTranslation()
                         .toTranslation2d()
                         .getAngle()
