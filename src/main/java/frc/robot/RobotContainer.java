@@ -413,8 +413,14 @@ public class RobotContainer {
                 new SequentialCommandGroup(
                         new ParallelDeadlineGroup(
                                 m_feeder.setVelocityBeambreakCommand(FeederConstants.kIntakeVelocity),
-                                m_intake.setVelocityCommand(IntakeConstants.kIntakePercent)),
+                                m_intake.setPercentOutputCommand(IntakeConstants.kIntakePercent)),
                         m_intake.stopCommand()));
+
+        NamedCommands.registerCommand("Intake3Seconds", 
+                new ParallelDeadlineGroup(
+                        Commands.waitSeconds(3.0),
+                        m_feeder.setVelocityBeambreakCommand(FeederConstants.kIntakeVelocity),
+                        m_intake.setPercentOutputCommand(IntakeConstants.kIntakePercent)));
 
         // Run Interpolation in Parallel
         NamedCommands.registerCommand(
@@ -458,7 +464,7 @@ public class RobotContainer {
                 "FIRE!",
                 new ParallelCommandGroup(
                         m_pivot.controlGoalToSpeakerCommand(),
-                        m_intake.setVelocityCommand(IntakeConstants.kIntakePercent),
+                        m_intake.setPercentOutputCommand(IntakeConstants.kIntakePercent),
                         m_shooter.rampUpSpeedToSpeakerCommand(),
                         m_feeder.setVelocityCommand(FeederConstants.kShootVelocity)));
 
@@ -468,7 +474,7 @@ public class RobotContainer {
                         new ParallelDeadlineGroup(
                                 new WaitCommand(1),
                                 m_pivot.controlGoalToSpeakerCommand(),
-                                m_intake.setVelocityCommand(IntakeConstants.kIntakePercent),
+                                m_intake.setPercentOutputCommand(IntakeConstants.kIntakePercent),
                                 m_shooter.rampUpSpeedToSpeakerCommand(),
                                 m_feeder.setVelocityCommand(FeederConstants.kShootVelocity)),
                         m_feeder.stopCommand()));
@@ -480,7 +486,7 @@ public class RobotContainer {
                         new ParallelDeadlineGroup(
                                 new WaitCommand(0.5),
                                 m_pivot.controlGoalToSpeakerCommand(),
-                                m_intake.setVelocityCommand(IntakeConstants.kIntakePercent),
+                                m_intake.setPercentOutputCommand(IntakeConstants.kIntakePercent),
                                 m_shooter.rampUpSpeedToSpeakerCommand(),
                                 m_feeder.setVelocityCommand(FeederConstants.kShootVelocity)),
                         m_feeder.stopCommand()));
@@ -492,7 +498,7 @@ public class RobotContainer {
                         new ParallelDeadlineGroup(
                                 new WaitCommand(0.25),
                                 m_pivot.controlGoalToSpeakerCommand(),
-                                m_intake.setVelocityCommand(IntakeConstants.kIntakePercent),
+                                m_intake.setPercentOutputCommand(IntakeConstants.kIntakePercent),
                                 m_shooter.rampUpSpeedToSpeakerCommand(),
                                 m_feeder.setVelocityCommand(FeederConstants.kShootVelocity)),
                         m_feeder.stopCommand()));
@@ -529,6 +535,41 @@ public class RobotContainer {
                         m_pivot.controlOutOfTheElevatorsWay()
                                 .until(m_pivot.isBelowElevatorConflictTreshold()),
                         m_elevator.setSetpointCommand(ElevatorConstants.kMinHeightInches)));
+
+
+
+        // New Auto Structure Commands:
+        // Using event markers in pp/choreo, we can move any commands we want run
+        // during paths there and only using explicit calls during auto creation for
+        // commands run in between paths
+
+        // Intake on/off
+        NamedCommands.registerCommand(
+                "IntakeOn", 
+                Commands.parallel(
+                        m_feeder.setVelocityBeambreakCommand(FeederConstants.kIntakeVelocity),
+                        m_intake.setPercentOutputCommand(IntakeConstants.kIntakePercent)
+                ));
+        NamedCommands.registerCommand(
+                "IntakeOff",
+                Commands.parallel(
+                        m_feeder.stopCommand(),
+                        m_intake.stopCommand()));
+
+        // ramp up / interpolate on/off
+        NamedCommands.registerCommand(
+                "ShotPrepare",
+                Commands.parallel(
+                        m_shooter.rampUpSpeedToSpeakerCommand(),
+                        m_pivot.controlGoalToSpeakerCommand()
+                ));
+        NamedCommands.registerCommand(
+                "AtEase",
+                Commands.parallel(
+                        m_shooter.stopCommand(),
+                        m_pivot.setEverythingCurrentCommand()
+                ));
+
     }
 
     /**
