@@ -199,8 +199,6 @@ public final class Constants {
         public static final int kBeambreakChannel = 0;
 
         public static final int kIntakeCanId = 1;
-        // public static final double kIntakeVelocity = 30.0;
-        // public static final double kIntakeReverseVelocity = -50.0;
 
         public static final double kIntakePercent = 0.45;
         public static final double kIntakeReversePercent = -0.50;
@@ -226,16 +224,11 @@ public final class Constants {
         public static final int kBeambreakChannel = 1;
     }
 
-<<<<<<< HEAD
-        public static final double kFeederIntakeVelocity = 22.0;
-        public static final double kFeederIntakeReverseVelocity = -50.0;
-        public static final double kFeederShootVelocity = 50.0;
-=======
     public static final class FeederConstants {
         public static final int kCanID = 2;
         public static final double kIntakeVelocity = 20.0;
         public static final double kShootVelocity = 50.0;
->>>>>>> origin/feed
+        public static final double kReverseVelocity = -20.0;
     }
 
     public static final class ClimberConstants {

@@ -474,6 +474,30 @@ public class RobotContainer {
                         m_feeder.stopCommand()));
 
         NamedCommands.registerCommand(
+                "NewFireOne",
+                new SequentialCommandGroup(
+                        Commands.waitSeconds(0.5),
+                        new ParallelDeadlineGroup(
+                                new WaitCommand(0.5),
+                                m_pivot.controlGoalToSpeakerCommand(),
+                                m_intake.setVelocityCommand(IntakeConstants.kIntakePercent),
+                                m_shooter.rampUpSpeedToSpeakerCommand(),
+                                m_feeder.setVelocityCommand(FeederConstants.kShootVelocity)),
+                        m_feeder.stopCommand()));
+
+        NamedCommands.registerCommand(
+                "NewFireHS",
+                new SequentialCommandGroup(
+                        Commands.waitSeconds(0.25),
+                        new ParallelDeadlineGroup(
+                                new WaitCommand(0.25),
+                                m_pivot.controlGoalToSpeakerCommand(),
+                                m_intake.setVelocityCommand(IntakeConstants.kIntakePercent),
+                                m_shooter.rampUpSpeedToSpeakerCommand(),
+                                m_feeder.setVelocityCommand(FeederConstants.kShootVelocity)),
+                        m_feeder.stopCommand()));
+        
+        NamedCommands.registerCommand(
                 "TargetNote",
                 new InstantCommand(() -> BobotState.updateAimingMode(AimingMode.OBJECT_DETECTION)));
 
