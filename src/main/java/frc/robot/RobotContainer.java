@@ -228,10 +228,6 @@ public class RobotContainer {
 
         m_driverController.x().and(m_driverController.leftBumper())
                 .whileTrue(m_automation.stageLeftAssist());
-        m_intake.setVelocityThenStopCommand(
-                IntakeConstants.kIntakePercent)
-                .alongWith(m_feeder.setVelocityBeambreakCommand(
-                        FeederConstants.kIntakeVelocity));
 
         m_driverController.rightBumper()
                 .whileTrue(m_automation.aimAtSpeakerAssist());
@@ -250,15 +246,6 @@ public class RobotContainer {
                         m_pivot.controlGoalToSpeakerCommand(),
                         m_shooter.rampUpSpeedToSpeakerCommand()))
                 .onFalse(m_shooter.stopCommand());
-
-        m_operatorController.leftTrigger().and(m_operatorController.rightTrigger())
-                .onTrue(m_feeder.setVelocityCommand(FeederConstants.kShootVelocity))
-                .whileTrue(new ParallelCommandGroup(
-                        m_pivot.controlGoalToSpeakerCommand(),
-                        m_shooter.rampUpSpeedToSpeakerCommand()))
-                .onFalse(new ParallelCommandGroup(
-                        m_shooter.stopCommand(),
-                        m_feeder.stopCommand()));
 
         m_operatorController.rightTrigger()
                 .onTrue(m_feeder.setVelocityCommand(FeederConstants.kShootVelocity))
