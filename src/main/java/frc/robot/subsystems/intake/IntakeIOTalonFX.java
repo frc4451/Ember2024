@@ -10,6 +10,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.PhoenixConstants;
 
 public class IntakeIOTalonFX implements IntakeIO {
@@ -49,12 +50,12 @@ public class IntakeIOTalonFX implements IntakeIO {
         StatusSignal.refreshAll(velocity, dutyCycle, voltage);
         inputs.appliedVoltage = voltage.getValueAsDouble();
         inputs.appliedDutyCycle = dutyCycle.getValueAsDouble();
-        inputs.velocityRotPerSecond = velocity.getValueAsDouble();
+        inputs.velocityRotPerSecond = velocity.getValueAsDouble() / IntakeConstants.kReduction;
     }
 
     @Override
     public void setVelocity(double velocityRotPerSecond) {
-        talon.setControl(velocityVoltage.withVelocity(velocityRotPerSecond));
+        talon.setControl(velocityVoltage.withVelocity(velocityRotPerSecond * IntakeConstants.kReduction));
     }
 
     @Override

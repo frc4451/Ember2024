@@ -196,6 +196,8 @@ public final class Constants {
     }
 
     public static final class IntakeConstants {
+        public static final int kReduction = 3;
+
         public static final int kBeambreakChannel = 0;
 
         public static final int kIntakeCanId = 1;
