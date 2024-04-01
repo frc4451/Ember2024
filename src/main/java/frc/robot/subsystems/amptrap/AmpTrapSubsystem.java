@@ -25,9 +25,7 @@ public class AmpTrapSubsystem extends SubsystemBase {
     public AmpTrapSubsystem() {
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
-                // io = new AmpTrapIOTalonFX(true);
-                io = new AmpTrapIO() {
-                };
+                io = new AmpTrapIOTalonFX(true);
                 beambreak = new BeambreakDigitalInput(AmpTrapConstants.kBeambreakChannel);
                 break;
             case SIM:
