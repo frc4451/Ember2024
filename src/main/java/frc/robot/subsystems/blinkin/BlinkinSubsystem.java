@@ -12,8 +12,7 @@ public class BlinkinSubsystem extends SubsystemBase {
     private final BlinkinIO io;
     private final BlinkinIOInputsAutoLogged inputs = new BlinkinIOInputsAutoLogged();
 
-    private BlinkinColors colorSetpoint = BlinkinColors.UNKNOWN;
-    private BlinkinPattern pattern = BlinkinPattern.SOLID;
+    private BlinkinState state = BlinkinState.DEFAULT;
 
     private final Timer blinkController = new Timer();
 
@@ -39,33 +38,26 @@ public class BlinkinSubsystem extends SubsystemBase {
         io.updateInputs(inputs);
         Logger.processInputs("Blinkin", inputs);
 
-        if (blinkController.hasElapsed(pattern.blinkIntervalSeconds)) {
+        if (blinkController.hasElapsed(state.pattern.blinkIntervalSeconds)) {
             blinkController.reset();
-            if (inputs.color == colorSetpoint) {
+            if (inputs.color == state.color) {
                 io.setColor(BlinkinColors.UNKNOWN);
             } else {
-                io.setColor(colorSetpoint);
+                io.setColor(state.color);
             }
         }
 
-        Logger.recordOutput("Blinkin/ColorSetpoint", colorSetpoint);
-        Logger.recordOutput("Blinkin/Blink/TimeUntilBlink", pattern.blinkIntervalSeconds - blinkController.get());
-        Logger.recordOutput("Blinkin/Pattern/Blinks", pattern.blinks);
-        Logger.recordOutput("Blinkin/Pattern/BlinkIntervalSecond", pattern.blinkIntervalSeconds);
+        Logger.recordOutput("Blinkin/ColorSetpoint", state.color);
+        Logger.recordOutput("Blinkin/TimeUntilBlink", state.pattern.blinkIntervalSeconds - blinkController.get());
+        Logger.recordOutput("Blinkin/Pattern/Blinks?", state.pattern.blinks);
+        Logger.recordOutput("Blinkin/Pattern/IntervalSecond", state.pattern.blinkIntervalSeconds);
     }
 
-    public void setColor(BlinkinColors color) {
-        colorSetpoint = color;
-        io.setColor(color);
+    public void setState(BlinkinState state) {
+        this.state = state;
     }
 
-    public void setPattern(BlinkinPattern pattern) {
-        this.pattern = pattern;
-        blinkController.reset();
-        io.setColor(colorSetpoint);
-    }
-
-    public Command setColorCommand(BlinkinColors color) {
-        return new InstantCommand(() -> setColor(color));
+    public Command setStateCommand(BlinkinState state) {
+        return new InstantCommand(() -> setState(state));
     }
 }

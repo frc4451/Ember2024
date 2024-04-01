@@ -41,7 +41,7 @@ import frc.robot.commands.WheelRadiusCharacterization;
 import frc.robot.pathplanner.PathPlannerUtils;
 import frc.robot.pathplanner.paths.PathPlannerPoses;
 import frc.robot.subsystems.amptrap.AmpTrapSubsystem;
-import frc.robot.subsystems.blinkin.BlinkinColors;
+import frc.robot.subsystems.blinkin.BlinkinState;
 import frc.robot.subsystems.blinkin.BlinkinSubsystem;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -126,6 +126,7 @@ public class RobotContainer {
         configureDriverBindings();
         configureOperatorBindings();
         configureProgrammerBindings();
+        configureLights();
         configureLaneChooser();
 
         // Configure default commands
@@ -160,8 +161,6 @@ public class RobotContainer {
                         new WheelRadiusCharacterization(
                                 m_robotDrive,
                                 WheelRadiusCharacterization.Direction.COUNTER_CLOCKWISE)));
-
-        m_intake.beambreakIsObstructed().whileTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_GOLD));
     }
 
     private void configureDriverBindings() {
@@ -390,6 +389,12 @@ public class RobotContainer {
     }
 
     private void configureProgrammerBindings() {
+    }
+
+    private void configureLights() {
+        m_feeder.beambreakIsObstructed()
+                .onTrue(m_blinkin.setStateCommand(BlinkinState.NOTE))
+                .onFalse(m_blinkin.setStateCommand(BlinkinState.DEFAULT));
     }
 
     /**
