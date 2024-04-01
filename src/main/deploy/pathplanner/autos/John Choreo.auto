@@ -5,7 +5,7 @@
       "x": 1.3586821556091309,
       "y": 5.548052787780762
     },
-    "rotation": 1.9782202121213871e-19
+    "rotation": 1.8615899370757513e-21
   },
   "command": {
     "type": "sequential",
@@ -26,7 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "JohnCoreo - 1"
+            "pathName": "JohnChoreo - 1"
           }
         },
         {
@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "JohnCoreo - 2"
+            "pathName": "JohnChoreo - 2"
           }
         },
         {
@@ -50,13 +50,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "JohnCoreo - 3"
+            "pathName": "JohnChoreo - 3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "JohnCoreo - 4"
+            "pathName": "JohnChoreo - 4"
           }
         },
         {
@@ -68,13 +68,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "JohnCoreo - 5"
+            "pathName": "JohnChoreo - 5"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "JohnCoreo - 6"
+            "pathName": "JohnChoreo - 6"
           }
         },
         {
@@ -86,13 +86,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "JohnCoreo - 7"
+            "pathName": "JohnChoreo - 7"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "JohnCoreo - 8"
+            "pathName": "JohnChoreo - 8"
           }
         },
         {

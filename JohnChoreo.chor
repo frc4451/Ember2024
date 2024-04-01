@@ -13,7 +13,7 @@
         "wheelRadius": 0.03809997942601111
     },
     "paths": {
-        "JohnCoreo - 1": {
+        "JohnChoreo - 1": {
             "waypoints": [
                 {
                     "x": 1.3586821556091309,
@@ -883,7 +883,7 @@
             ],
             "isTrajectoryStale": false
         },
-        "JohnCoreo - 2": {
+        "JohnChoreo - 2": {
             "waypoints": [
                 {
                     "x": 2.8626065254211426,
@@ -1714,7 +1714,7 @@
             ],
             "isTrajectoryStale": false
         },
-        "JohnCoreo - 3": {
+        "JohnChoreo - 3": {
             "waypoints": [
                 {
                     "x": 2.803020477294922,
@@ -1946,7 +1946,7 @@
             "eventMarkers": [],
             "isTrajectoryStale": false
         },
-        "JohnCoreo - 4": {
+        "JohnChoreo - 4": {
             "waypoints": [
                 {
                     "x": 2.5837929248809814,
@@ -2205,7 +2205,7 @@
             ],
             "isTrajectoryStale": false
         },
-        "JohnCoreo - 5": {
+        "JohnChoreo - 5": {
             "waypoints": [
                 {
                     "x": 3.6132097244262695,
@@ -2536,7 +2536,7 @@
             ],
             "isTrajectoryStale": false
         },
-        "JohnCoreo - 6": {
+        "JohnChoreo - 6": {
             "waypoints": [
                 {
                     "x": 8.157519340515137,
@@ -2867,7 +2867,7 @@
             ],
             "isTrajectoryStale": false
         },
-        "JohnCoreo - 7": {
+        "JohnChoreo - 7": {
             "waypoints": [
                 {
                     "x": 3.743985652923584,
@@ -3185,7 +3185,7 @@
             ],
             "isTrajectoryStale": false
         },
-        "JohnCoreo - 8": {
+        "JohnChoreo - 8": {
             "waypoints": [
                 {
                     "x": 8.125304222106934,
@@ -3509,5 +3509,5 @@
         }
     },
     "splitTrajectoriesAtStopPoints": false,
-    "usesObstacles": false
+    "usesObstacles": true
 }
