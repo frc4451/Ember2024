@@ -41,6 +41,7 @@ import frc.robot.commands.WheelRadiusCharacterization;
 import frc.robot.pathplanner.PathPlannerUtils;
 import frc.robot.pathplanner.paths.PathPlannerPoses;
 import frc.robot.subsystems.amptrap.AmpTrapSubsystem;
+import frc.robot.subsystems.blinkin.BlinkinColors;
 import frc.robot.subsystems.blinkin.BlinkinSubsystem;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -159,6 +160,8 @@ public class RobotContainer {
                         new WheelRadiusCharacterization(
                                 m_robotDrive,
                                 WheelRadiusCharacterization.Direction.COUNTER_CLOCKWISE)));
+
+        m_intake.beambreakIsObstructed().whileTrue(m_blinkin.setColorCommand(BlinkinColors.SOLID_GOLD));
     }
 
     private void configureDriverBindings() {
@@ -235,9 +238,6 @@ public class RobotContainer {
         m_driverController.start()
                 .whileTrue(m_automation.humanPlayerStationPath());
 
-        // start
-        // and
-        // left bumper
     }
 
     private void configureOperatorBindings() {
