@@ -228,10 +228,10 @@ public class RobotContainer {
 
         m_driverController.x().and(m_driverController.leftBumper())
                 .whileTrue(m_automation.stageLeftAssist());
-                                m_intake.setVelocityThenStopCommand(
-                                        IntakeConstants.kIntakePercent)
-                                        .alongWith(m_feeder.setVelocityBeambreakCommand(
-                                                FeederConstants.kIntakeVelocity));
+        m_intake.setVelocityThenStopCommand(
+                IntakeConstants.kIntakePercent)
+                .alongWith(m_feeder.setVelocityBeambreakCommand(
+                        FeederConstants.kIntakeVelocity));
 
         m_driverController.rightBumper()
                 .whileTrue(m_automation.aimAtSpeakerAssist());
@@ -416,7 +416,7 @@ public class RobotContainer {
                                 m_intake.setPercentOutputCommand(IntakeConstants.kIntakePercent)),
                         m_intake.stopCommand()));
 
-        NamedCommands.registerCommand("Intake3Seconds", 
+        NamedCommands.registerCommand("Intake3Seconds",
                 new ParallelDeadlineGroup(
                         Commands.waitSeconds(3.0),
                         m_feeder.setVelocityBeambreakCommand(FeederConstants.kIntakeVelocity),
@@ -502,7 +502,7 @@ public class RobotContainer {
                                 m_shooter.rampUpSpeedToSpeakerCommand(),
                                 m_feeder.setVelocityCommand(FeederConstants.kShootVelocity)),
                         m_feeder.stopCommand()));
-        
+
         NamedCommands.registerCommand(
                 "TargetNote",
                 new InstantCommand(() -> BobotState.updateAimingMode(AimingMode.OBJECT_DETECTION)));
@@ -536,8 +536,6 @@ public class RobotContainer {
                                 .until(m_pivot.isBelowElevatorConflictTreshold()),
                         m_elevator.setSetpointCommand(ElevatorConstants.kMinHeightInches)));
 
-
-
         // New Auto Structure Commands:
         // Using event markers in pp/choreo, we can move any commands we want run
         // during paths there and only using explicit calls during auto creation for
@@ -545,11 +543,10 @@ public class RobotContainer {
 
         // Intake on/off
         NamedCommands.registerCommand(
-                "IntakeOn", 
+                "IntakeOn",
                 Commands.parallel(
                         m_feeder.setVelocityBeambreakCommand(FeederConstants.kIntakeVelocity),
-                        m_intake.setPercentOutputCommand(IntakeConstants.kIntakePercent)
-                ));
+                        m_intake.setPercentOutputCommand(IntakeConstants.kIntakePercent)));
         NamedCommands.registerCommand(
                 "IntakeOff",
                 Commands.parallel(
@@ -561,14 +558,12 @@ public class RobotContainer {
                 "ShotPrepare",
                 Commands.parallel(
                         m_shooter.rampUpSpeedToSpeakerCommand(),
-                        m_pivot.controlGoalToSpeakerCommand()
-                ));
+                        m_pivot.controlGoalToSpeakerCommand()));
         NamedCommands.registerCommand(
                 "AtEase",
                 Commands.parallel(
                         m_shooter.stopCommand(),
-                        m_pivot.setEverythingCurrentCommand()
-                ));
+                        m_pivot.setEverythingCurrentCommand()));
 
     }
 
