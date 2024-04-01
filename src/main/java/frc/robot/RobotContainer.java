@@ -175,7 +175,7 @@ public class RobotContainer {
 
         m_driverController.leftTrigger()
                 .whileTrue(
-                        m_intake.setVelocityThenStopCommand(IntakeConstants.kIntakePercent)
+                        m_intake.setPercentOutputThenStopCommand(IntakeConstants.kIntakePercent)
                                 .alongWith(m_feeder.setVelocityBeambreakCommand(
                                         FeederConstants.kIntakeVelocity)));
 

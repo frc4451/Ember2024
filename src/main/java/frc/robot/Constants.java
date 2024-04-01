@@ -202,7 +202,7 @@ public final class Constants {
 
         public static final int kIntakeCanId = 1;
 
-        public static final double kIntakePercent = 0.45;
+        public static final double kIntakePercent = 0.60;
         public static final double kIntakeReversePercent = -0.50;
     }
 
