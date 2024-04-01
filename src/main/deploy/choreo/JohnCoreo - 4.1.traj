@@ -156,11 +156,11 @@
       }
     },
     {
-      "timestamp": 1.1592503217235743,
+      "timestamp": 0.4972187610272258,
       "command": {
         "type": "named",
         "data": {
-          "name": "TargetRotation"
+          "name": "TargetSpeaker"
         }
       }
     }

@@ -468,26 +468,18 @@ public class RobotContainer {
 
         NamedCommands.registerCommand(
                 "NewFireOne",
-                new SequentialCommandGroup(
+                Commands.sequence(
                         Commands.waitSeconds(0.5),
-                        new ParallelDeadlineGroup(
-                                new WaitCommand(0.5),
-                                m_pivot.controlGoalToSpeakerCommand(),
-                                m_intake.setPercentOutputCommand(IntakeConstants.kIntakePercent),
-                                m_shooter.rampUpSpeedToSpeakerCommand(),
-                                m_feeder.setVelocityCommand(FeederConstants.kShootVelocity)),
+                        m_feeder.setVelocityCommand(FeederConstants.kShootVelocity),
+                        Commands.waitSeconds(0.5),
                         m_feeder.stopCommand()));
 
         NamedCommands.registerCommand(
                 "NewFireHS",
-                new SequentialCommandGroup(
+                Commands.sequence(
                         Commands.waitSeconds(0.25),
-                        new ParallelDeadlineGroup(
-                                new WaitCommand(0.25),
-                                m_pivot.controlGoalToSpeakerCommand(),
-                                m_intake.setPercentOutputCommand(IntakeConstants.kIntakePercent),
-                                m_shooter.rampUpSpeedToSpeakerCommand(),
-                                m_feeder.setVelocityCommand(FeederConstants.kShootVelocity)),
+                        m_feeder.setVelocityCommand(FeederConstants.kShootVelocity),
+                        Commands.waitSeconds(0.25),
                         m_feeder.stopCommand()));
 
         NamedCommands.registerCommand(

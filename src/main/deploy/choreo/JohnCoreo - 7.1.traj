@@ -226,15 +226,6 @@
           "name": "IntakeOn"
         }
       }
-    },
-    {
-      "timestamp": 0,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "AtEase"
-        }
-      }
     }
   ]
 }

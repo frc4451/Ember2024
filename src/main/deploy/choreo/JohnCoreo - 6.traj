@@ -219,7 +219,7 @@
   ],
   "eventMarkers": [
     {
-      "timestamp": 0.7489472940021179,
+      "timestamp": 0.5,
       "command": {
         "type": "named",
         "data": {
@@ -228,20 +228,11 @@
       }
     },
     {
-      "timestamp": 0.7489472940021179,
+      "timestamp": 1.1247565176584344,
       "command": {
         "type": "named",
         "data": {
-          "name": "ShotPrepare"
-        }
-      }
-    },
-    {
-      "timestamp": 0.7489472940021179,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "TargetRotation"
+          "name": ""
         }
       }
     }

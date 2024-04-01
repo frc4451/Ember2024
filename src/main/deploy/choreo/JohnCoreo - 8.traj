@@ -226,15 +226,6 @@
           "name": "TargetSpeaker"
         }
       }
-    },
-    {
-      "timestamp": 0.6949734144701828,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "ShotPrepare"
-        }
-      }
     }
   ]
 }
