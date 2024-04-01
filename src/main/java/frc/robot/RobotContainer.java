@@ -393,8 +393,8 @@ public class RobotContainer {
 
     private void configureLights() {
         m_feeder.beambreakIsObstructed()
-                .onTrue(m_blinkin.setStateCommand(BlinkinState.NOTE))
-                .onFalse(m_blinkin.setStateCommand(BlinkinState.DEFAULT));
+                .onTrue(m_blinkin.addStateCommand(BlinkinState.NOTE))
+                .onFalse(m_blinkin.removeStateCommand(BlinkinState.NOTE));
     }
 
     /**

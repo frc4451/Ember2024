@@ -1,5 +1,8 @@
 package frc.robot.subsystems.blinkin;
 
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.Timer;
@@ -12,11 +15,15 @@ public class BlinkinSubsystem extends SubsystemBase {
     private final BlinkinIO io;
     private final BlinkinIOInputsAutoLogged inputs = new BlinkinIOInputsAutoLogged();
 
-    private BlinkinState state = BlinkinState.DEFAULT;
+    private final SortedSet<BlinkinState> possibleStates = new TreeSet<>();
+
+    private BlinkinState currentState = BlinkinState.DEFAULT;
 
     private final Timer blinkController = new Timer();
 
     public BlinkinSubsystem() {
+        possibleStates.add(BlinkinState.DEFAULT);
+
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
                 io = new BlinkinIOSpark();
@@ -38,26 +45,42 @@ public class BlinkinSubsystem extends SubsystemBase {
         io.updateInputs(inputs);
         Logger.processInputs("Blinkin", inputs);
 
-        if (blinkController.hasElapsed(state.pattern.blinkIntervalSeconds)) {
+        if (currentState != possibleStates.first()) {
+            currentState = possibleStates.first();
             blinkController.reset();
-            if (inputs.color == state.color) {
+            io.setColor(currentState.color);
+        }
+
+        if (blinkController.hasElapsed(currentState.pattern.blinkIntervalSeconds)) {
+            blinkController.reset();
+            if (inputs.color == currentState.color) {
                 io.setColor(BlinkinColors.UNKNOWN);
             } else {
-                io.setColor(state.color);
+                io.setColor(currentState.color);
             }
         }
 
-        Logger.recordOutput("Blinkin/ColorSetpoint", state.color);
-        Logger.recordOutput("Blinkin/TimeUntilBlink", state.pattern.blinkIntervalSeconds - blinkController.get());
-        Logger.recordOutput("Blinkin/Pattern/Blinks?", state.pattern.blinks);
-        Logger.recordOutput("Blinkin/Pattern/IntervalSecond", state.pattern.blinkIntervalSeconds);
+        String stateLogRoot = "Blinkin/CurrentState/";
+        Logger.recordOutput(stateLogRoot + "ColorSetpoint", currentState.color);
+        Logger.recordOutput(
+                stateLogRoot + "TimeUntilBlink",
+                currentState.pattern.blinkIntervalSeconds - blinkController.get());
+        Logger.recordOutput(stateLogRoot + "Pattern/IntervalSecond", currentState.pattern.blinkIntervalSeconds);
     }
 
-    public void setState(BlinkinState state) {
-        this.state = state;
+    public void addState(BlinkinState state) {
+        possibleStates.add(state);
     }
 
-    public Command setStateCommand(BlinkinState state) {
-        return new InstantCommand(() -> setState(state));
+    public Command addStateCommand(BlinkinState state) {
+        return new InstantCommand(() -> addState(state));
+    }
+
+    public void removeState(BlinkinState state) {
+        possibleStates.remove(state);
+    }
+
+    public Command removeStateCommand(BlinkinState state) {
+        return new InstantCommand(() -> removeState(state));
     }
 }
