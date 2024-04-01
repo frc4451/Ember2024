@@ -54,7 +54,7 @@ public class BlinkinSubsystem extends SubsystemBase {
         if (blinkController.hasElapsed(currentState.pattern.blinkIntervalSeconds)) {
             blinkController.reset();
             if (inputs.color == currentState.color) {
-                io.setColor(BlinkinColors.UNKNOWN);
+                io.setColor(BlinkinColors.SOLID_BLACK);
             } else {
                 io.setColor(currentState.color);
             }
