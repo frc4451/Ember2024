@@ -11,6 +11,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.bobot_state.TargetAngleTrackers.NoteAngleTracker;
 import frc.robot.bobot_state.TargetAngleTrackers.SpeakerAngleTracker;
 import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
@@ -53,6 +54,9 @@ public class BobotState extends VirtualSubsystem {
     private static final NoteAngleTracker noteAngleTracker = new NoteAngleTracker();
 
     static {
+        final double kCloseFudgeFactor = 1.0;
+        final double kFarFudgeFactor = 0.4;
+
         shootingInterpolator.addEntries(
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(7),
@@ -62,51 +66,55 @@ public class BobotState extends VirtualSubsystem {
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(8),
-                        40.0,
+                        40.0 + kCloseFudgeFactor,
                         kLeftShooterSpeed,
                         kRightShooterSpeed),
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(9),
-                        37.0,
+                        37.0 + kCloseFudgeFactor,
                         kLeftShooterSpeed,
                         kRightShooterSpeed),
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(10),
-                        34.0,
+                        34.0 + kCloseFudgeFactor,
                         kLeftShooterSpeed,
                         kRightShooterSpeed),
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(11),
-                        31.5,
+                        31.5 + kCloseFudgeFactor,
                         kLeftShooterSpeed,
                         kRightShooterSpeed),
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(12),
-                        30,
+                        30 + kFarFudgeFactor,
                         kLeftShooterSpeed,
                         kRightShooterSpeed),
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(13),
-                        28.5,
+                        28.5 + kFarFudgeFactor,
                         kLeftShooterSpeed,
                         kRightShooterSpeed),
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(14),
-                        27.5,
+                        27.5 + kFarFudgeFactor,
                         kLeftShooterSpeed,
                         kRightShooterSpeed),
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(15),
-                        26.9,
+                        26.9 + kFarFudgeFactor,
                         kLeftShooterSpeed,
                         kRightShooterSpeed));
+    }
+
+    public static Trigger inRangeOfInterpolation() {
+        return new Trigger(() -> OffsetTags.SPEAKER_AIM.getDistanceFrom(robotPose) < Units.feetToMeters(15));
     }
 
     public static void updateRobotPose(Pose2d pose) {
@@ -184,7 +192,7 @@ public class BobotState extends VirtualSubsystem {
         }
 
         {
-            double distanceFromSpeaker = OffsetTags.SPEAKER_AIM.getDistanceFrom(predictedPose);
+            double distanceFromSpeaker = OffsetTags.SPEAKER_AIM.getDistanceFrom(robotPose);
             shootingCalculation = shootingInterpolator.calculateInterpolation(distanceFromSpeaker);
 
             String calcLogRoot = logRoot + "ShootingCalculation/";

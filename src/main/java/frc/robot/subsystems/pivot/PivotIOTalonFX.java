@@ -67,7 +67,7 @@ public class PivotIOTalonFX implements PivotIO {
                 temperatureCelsiusFollower,
                 currentAmperageFollower,
                 positionRotationsFollower,
-                velocityRotPerSecLeader);
+                velocityRotPerSecFollower);
         this.pivotFollower.optimizeBusUtilization();
         this.pivotLeader.optimizeBusUtilization();
     }

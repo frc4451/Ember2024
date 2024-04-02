@@ -86,7 +86,7 @@ public class ShooterSubsystem extends SubsystemBase {
         }, this).andThen(stopCommand());
     }
 
-    public Trigger shooterRampedUp() {
+    public Trigger shooterNearTarget() {
         return new Trigger(
                 () -> MathUtil.isNear(inputs.velocityRotPerSecondLeft, this.targetVelocityRotPerSecondLeft, 1.0) &&
                         MathUtil.isNear(inputs.velocityRotPerSecondRight, this.targetVelocityRotPerSecondRight, 1.0));

@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.35,
-      "y": 6.499026331385996
+      "x": 1.3721671887788225,
+      "y": 4.55
     },
     "rotation": 0
   },
@@ -32,7 +32,7 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "ShootNote1"
+                              "pathName": "WendysShot1"
                             }
                           },
                           {
@@ -63,50 +63,13 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "GetNote2"
+                              "pathName": "WendysShotToInnermore"
                             }
                           },
                           {
                             "type": "named",
                             "data": {
                               "name": "RunIntakeReal"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "InterpolatePivot"
-                            }
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "FireOne"
-                      }
-                    },
-                    {
-                      "type": "deadline",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "path",
-                            "data": {
-                              "pathName": "A1toB1"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "RunIntakeReal"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "InterpolatePivot"
                             }
                           }
                         ]
@@ -125,7 +88,7 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "B1to15FT"
+                              "pathName": "WendysInnermoreToShot"
                             }
                           },
                           {
@@ -156,19 +119,13 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "15FTtoB2"
+                              "pathName": "WendysShot1ToOutermostNote"
                             }
                           },
                           {
                             "type": "named",
                             "data": {
                               "name": "RunIntakeReal"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "InterpolatePivot"
                             }
                           }
                         ]
@@ -187,7 +144,7 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "B2to15FT"
+                              "pathName": "WendysOutermostToShot"
                             }
                           },
                           {

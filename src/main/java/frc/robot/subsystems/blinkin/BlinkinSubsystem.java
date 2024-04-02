@@ -17,7 +17,7 @@ public class BlinkinSubsystem extends SubsystemBase {
 
     private final SortedSet<BlinkinState> possibleStates = new TreeSet<>();
 
-    private BlinkinState currentState = BlinkinState.DEFAULT;
+    private BlinkinState currentState = null;
 
     private final Timer blinkController = new Timer();
 

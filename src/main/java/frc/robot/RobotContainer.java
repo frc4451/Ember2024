@@ -402,9 +402,9 @@ public class RobotContainer {
         m_feeder.beambreakIsObstructed()
                 .onTrue(m_blinkin.addStateCommand(BlinkinState.NOTE))
                 .onFalse(m_blinkin.removeStateCommand(BlinkinState.NOTE));
-        m_shooter.shooterRampedUp()
-                .onTrue(m_blinkin.addStateCommand(BlinkinState.READYSHOOT))
-                .onFalse(m_blinkin.removeStateCommand(BlinkinState.READYSHOOT));
+        m_feeder.beambreakIsObstructed().and(BobotState.inRangeOfInterpolation())
+                .onTrue(m_blinkin.addStateCommand(BlinkinState.IN_RANGE))
+                .onFalse(m_blinkin.removeStateCommand(BlinkinState.IN_RANGE));
     }
 
     /**
@@ -479,11 +479,9 @@ public class RobotContainer {
                         new ParallelDeadlineGroup(
                                 new WaitCommand(1),
                                 m_pivot.controlGoalToSpeakerCommand(),
-                                m_intake.setPercentOutputCommand(
-                                        IntakeConstants.kIntakePercent),
+                                m_intake.setPercentOutputCommand(IntakeConstants.kIntakePercent),
                                 m_shooter.rampUpSpeedToSpeakerCommand(),
-                                m_feeder.setVelocityCommand(
-                                        FeederConstants.kShootVelocity)),
+                                m_feeder.setVelocityCommand(FeederConstants.kShootVelocity)),
                         m_feeder.stopCommand()));
 
         NamedCommands.registerCommand(
@@ -559,6 +557,7 @@ public class RobotContainer {
                 Commands.parallel(
                         m_shooter.rampUpSpeedToSpeakerCommand(),
                         m_pivot.controlGoalToSpeakerCommand()));
+
         NamedCommands.registerCommand(
                 "AtEase",
                 Commands.parallel(
