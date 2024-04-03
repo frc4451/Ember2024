@@ -73,6 +73,21 @@ public class IntakeSubsystem extends SubsystemBase {
                 .andThen(stopCommand());
     }
 
+    public Command setPercentOutputCommand(double velocityRotPerSecond) {
+        return new InstantCommand(() -> this.io.setPercentOutput(velocityRotPerSecond), this);
+    }
+
+    public Command setPercentOutputThenStopCommand(double percentDecimal) {
+        return new RunCommand(() -> this.io.setPercentOutput(percentDecimal), this).finallyDo(io::stop);
+    }
+
+    public Command setPercentOutputBeambreakCommand(double percentDecimal) {
+        return new RunCommand(() -> this.io.setPercentOutput(percentDecimal), this)
+                .unless(beambreakIsObstructed())
+                .until(beambreakIsObstructed())
+                .andThen(stopCommand());
+    }
+
     public Command stopCommand() {
         return new InstantCommand(this.io::stop, this);
     }

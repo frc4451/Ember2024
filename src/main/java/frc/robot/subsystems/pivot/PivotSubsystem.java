@@ -230,4 +230,11 @@ public class PivotSubsystem extends SubsystemBase {
                 this.getAngle().getDegrees(),
                 1.0));
     }
+
+    public Trigger isNearGoal() {
+        return new Trigger(() -> MathUtil.isNear(
+                getGoal().position,
+                getAngle().getDegrees(),
+                1.0));
+    }
 }

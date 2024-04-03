@@ -1,0 +1,109 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.3586821556091309,
+      "y": 5.548052787780762
+    },
+    "rotation": 1.4214061208070477e-21
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "SubwayShot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SubwayReset"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "JohnChoreo - 1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "NewFireHs"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "JohnChoreo - 2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "NewFireHs"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "JohnChoreo - 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "JohnChoreo - 4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "NewFireHs"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "JohnChoreo - 5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "JohnChoreo - 6"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "NewFireHs"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "JohnChoreo - 7"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "JohnChoreo - 8"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "NewFireHs"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": true
+}

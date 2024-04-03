@@ -58,7 +58,7 @@ public class ObjectDetectionPhotonSim implements ObjectDetectionIO {
             visionSim.addVisionTargets(
                     "note",
                     new VisionTargetSim(
-                            new Pose3d(8.25, 4.0, 0.0, new Rotation3d()),
+                            new Pose3d(8.28, 2.45, 0.0, new Rotation3d()),
                             notePlaceholder));
 
             SimCameraProperties simCameraProperties = new SimCameraProperties();

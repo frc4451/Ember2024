@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4583935305750524,
-        "y": 5.551483304597447
+        "x": 2.8,
+        "y": 5.555088802485298
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.55744644822623,
-        "y": 5.145062512347247
+        "x": 1.8990529176511775,
+        "y": 5.148668010235098
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "McNote3"
     },
     {
       "anchor": {
-        "x": 2.46,
-        "y": 4.1
+        "x": 2.483842745463269,
+        "y": 4.30417971947055
       },
       "prevControl": {
-        "x": 1.4600486288084515,
-        "y": 4.090138192247759
+        "x": 1.1690009313351968,
+        "y": 4.787422459289363
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,7 +39,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0,
+    "rotation": -28.300755766006333,
     "rotateFast": false
   },
   "reversed": false,

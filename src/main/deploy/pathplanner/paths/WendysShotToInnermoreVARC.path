@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 8.36,
-        "y": 2.7
+        "x": 8.28,
+        "y": 2.45
       },
       "prevControl": {
-        "x": 5.794594869189737,
-        "y": 1.3116755566844465
+        "x": 5.714594869189737,
+        "y": 1.0616755566844465
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "WendysInnermore"
+      "linkedName": "WendysInnermoreVARC"
     }
   ],
   "rotationTargets": [],
@@ -50,7 +50,7 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.5,
+    "maxVelocity": 3.7,
     "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
@@ -66,5 +66,5 @@
     "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

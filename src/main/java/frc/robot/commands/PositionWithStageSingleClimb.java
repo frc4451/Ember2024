@@ -8,6 +8,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.bobot_state.BobotState;
@@ -48,6 +49,8 @@ public class PositionWithStageSingleClimb extends Command {
 
         targetPose = stageTag.getOffsetPose();
 
+        yController.setTolerance(0.1);
+        thetaController.setTolerance(Units.degreesToRadians(1));
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
     }
 

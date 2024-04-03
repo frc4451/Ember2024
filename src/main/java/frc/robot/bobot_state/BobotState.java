@@ -9,12 +9,11 @@ import org.littletonrobotics.junction.Logger;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.bobot_state.TargetAngleTrackers.NoteAngleTracker;
 import frc.robot.bobot_state.TargetAngleTrackers.SpeakerAngleTracker;
-import frc.robot.subsystems.pivot.PivotLocation;
 import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
 import frc.robot.subsystems.vision.apriltag.OffsetTags;
 import frc.utils.VirtualSubsystem;
@@ -31,7 +30,17 @@ public class BobotState extends VirtualSubsystem {
 
     private static ShootingInterpolator.InterpolatedCalculation shootingCalculation;
 
+    public static final double kLeftShooterSpeed = 88.0;
+
+    public static final double kRightShooterSpeed = 73.0;
+
     private static Pose2d robotPose = new Pose2d();
+
+    /**
+     * {@link #robotPose} predicted ahead via a pose expontential of our current
+     * velocity
+     */
+    private static Pose2d predictedPose = new Pose2d();
 
     private static Set<TargetWithSource> visibleAprilTags = new HashSet<>();
 
@@ -45,58 +54,67 @@ public class BobotState extends VirtualSubsystem {
     private static final NoteAngleTracker noteAngleTracker = new NoteAngleTracker();
 
     static {
+        final double kCloseFudgeFactor = 1.0;
+        final double kFarFudgeFactor = 0.4;
+
         shootingInterpolator.addEntries(
-                // // Subwoofer (calculated: 92cm from wall)
-                // new ShootingInterpolator.DistanceAngleSpeedEntry(
-                // 1.36,
-                // 55.0,
-                // 70.0,
-                // 50.0),
-                // 10ft
+                new ShootingInterpolator.DistanceAngleSpeedEntry(
+                        Units.feetToMeters(7),
+                        42.0,
+                        kLeftShooterSpeed,
+                        kRightShooterSpeed),
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
-                        Double.MIN_VALUE,
-                        PivotLocation.kElevatorDownSoftMax.angle.getDegrees(),
-                        85.0,
-                        70.0),
+                        Units.feetToMeters(8),
+                        40.0 + kCloseFudgeFactor,
+                        kLeftShooterSpeed,
+                        kRightShooterSpeed),
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
-                        Units.feetToMeters(8.3),
-                        40.0,
-                        85.0,
-                        70.0),
+                        Units.feetToMeters(9),
+                        37.0 + kCloseFudgeFactor,
+                        kLeftShooterSpeed,
+                        kRightShooterSpeed),
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(10),
-                        36.0,
-                        85.0,
-                        70.0),
+                        34.0 + kCloseFudgeFactor,
+                        kLeftShooterSpeed,
+                        kRightShooterSpeed),
+
+                new ShootingInterpolator.DistanceAngleSpeedEntry(
+                        Units.feetToMeters(11),
+                        31.5 + kCloseFudgeFactor,
+                        kLeftShooterSpeed,
+                        kRightShooterSpeed),
+
+                new ShootingInterpolator.DistanceAngleSpeedEntry(
+                        Units.feetToMeters(12),
+                        30 + kFarFudgeFactor,
+                        kLeftShooterSpeed,
+                        kRightShooterSpeed),
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(13),
-                        31.5,
-                        85.0,
-                        70.0),
+                        28.5 + kFarFudgeFactor,
+                        kLeftShooterSpeed,
+                        kRightShooterSpeed),
+
+                new ShootingInterpolator.DistanceAngleSpeedEntry(
+                        Units.feetToMeters(14),
+                        27.5 + kFarFudgeFactor,
+                        kLeftShooterSpeed,
+                        kRightShooterSpeed),
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(15),
-                        27.875,
-                        85.0,
-                        70.0)
+                        26.9 + kFarFudgeFactor,
+                        kLeftShooterSpeed,
+                        kRightShooterSpeed));
+    }
 
-        // // Empirically gathered 15ft shot (prototype)
-        // new ShootingInterpolator.DistanceAngleSpeedEntry(
-        // Units.feetToMeters(15),
-        // 31.0,
-        // 85.0,
-        // 75.0),
-        // // Empirically gathered 21ft shot (prototype)
-        // new ShootingInterpolator.DistanceAngleSpeedEntry(
-        // Units.feetToMeters(21),
-        // 26.0,
-        // 85.0,
-        // 70.0)
-        );
+    public static Trigger inRangeOfInterpolation() {
+        return new Trigger(() -> OffsetTags.SPEAKER_AIM.getDistanceFrom(robotPose) < Units.feetToMeters(15));
     }
 
     public static void updateRobotPose(Pose2d pose) {
@@ -107,8 +125,12 @@ public class BobotState extends VirtualSubsystem {
         return robotPose;
     }
 
-    public static Pose3d getRobotPose3d() {
-        return new Pose3d(BobotState.getRobotPose());
+    public static void updatePredictedPose(Pose2d pose) {
+        predictedPose = pose;
+    }
+
+    public static Pose2d getPredictedPose() {
+        return predictedPose;
     }
 
     public static void updateVisibleAprilTags(Set<TargetWithSource> trackedAprilTags) {
@@ -153,27 +175,26 @@ public class BobotState extends VirtualSubsystem {
      * https://pathplanner.dev/pplib-override-target-rotation.html
      */
     public static Optional<Rotation2d> VARC() {
-        switch (BobotState.getAimingMode()) {
-            case OBJECT_DETECTION:
-                return BobotState.getNoteAngleTracker().getHasSeenNote()
-                        ? Optional.of(BobotState.getNoteAngleTracker().getRotationDifference())
-                        : Optional.empty();
-            case SPEAKER:
-                return BobotState.getSpeakerAngleTracker().getHasSeenTag()
-                        ? Optional.of(BobotState.getSpeakerAngleTracker().getRotationDifference())
-                        : Optional.empty();
-            case NONE:
-            default:
-                return Optional.empty();
-        }
+        return switch (BobotState.getAimingMode()) {
+            case OBJECT_DETECTION -> BobotState.getNoteAngleTracker().getRotationTarget();
+            case SPEAKER -> BobotState.getSpeakerAngleTracker().getRotationTarget();
+            case NONE -> Optional.empty();
+            default -> Optional.empty();
+        };
     }
 
     @Override
     public void periodic() {
-        double distanceFromSpeaker = OffsetTags.SPEAKER_AIM.getDistanceFrom(robotPose);
-        shootingCalculation = shootingInterpolator.calculateInterpolation(distanceFromSpeaker);
+        {
+            String calcLogRoot = logRoot + "RobotOdometry/";
+            Logger.recordOutput(calcLogRoot + "Estimated", robotPose);
+            Logger.recordOutput(calcLogRoot + "Predicted", predictedPose);
+        }
 
         {
+            double distanceFromSpeaker = OffsetTags.SPEAKER_AIM.getDistanceFrom(robotPose);
+            shootingCalculation = shootingInterpolator.calculateInterpolation(distanceFromSpeaker);
+
             String calcLogRoot = logRoot + "ShootingCalculation/";
             Logger.recordOutput(calcLogRoot + "DistanceMeters", distanceFromSpeaker);
             Logger.recordOutput(calcLogRoot + "DistanceFeet", Units.metersToFeet(distanceFromSpeaker));
@@ -203,18 +224,26 @@ public class BobotState extends VirtualSubsystem {
                 String calcRoot = logRoot + "AngleTracking/Speaker/";
                 Logger.recordOutput(calcRoot + "TargetPose", speakerAngleTracker.getTargetPose());
                 Logger.recordOutput(calcRoot + "TargetAngleRad",
-                        speakerAngleTracker.getRotationDifference().getRadians());
+                        speakerAngleTracker.getRotationTarget()
+                                .map(Rotation2d::getRadians)
+                                .orElse(Double.NaN));
                 Logger.recordOutput(calcRoot + "TargetAngleDegrees",
-                        speakerAngleTracker.getRotationDifference().getDegrees());
+                        speakerAngleTracker.getRotationTarget()
+                                .map(Rotation2d::getDegrees)
+                                .orElse(Double.NaN));
                 Logger.recordOutput(calcRoot + "HasSeenTag", speakerAngleTracker.getHasSeenTag());
             }
 
             {
                 String calcRoot = logRoot + "AngleTracking/Note/";
                 Logger.recordOutput(calcRoot + "TargetAngleRad",
-                        noteAngleTracker.getRotationDifference().getRadians());
+                        noteAngleTracker.getRotationTarget()
+                                .map(Rotation2d::getRadians)
+                                .orElse(Double.NaN));
                 Logger.recordOutput(calcRoot + "TargetAngleDegrees",
-                        noteAngleTracker.getRotationDifference().getDegrees());
+                        noteAngleTracker.getRotationTarget()
+                                .map(Rotation2d::getRadians)
+                                .orElse(Double.NaN));
                 Logger.recordOutput(calcRoot + "HasSeenNote", noteAngleTracker.getHasSeenNote());
             }
         }

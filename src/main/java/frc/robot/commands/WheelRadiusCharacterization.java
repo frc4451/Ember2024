@@ -22,7 +22,7 @@ import frc.robot.subsystems.drive.DriveSubsystem;
 public class WheelRadiusCharacterization extends Command {
     private static final String logRoot = "Commands/WheelRadiusCharacterization/";
 
-    private static final double characterizationSpeedRadPerSec = 0.1;
+    private static final double characterizationSpeedRadPerSec = 0.3;
 
     public enum Direction {
         CLOCKWISE(-1),

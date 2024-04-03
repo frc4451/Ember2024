@@ -44,7 +44,7 @@ public class PivotIOTalonFX implements PivotIO {
                 .withClosedLoopRamps(new ClosedLoopRampsConfigs()
                         .withDutyCycleClosedLoopRampPeriod(1.0))
                 .withSlot0(new Slot0Configs()
-                        .withKV(0.12)
+                        .withKV(0.14)
                         .withKP(4.0)
                         .withKI(0)
                         .withKD(0));
@@ -67,7 +67,7 @@ public class PivotIOTalonFX implements PivotIO {
                 temperatureCelsiusFollower,
                 currentAmperageFollower,
                 positionRotationsFollower,
-                velocityRotPerSecLeader);
+                velocityRotPerSecFollower);
         this.pivotFollower.optimizeBusUtilization();
         this.pivotLeader.optimizeBusUtilization();
     }

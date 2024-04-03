@@ -19,6 +19,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -30,8 +31,11 @@ import frc.robot.Constants.ModuleConstants;
 import frc.robot.bobot_state.BobotState;
 import frc.robot.subsystems.vision.VisionSubsystem.VisionMeasurement;
 import frc.utils.GarageUtils;
+import frc.utils.GeomUtils;
 
 public class DriveSubsystem extends SubsystemBase {
+    private static final double kLookaheadTimeSeconds = 0.20; // NOTE: 6328 uses 0.35
+
     // Swerve Modules
     private final SwerveModuleIO[] m_modules = new SwerveModuleIO[4]; // FL, FR, RL, RR
     private final SwerveModuleIOInputsAutoLogged[] m_moduleInputs = new SwerveModuleIOInputsAutoLogged[] {
@@ -80,7 +84,7 @@ public class DriveSubsystem extends SubsystemBase {
         AutoBuilder.configureHolonomic(
                 this::getPose,
                 this::resetPose,
-                () -> DriveConstants.kDriveKinematics.toChassisSpeeds(getModuleStates()),
+                this::getVelocitySpeeds,
                 this::runVelocity,
                 new HolonomicPathFollowerConfig(
                         new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
@@ -191,7 +195,12 @@ public class DriveSubsystem extends SubsystemBase {
         Pose2d visionOnlyPose = m_visionOnlyPoseEstimator.getEstimatedPosition();
         Pose2d wheelOnlyPose = m_wheelOnlyPoseEstimator.getEstimatedPosition();
 
+        Pose2d predictedPose = getPredictedPose();
+
         BobotState.updateRobotPose(combinedPose);
+        BobotState.updatePredictedPose(predictedPose);
+
+        Logger.recordOutput("Drive/Velocity", getVelocitySpeeds());
 
         Logger.recordOutput("Odometry/Combined/Pose", combinedPose);
         Logger.recordOutput("Odometry/Combined/RotationDeg", combinedPose.getRotation().getDegrees());
@@ -201,6 +210,9 @@ public class DriveSubsystem extends SubsystemBase {
 
         Logger.recordOutput("Odometry/WheelOnly/Pose", wheelOnlyPose);
         Logger.recordOutput("Odometry/WheelOnly/RotationDeg", wheelOnlyPose.getRotation().getDegrees());
+
+        Logger.recordOutput("Odometry/Predicted/Pose", predictedPose);
+        Logger.recordOutput("Odometry/Predicted/RotationDeg", predictedPose.getRotation().getDegrees());
     }
 
     private void addVisionMeasurements() {
@@ -227,6 +239,19 @@ public class DriveSubsystem extends SubsystemBase {
      */
     public Pose2d getPose() {
         return m_combinedPoseEstimator.getEstimatedPosition();
+    }
+
+    /**
+     * Predicts what our pose will be in the future.
+     *
+     */
+    public Pose2d getPredictedPose() {
+        Twist2d velocity = getVelocityTwist();
+        return getPose().exp(
+                new Twist2d(
+                        velocity.dx * kLookaheadTimeSeconds,
+                        velocity.dy * kLookaheadTimeSeconds,
+                        velocity.dtheta * kLookaheadTimeSeconds));
     }
 
     /**
@@ -355,5 +380,13 @@ public class DriveSubsystem extends SubsystemBase {
                                 / ModuleConstants.kDrivingMotorReduction
                                 * 2.0 * Math.PI)
                 .toArray();
+    }
+
+    private ChassisSpeeds getVelocitySpeeds() {
+        return DriveConstants.kDriveKinematics.toChassisSpeeds(getModuleStates());
+    }
+
+    private Twist2d getVelocityTwist() {
+        return GeomUtils.toTwist2d(getVelocitySpeeds());
     }
 }
