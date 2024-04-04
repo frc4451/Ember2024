@@ -1,6 +1,6 @@
 {
-  "robotWidth": 0.89,
-  "robotLength": 0.89,
+  "robotWidth": 0.85725,
+  "robotLength": 0.85725,
   "holonomicMode": true,
   "pathFolders": [
     "Ember Tuning",
