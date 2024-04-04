@@ -210,31 +210,30 @@ public class PivotSubsystem extends SubsystemBase {
         return this.getAngle().getDegrees() <= PivotLocation.kElevatorDownHardMax.angle.getDegrees();
     }
 
-    public Trigger isNearAmpScoringAngle() {
+    public Trigger isNearAngle(double angleDegrees) {
         return new Trigger(() -> MathUtil.isNear(
-                PivotLocation.kAmpScoringPosition.angle.getDegrees(),
-                this.getAngle().getDegrees(),
+                angleDegrees,
+                getAngle().getDegrees(),
                 1.0));
+    }
+
+    public Trigger isNearAngle(Rotation2d angle) {
+        return isNearAngle(angle.getDegrees());
+    }
+
+    public Trigger isNearAmpScoringAngle() {
+        return isNearAngle(PivotLocation.kAmpScoringPosition.angle);
     }
 
     public Trigger isNearTrapScoringAngle() {
-        return new Trigger(() -> MathUtil.isNear(
-                PivotLocation.kTrapScoringPosition.angle.getDegrees(),
-                this.getAngle().getDegrees(),
-                1.0));
+        return isNearAngle(PivotLocation.kTrapScoringPosition.angle);
     }
 
     public Trigger isNearBottom() {
-        return new Trigger(() -> MathUtil.isNear(
-                PivotLocation.INITIAL.angle.getDegrees(),
-                this.getAngle().getDegrees(),
-                1.0));
+        return isNearAngle(PivotLocation.INITIAL.angle);
     }
 
     public Trigger isNearGoal() {
-        return new Trigger(() -> MathUtil.isNear(
-                getGoal().position,
-                getAngle().getDegrees(),
-                1.0));
+        return isNearAngle(getGoal().position);
     }
 }
