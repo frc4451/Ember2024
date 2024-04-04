@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.subsystems.pivot.PivotLocation;
 import frc.utils.GarageUtils;
-import frc.utils.GeomUtils;
 import frc.utils.VirtualSubsystem;
 
 /**
@@ -160,11 +159,6 @@ public class Robot extends LoggedRobot {
      */
     @Override
     public void autonomousInit() {
-        Pose2d pose = GeomUtils.withRotation(
-                m_robotContainer.m_robotDrive.getPose(),
-                new Rotation2d(GarageUtils.isBlueAlliance() ? 0 : Math.PI));
-        m_robotContainer.m_robotDrive.resetPose(pose);
-
         m_robotContainer.m_pivot.setAngle(PivotLocation.INITIAL.angle);
 
         m_autoCommand = m_robotContainer.m_autoChooser.get();
