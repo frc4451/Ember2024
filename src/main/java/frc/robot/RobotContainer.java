@@ -487,17 +487,17 @@ public class RobotContainer {
         NamedCommands.registerCommand(
                 "NewFireOne",
                 Commands.sequence(
-                        Commands.waitSeconds(0.5),
+                        Commands.waitSeconds(0.1),
                         m_feeder.setVelocityCommand(FeederConstants.kShootVelocity),
-                        Commands.waitSeconds(0.5),
+                        Commands.waitSeconds(0.9),
                         m_feeder.stopCommand()));
 
         NamedCommands.registerCommand(
                 "NewFireHS",
                 Commands.sequence(
-                        Commands.waitSeconds(0.25),
+                        Commands.waitSeconds(0.1),
                         m_feeder.setVelocityCommand(FeederConstants.kShootVelocity),
-                        Commands.waitSeconds(0.25),
+                        Commands.waitSeconds(0.4),
                         m_feeder.stopCommand()));
 
         NamedCommands.registerCommand(
@@ -522,9 +522,9 @@ public class RobotContainer {
                                 ElevatorConstants.kSubwooferShotHeightInches),
                         Commands.waitUntil(m_elevator.elevatorIsAtSubwooferShot()),
                         m_pivot.setGoalCommand(PivotLocation.kSubwooferScoringPosition.angle),
-                        Commands.waitSeconds(0.75),
+                        Commands.waitUntil(m_pivot.isNearGoal()),
                         m_feeder.setVelocityCommand(FeederConstants.kShootVelocity),
-                        Commands.waitSeconds(0.25)));
+                        Commands.waitSeconds(0.4)));
 
         NamedCommands.registerCommand(
                 "SubwayReset",
