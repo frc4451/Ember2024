@@ -1,8 +1,15 @@
 package frc.robot.bobot_state;
 
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import frc.robot.subsystems.pivot.PivotLocation;
+import frc.utils.GarageUtils;
 
 public class ShootingInterpolator {
+    private final double blueCloseAngleFudgeFactor;
+    private final double blueFarAngleFudgeFactor;
+    private final double redCloseAngleFudgeFactor;
+    private final double redFarAngleFudgeFactor;
+
     public static record InterpolatedCalculation(
             double angleDegrees,
             double leftSpeedRotPerSec,
@@ -16,6 +23,17 @@ public class ShootingInterpolator {
             double rightSpeedRotPerSec) {
     }
 
+    public ShootingInterpolator(
+            double blueCloseAngleFudgeFactor,
+            double blueFarAngleFudgeFactor,
+            double redCloseAngleFudgeFactor,
+            double redFarAngleFudgeFactor) {
+        this.blueCloseAngleFudgeFactor = blueCloseAngleFudgeFactor;
+        this.blueFarAngleFudgeFactor = blueFarAngleFudgeFactor;
+        this.redCloseAngleFudgeFactor = redCloseAngleFudgeFactor;
+        this.redFarAngleFudgeFactor = redFarAngleFudgeFactor;
+    }
+
     /**
      * <p>
      * Lookup table for finding known good shots and guessing the angle we need
@@ -25,17 +43,8 @@ public class ShootingInterpolator {
      * key: meters, values: degrees
      * </p>
      */
-    private final InterpolatingDoubleTreeMap distanceAngleMap = new InterpolatingDoubleTreeMap();
-
-    /**
-     * key: angle (degrees), values: speed (rotations per second)
-     */
-    private final InterpolatingDoubleTreeMap leftAngleSpeedMap = new InterpolatingDoubleTreeMap();
-
-    /**
-     * key: angle (degrees), values: speed (rotations per second)
-     */
-    private final InterpolatingDoubleTreeMap rightAngleSpeedMap = new InterpolatingDoubleTreeMap();
+    private final InterpolatingDoubleTreeMap blueDistanceAngleMap = new InterpolatingDoubleTreeMap();
+    private final InterpolatingDoubleTreeMap redDistanceAngleMap = new InterpolatingDoubleTreeMap();
 
     public void addEntries(DistanceAngleSpeedEntry... entries) {
         for (DistanceAngleSpeedEntry entry : entries) {
@@ -44,27 +53,32 @@ public class ShootingInterpolator {
     }
 
     public void addEntry(DistanceAngleSpeedEntry entry) {
-        addDistanceAngleEntry(entry.distanceMeters, entry.angleDegrees);
-        addLeftAngleSpeedEntry(entry.angleDegrees, entry.leftSpeedRotPerSec);
-        addRightAngleSpeedEntry(entry.angleDegrees, entry.rightSpeedRotPerSec);
+        boolean isClose = entry.distanceMeters < 12;
+
+        double blueFudgeFactor = isClose ? blueCloseAngleFudgeFactor : blueFarAngleFudgeFactor;
+
+        double redFudgeFactor = isClose ? redCloseAngleFudgeFactor : redFarAngleFudgeFactor;
+
+        double maxAngle = PivotLocation.kElevatorDownHardMax.angle.getDegrees();
+
+        blueDistanceAngleMap.put(
+                entry.distanceMeters,
+                Math.min(entry.angleDegrees + blueFudgeFactor, maxAngle));
+
+        redDistanceAngleMap.put(
+                entry.distanceMeters,
+                Math.min(entry.angleDegrees + redFudgeFactor, maxAngle));
     }
 
-    private void addDistanceAngleEntry(double distanceMeters, double angleDegrees) {
-        distanceAngleMap.put(distanceMeters, angleDegrees);
-    }
-
-    private void addLeftAngleSpeedEntry(double angleDegrees, double leftSpeedRotPerSec) {
-        leftAngleSpeedMap.put(angleDegrees, leftSpeedRotPerSec);
-    }
-
-    private void addRightAngleSpeedEntry(double angleDegrees, double rightSpeedRotPerSec) {
-        rightAngleSpeedMap.put(angleDegrees, rightSpeedRotPerSec);
-    }
-
+    // TODO: Remove speed entirely
     public InterpolatedCalculation calculateInterpolation(double distanceMeters) {
-        double angleCalculation = distanceAngleMap.get(distanceMeters);
-        double leftSpeedCalculation = leftAngleSpeedMap.get(angleCalculation);
-        double rightSpeedCalculation = rightAngleSpeedMap.get(angleCalculation);
+        InterpolatingDoubleTreeMap angleMap = GarageUtils.isBlueAlliance()
+                ? blueDistanceAngleMap
+                : redDistanceAngleMap;
+
+        double angleCalculation = angleMap.get(distanceMeters);
+        double leftSpeedCalculation = BobotState.kLeftShooterSpeed;
+        double rightSpeedCalculation = BobotState.kRightShooterSpeed;
 
         return new InterpolatedCalculation(angleCalculation, leftSpeedCalculation, rightSpeedCalculation);
     }

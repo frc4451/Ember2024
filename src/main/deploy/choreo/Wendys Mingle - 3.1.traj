@@ -322,7 +322,7 @@
       "command": {
         "type": "named",
         "data": {
-          "name": "SpeakerVARC"
+          "name": "TargetSpeaker"
         }
       }
     }

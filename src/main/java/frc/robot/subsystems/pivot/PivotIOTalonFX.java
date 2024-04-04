@@ -40,7 +40,7 @@ public class PivotIOTalonFX implements PivotIO {
         TalonFXConfiguration config = new TalonFXConfiguration()
                 .withMotorOutput(new MotorOutputConfigs()
                         .withInverted(InvertedValue.Clockwise_Positive)
-                        .withNeutralMode(NeutralModeValue.Coast))
+                        .withNeutralMode(NeutralModeValue.Brake))
                 .withClosedLoopRamps(new ClosedLoopRampsConfigs()
                         .withDutyCycleClosedLoopRampPeriod(1.0))
                 .withSlot0(new Slot0Configs()

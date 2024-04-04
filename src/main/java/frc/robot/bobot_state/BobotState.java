@@ -26,7 +26,11 @@ import frc.utils.VirtualSubsystem;
 public class BobotState extends VirtualSubsystem {
     private static final String logRoot = "BobotState/";
 
-    private static final ShootingInterpolator shootingInterpolator = new ShootingInterpolator();
+    private static final ShootingInterpolator shootingInterpolator = new ShootingInterpolator(
+            1.0,
+            1.0,
+            1.0,
+            1.0);
 
     private static ShootingInterpolator.InterpolatedCalculation shootingCalculation;
 
@@ -54,9 +58,6 @@ public class BobotState extends VirtualSubsystem {
     private static final NoteAngleTracker noteAngleTracker = new NoteAngleTracker();
 
     static {
-        final double kCloseFudgeFactor = 1.0;
-        final double kFarFudgeFactor = 0.4;
-
         shootingInterpolator.addEntries(
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(7),
@@ -66,49 +67,49 @@ public class BobotState extends VirtualSubsystem {
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(8),
-                        40.0 + kCloseFudgeFactor,
+                        40.0,
                         kLeftShooterSpeed,
                         kRightShooterSpeed),
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(9),
-                        37.0 + kCloseFudgeFactor,
+                        37.0,
                         kLeftShooterSpeed,
                         kRightShooterSpeed),
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(10),
-                        34.0 + kCloseFudgeFactor,
+                        34.0,
                         kLeftShooterSpeed,
                         kRightShooterSpeed),
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(11),
-                        31.5 + kCloseFudgeFactor,
+                        31.5,
                         kLeftShooterSpeed,
                         kRightShooterSpeed),
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(12),
-                        30 + kFarFudgeFactor,
+                        30,
                         kLeftShooterSpeed,
                         kRightShooterSpeed),
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(13),
-                        28.5 + kFarFudgeFactor,
+                        28.5,
                         kLeftShooterSpeed,
                         kRightShooterSpeed),
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(14),
-                        27.5 + kFarFudgeFactor,
+                        27.5,
                         kLeftShooterSpeed,
                         kRightShooterSpeed),
 
                 new ShootingInterpolator.DistanceAngleSpeedEntry(
                         Units.feetToMeters(15),
-                        26.9 + kFarFudgeFactor,
+                        26.9,
                         kLeftShooterSpeed,
                         kRightShooterSpeed));
     }
@@ -199,8 +200,8 @@ public class BobotState extends VirtualSubsystem {
             Logger.recordOutput(calcLogRoot + "DistanceMeters", distanceFromSpeaker);
             Logger.recordOutput(calcLogRoot + "DistanceFeet", Units.metersToFeet(distanceFromSpeaker));
             Logger.recordOutput(calcLogRoot + "AngleDegrees", shootingCalculation.angleDegrees());
-            Logger.recordOutput(calcLogRoot + "LeftSpeedRotPerSec", shootingCalculation.leftSpeedRotPerSec());
-            Logger.recordOutput(calcLogRoot + "RightSpeedRotPerSec", shootingCalculation.rightSpeedRotPerSec());
+            Logger.recordOutput(calcLogRoot + "LeftSpeedRotPerSec", kLeftShooterSpeed);
+            Logger.recordOutput(calcLogRoot + "RightSpeedRotPerSec", kRightShooterSpeed);
         }
 
         {

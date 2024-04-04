@@ -81,9 +81,9 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public Command shootIntoAmpCommand() {
-        return new RunCommand(() -> {
+        return new InstantCommand(() -> {
             setVelocity(25.0, 25.0);
-        }, this).andThen(stopCommand());
+        }, this);
     }
 
     public Trigger shooterNearTarget() {
