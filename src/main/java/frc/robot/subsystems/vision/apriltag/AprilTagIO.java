@@ -9,6 +9,7 @@ public interface AprilTagIO {
         public PhotonPipelineResult frame = new PhotonPipelineResult();
         public boolean isDuplicateFrame = false;
         public boolean isConnected = false;
+        public int heartbeat = 0;
 
         public EstimatedPose estimatedPose = new EstimatedPose();
     }
