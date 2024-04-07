@@ -36,30 +36,30 @@ public final class VisionConstants {
     //
     // NOTE this should be updated with real values from measurements on the robot
     public static final List<VisionSource> APRIL_TAG_SOURCES = List.of(
-            // FL
-            new VisionSource(
-                    "FrontLeft",
-                    new Transform3d(
-                            new Translation3d(
-                                    Units.inchesToMeters(13.14), // forward+
-                                    Units.inchesToMeters(10.35), // left+
-                                    Units.inchesToMeters(10.50)), // up+
-                            new Rotation3d(
-                                    0,
-                                    Units.degreesToRadians(-28),
-                                    Units.degreesToRadians(-30)))),
-            // FR
-            new VisionSource(
-                    "FrontRight",
-                    new Transform3d(
-                            new Translation3d(
-                                    Units.inchesToMeters(13.14), // forward+
-                                    Units.inchesToMeters(-10.35), // left+
-                                    Units.inchesToMeters(10.50)), // up+
-                            new Rotation3d(
-                                    0,
-                                    Units.degreesToRadians(-28),
-                                    Units.degreesToRadians(30)))),
+            // // FL
+            // new VisionSource(
+            // "FrontLeft",
+            // new Transform3d(
+            // new Translation3d(
+            // Units.inchesToMeters(13.14), // forward+
+            // Units.inchesToMeters(10.35), // left+
+            // Units.inchesToMeters(10.50)), // up+
+            // new Rotation3d(
+            // 0,
+            // Units.degreesToRadians(-28),
+            // Units.degreesToRadians(-30)))),
+            // // FR
+            // new VisionSource(
+            // "FrontRight",
+            // new Transform3d(
+            // new Translation3d(
+            // Units.inchesToMeters(13.14), // forward+
+            // Units.inchesToMeters(-10.35), // left+
+            // Units.inchesToMeters(10.50)), // up+
+            // new Rotation3d(
+            // 0,
+            // Units.degreesToRadians(-28),
+            // Units.degreesToRadians(30)))),
             // RL
             new VisionSource(
                     "BackLeft",
