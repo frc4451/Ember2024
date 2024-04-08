@@ -77,10 +77,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     private void setSetpoint(double setpoint) {
-        // this.setpointInches = MathUtil.clamp(setpoint,
-        // ElevatorConstants.kMinHeightInches,
-        // ElevatorConstants.kMaxHeightInches);
-        // this.pidController.setSetpoint(this.setpointInches);
+        this.setpointInches = MathUtil.clamp(setpoint, ElevatorConstants.kMinHeightInches,
+                ElevatorConstants.kMaxHeightInches);
+        this.pidController.setSetpoint(this.setpointInches);
     }
 
     public Command setSetpointCommand(double positionInches) {
