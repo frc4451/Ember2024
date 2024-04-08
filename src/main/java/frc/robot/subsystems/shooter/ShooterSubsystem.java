@@ -80,6 +80,13 @@ public class ShooterSubsystem extends SubsystemBase {
         }, this).andThen(stopCommand());
     }
 
+    public Command rampUpSpeedToFloorCommand() {
+        return new RunCommand(() -> {
+            ShootingInterpolator.InterpolatedCalculation shootingCalculation = BobotState.getFloorCalculation();
+            setVelocity(shootingCalculation.leftSpeedRotPerSec(), shootingCalculation.rightSpeedRotPerSec());
+        }, this).andThen(stopCommand());
+    }
+
     public Command shootIntoAmpCommand() {
         return new InstantCommand(() -> {
             setVelocity(25.0, 25.0);

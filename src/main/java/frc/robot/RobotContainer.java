@@ -242,6 +242,12 @@ public class RobotContainer {
                         m_shooter.rampUpSpeedToSpeakerCommand()))
                 .onFalse(m_shooter.stopCommand());
 
+        m_operatorController.leftBumper()
+                .whileTrue(new ParallelCommandGroup(
+                        m_pivot.controlGoalToFloorCommand(),
+                        m_shooter.rampUpSpeedToFloorCommand()))
+                .onFalse(m_shooter.stopCommand());
+
         m_operatorController.rightTrigger()
                 .onTrue(m_feeder.setVelocityCommand(FeederConstants.kShootVelocity))
                 .onFalse(m_feeder.stopCommand());

@@ -197,6 +197,12 @@ public class PivotSubsystem extends SubsystemBase {
         });
     }
 
+    public Command controlGoalToFloorCommand() {
+        return new RunCommand(() -> {
+            setGoal(Rotation2d.fromDegrees(BobotState.getFloorCalculation().angleDegrees()));
+        });
+    }
+
     // /**
     // * The Pivot cannot exceed 42degrees when the elevator is down.
     // */
