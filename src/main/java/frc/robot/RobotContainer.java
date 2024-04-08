@@ -257,17 +257,13 @@ public class RobotContainer {
         // presets
         // Subwoofer shot
         // This could be made into a singular command sequence.
-        // m_operatorController.povDown()
-        // .onTrue(new ParallelCommandGroup(
-        // m_shooter.setVelocityShooterCommand(
-        // BobotState.kLeftShooterSpeed,
-        // BobotState.kRightShooterSpeed),
-        // m_elevator.setSetpointCommand(ElevatorConstants.kSubwooferShotHeightInches)))
-        // .whileTrue(Commands.waitUntil(m_elevator.elevatorIsAtSubwooferShot())
-        // .andThen(m_pivot.setGoalCommand(PivotLocation.kSubwooferScoringPosition.angle)))
-        // .onFalse(new ParallelCommandGroup(
-        // m_shooter.stopShooterCommand(),
-        // m_pivot.controlOutOfTheElevatorsWay()));
+        m_operatorController.povDown()
+                .onTrue(new ParallelCommandGroup(
+                        m_shooter.setVelocityCommand(
+                                BobotState.kLeftShooterSpeed,
+                                BobotState.kRightShooterSpeed),
+                        m_pivot.setGoalCommand(Rotation2d.fromDegrees(55.0))))
+                .onFalse(new ParallelCommandGroup(m_shooter.stopShooterCommand()));
 
         // m_operatorController.povDown()
         // .and(m_elevator.elevatorIsAtSubwooferShot().negate())

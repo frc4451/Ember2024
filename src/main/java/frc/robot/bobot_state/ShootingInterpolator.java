@@ -62,7 +62,7 @@ public class ShootingInterpolator {
 
         double redFudgeFactor = isClose ? redCloseAngleFudgeFactor : redFarAngleFudgeFactor;
 
-        double maxAngle = PivotLocation.kElevatorDownHardMax.angle.getDegrees();
+        double maxAngle = PivotLocation.kSoftMax.angle.getDegrees();
 
         blueDistanceAngleMap.put(
                 entry.distanceMeters,
