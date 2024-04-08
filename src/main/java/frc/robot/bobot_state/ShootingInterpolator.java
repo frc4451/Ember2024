@@ -46,6 +46,9 @@ public class ShootingInterpolator {
     private final InterpolatingDoubleTreeMap blueDistanceAngleMap = new InterpolatingDoubleTreeMap();
     private final InterpolatingDoubleTreeMap redDistanceAngleMap = new InterpolatingDoubleTreeMap();
 
+    private final InterpolatingDoubleTreeMap distanceLeftSpeedMap = new InterpolatingDoubleTreeMap();
+    private final InterpolatingDoubleTreeMap distanceRightSpeedMap = new InterpolatingDoubleTreeMap();
+
     public void addEntries(DistanceAngleSpeedEntry... entries) {
         for (DistanceAngleSpeedEntry entry : entries) {
             addEntry(entry);
@@ -68,17 +71,20 @@ public class ShootingInterpolator {
         redDistanceAngleMap.put(
                 entry.distanceMeters,
                 Math.min(entry.angleDegrees + redFudgeFactor, maxAngle));
+
+        distanceLeftSpeedMap.put(entry.distanceMeters, entry.leftSpeedRotPerSec);
+
+        distanceRightSpeedMap.put(entry.distanceMeters, entry.rightSpeedRotPerSec);
     }
 
-    // TODO: Remove speed entirely
     public InterpolatedCalculation calculateInterpolation(double distanceMeters) {
         InterpolatingDoubleTreeMap angleMap = GarageUtils.isBlueAlliance()
                 ? blueDistanceAngleMap
                 : redDistanceAngleMap;
 
         double angleCalculation = angleMap.get(distanceMeters);
-        double leftSpeedCalculation = BobotState.kLeftShooterSpeed;
-        double rightSpeedCalculation = BobotState.kRightShooterSpeed;
+        double leftSpeedCalculation = distanceLeftSpeedMap.get(distanceMeters);
+        double rightSpeedCalculation = distanceRightSpeedMap.get(distanceMeters);
 
         return new InterpolatedCalculation(angleCalculation, leftSpeedCalculation, rightSpeedCalculation);
     }

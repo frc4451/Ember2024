@@ -192,7 +192,7 @@ public class PivotSubsystem extends SubsystemBase {
 
     public Command controlGoalToSpeakerCommand() {
         return new RunCommand(() -> {
-            setGoal(Rotation2d.fromDegrees(BobotState.getShootingCalculation().angleDegrees()));
+            setGoal(Rotation2d.fromDegrees(BobotState.getSpeakerCalculation().angleDegrees()));
         });
     }
 

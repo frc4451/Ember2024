@@ -75,7 +75,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public Command rampUpSpeedToSpeakerCommand() {
         return new RunCommand(() -> {
-            ShootingInterpolator.InterpolatedCalculation shootingCalculation = BobotState.getShootingCalculation();
+            ShootingInterpolator.InterpolatedCalculation shootingCalculation = BobotState.getSpeakerCalculation();
             setVelocity(shootingCalculation.leftSpeedRotPerSec(), shootingCalculation.rightSpeedRotPerSec());
         }, this).andThen(stopCommand());
     }
