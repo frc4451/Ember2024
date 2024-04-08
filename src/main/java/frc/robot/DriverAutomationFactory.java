@@ -2,12 +2,18 @@ package frc.robot;
 
 import java.util.Set;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants.FeederConstants;
 import frc.robot.commands.PositionWithAmp;
 import frc.robot.commands.PositionWithStageSingleClimb;
 import frc.robot.commands.StrafeAndAimToSpeaker;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.feeder.FeederSubsystem;
+import frc.robot.subsystems.pivot.PivotLocation;
+import frc.robot.subsystems.pivot.PivotSubsystem;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.vision.apriltag.OffsetTags;
 import frc.utils.CommandCustomController;
 import frc.utils.GarageUtils;
@@ -17,14 +23,23 @@ public class DriverAutomationFactory {
     // private final CommandCustomController operatorController;
 
     private final DriveSubsystem drive;
+    private final PivotSubsystem pivot;
+    private final ShooterSubsystem shooter;
+    private final FeederSubsystem feeder;
 
     public DriverAutomationFactory(
             CommandCustomController driverController,
             CommandCustomController operatorController,
-            DriveSubsystem drive) {
+            DriveSubsystem drive,
+            PivotSubsystem pivot,
+            ShooterSubsystem shooter,
+            FeederSubsystem feeder) {
         this.driverController = driverController;
         // this.operatorController = operatorController;
         this.drive = drive;
+        this.pivot = pivot;
+        this.shooter = shooter;
+        this.feeder = feeder;
     }
 
     public Command aimAtSpeakerAssist() {
@@ -108,5 +123,21 @@ public class DriverAutomationFactory {
 
     public Command humanPlayerStationPath() {
         return Commands.deferredProxy(() -> OffsetTags.HUMAN_PLAYER.getDeferredCommand());
+    }
+
+    public Command ampShot() {
+        Rotation2d startAngle = PivotLocation.kNewAmpShot.angle;
+        Rotation2d finalAngle = PivotLocation.kNewAmpShot.angle.plus(Rotation2d.fromDegrees(15));
+
+        return Commands.sequence(
+                shooter.setVelocityCommand(25, 25),
+                pivot.setGoalCommand(startAngle),
+                Commands.waitUntil(pivot.isNearGoal()),
+                pivot.setGoalCommand(finalAngle),
+                // Commands.waitSeconds(0),
+                feeder.setVelocityCommand(FeederConstants.kShootVelocity),
+                Commands.waitSeconds(0.1),
+                shooter.stopCommand(),
+                feeder.stopCommand());
     }
 }

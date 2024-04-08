@@ -97,7 +97,10 @@ public class RobotContainer {
     public final DriverAutomationFactory m_automation = new DriverAutomationFactory(
             m_driverController,
             m_operatorController,
-            m_robotDrive);
+            m_robotDrive,
+            m_pivot,
+            m_shooter,
+            m_feeder);
 
     public final BlinkinSubsystem m_blinkin = new BlinkinSubsystem();
 
