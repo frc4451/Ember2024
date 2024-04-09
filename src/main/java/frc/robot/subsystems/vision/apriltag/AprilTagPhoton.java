@@ -1,9 +1,13 @@
 package frc.robot.subsystems.vision.apriltag;
 
+import java.util.Arrays;
+
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.VisionConstants;
@@ -86,5 +90,13 @@ public class AprilTagPhoton implements AprilTagIO {
         inputs.estimatedPose = estimatedPose;
         inputs.isConnected = isConnected;
         inputs.heartbeat = heartbeat;
+
+        inputs.visibleIds = inputs.frame.getTargets().stream()
+                .filter((PhotonTrackedTarget target) -> VisionConstants.ALL_TAGS.contains(target.getFiducialId()))
+                .mapToInt(PhotonTrackedTarget::getFiducialId).toArray();
+
+        inputs.visiblePoses = Arrays.stream(inputs.visibleIds).boxed().map((Integer id) -> {
+            return VisionConstants.FIELD_LAYOUT.getTagPose(id).get();
+        }).toArray(Pose3d[]::new);
     }
 }

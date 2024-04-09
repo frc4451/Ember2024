@@ -1,11 +1,14 @@
 package frc.robot.subsystems.vision.apriltag;
 
+import java.util.Arrays;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -103,6 +106,14 @@ public class AprilTagPhotonSim implements AprilTagIO {
         inputs.estimatedPose = estimatedPose;
         inputs.isConnected = camera.isConnected();
         inputs.heartbeat = heartbeat;
+
+        inputs.visibleIds = inputs.frame.getTargets().stream()
+                .filter((PhotonTrackedTarget target) -> VisionConstants.ALL_TAGS.contains(target.getFiducialId()))
+                .mapToInt(PhotonTrackedTarget::getFiducialId).toArray();
+
+        inputs.visiblePoses = Arrays.stream(inputs.visibleIds).boxed().map((Integer id) -> {
+            return VisionConstants.FIELD_LAYOUT.getTagPose(id).get();
+        }).toArray(Pose3d[]::new);
     }
 
     public void updateFieldPoseEstimate() {
