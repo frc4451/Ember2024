@@ -88,6 +88,10 @@ public class StrafeAndAimToAprilTag extends Command {
     @Override
     public void execute() {
         Pose3d robotPose = new Pose3d(drive.getPose());
+        // Find some way to figure out time to shot, then move our position ahead by
+        // that time and aim from there
+        double lookaheadTimeSeconds = 1; // Arbitrary
+        Pose3d predictedRobotPose = new Pose3d(drive.getPredictedPose(lookaheadTimeSeconds));
 
         Set<TargetWithSource> targets = BobotState.getVisibleAprilTags();
         AprilTagAlgorithms.filterTags(targets.stream(), targetFiducialId)
