@@ -31,29 +31,15 @@ import frc.utils.VirtualSubsystem;
 public class BobotState extends VirtualSubsystem {
     private static final String logRoot = "BobotState/";
 
-    // private static final InterpolationTriplet speakerTriplet = new
-    // InterpolationTriplet(
-    // "Speaker",
-    // new SpeakerInterpolator());
-
-    // private static final InterpolationTriplet floorTriplet = new
-    // InterpolationTriplet(
-    // "Floor",
-    // new FloorInterpolator());
-
-    // private static final List<InterpolationTriplet> interpolationTriplets =
-    // List.of(speakerTriplet, floorTriplet);
-
-    private static final SpeakerInterpolator kSpeakerInterpolator = new SpeakerInterpolator();
-    private static final FloorInterpolator kFloorInterpolator = new FloorInterpolator();
-
-    private static final Map<String, TargetInterpolator> kTargetInterpolators = Map.of(
-            "Speaker", kSpeakerInterpolator,
-            "Floor", kFloorInterpolator);
+    private static final SpeakerInterpolator speakerInterpolator = new SpeakerInterpolator();
+    private static final FloorInterpolator floorInterpolator = new FloorInterpolator();
 
     public static final double kLeftShooterSpeed = 88.0;
 
     public static final double kRightShooterSpeed = 73.0;
+    private static final Map<String, TargetInterpolator> targetInterpolators = Map.of(
+            "Speaker", speakerInterpolator,
+            "Floor", floorInterpolator);
 
     private static Pose2d robotPose = new Pose2d();
 
@@ -111,11 +97,11 @@ public class BobotState extends VirtualSubsystem {
     }
 
     public static InterpolatedCalculation getSpeakerCalculation() {
-        return kSpeakerInterpolator.getCalculation();
+        return speakerInterpolator.getCalculation();
     }
 
     public static InterpolatedCalculation getFloorCalculation() {
-        return kFloorInterpolator.getCalculation();
+        return floorInterpolator.getCalculation();
     }
 
     public static void updateAimingMode(AimingMode newAimingMode) {
@@ -156,7 +142,7 @@ public class BobotState extends VirtualSubsystem {
             Logger.recordOutput(calcLogRoot + "Predicted", predictedPose);
         }
 
-        kTargetInterpolators.forEach((String name, TargetInterpolator interpolator) -> {
+        targetInterpolators.forEach((String name, TargetInterpolator interpolator) -> {
             interpolator.update(robotPose);
             InterpolatedCalculation calculation = interpolator.getCalculation();
 
