@@ -92,11 +92,13 @@ public class AprilTagPhoton implements AprilTagIO {
         inputs.heartbeat = heartbeat;
 
         inputs.visibleIds = inputs.frame.getTargets().stream()
-                .filter((PhotonTrackedTarget target) -> VisionConstants.ALL_TAGS.contains(target.getFiducialId()))
-                .mapToInt(PhotonTrackedTarget::getFiducialId).toArray();
+                .filter(target -> VisionConstants.ALL_TAGS.contains(target.getFiducialId()))
+                .mapToInt(PhotonTrackedTarget::getFiducialId)
+                .toArray();
 
-        inputs.visiblePoses = Arrays.stream(inputs.visibleIds).boxed().map((Integer id) -> {
-            return VisionConstants.FIELD_LAYOUT.getTagPose(id).get();
-        }).toArray(Pose3d[]::new);
+        inputs.visiblePoses = Arrays.stream(inputs.visibleIds)
+                .boxed()
+                .map(id -> VisionConstants.FIELD_LAYOUT.getTagPose(id).get())
+                .toArray(Pose3d[]::new);
     }
 }
