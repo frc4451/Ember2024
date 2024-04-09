@@ -28,6 +28,7 @@ import frc.robot.Constants.AdvantageKitConstants.Mode;
 import frc.robot.Constants.FeederConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.bobot_state.AimingMode;
 import frc.robot.bobot_state.BobotState;
 import frc.robot.commands.AimAtNote;
@@ -269,8 +270,8 @@ public class RobotContainer {
         m_operatorController.povDown()
                 .onTrue(new ParallelCommandGroup(
                         m_shooter.setVelocityCommand(
-                                BobotState.kLeftShooterSpeed,
-                                BobotState.kRightShooterSpeed),
+                                ShooterConstants.kLeftShooterSpeed,
+                                ShooterConstants.kRightShooterSpeed),
                         m_pivot.setGoalCommand(Rotation2d.fromDegrees(55.0))))
                 .onFalse(new ParallelCommandGroup(m_shooter.stopShooterCommand()));
 
@@ -294,8 +295,8 @@ public class RobotContainer {
         // 15 ft
         m_operatorController.povUp()
                 .onTrue(
-                        m_shooter.setVelocityCommand(BobotState.kLeftShooterSpeed,
-                                BobotState.kRightShooterSpeed)
+                        m_shooter.setVelocityCommand(ShooterConstants.kLeftShooterSpeed,
+                                ShooterConstants.kRightShooterSpeed)
                                 .alongWith(m_pivot.setGoalCommand(
                                         Rotation2d.fromDegrees(26.9))))
                 .onFalse(m_shooter.stopCommand());
@@ -304,15 +305,15 @@ public class RobotContainer {
         // 10ft shot
         m_operatorController.povLeft()
                 .onTrue(m_shooter
-                        .setVelocityCommand(BobotState.kLeftShooterSpeed,
-                                BobotState.kRightShooterSpeed)
+                        .setVelocityCommand(ShooterConstants.kLeftShooterSpeed,
+                                ShooterConstants.kRightShooterSpeed)
                         .alongWith(m_pivot.setGoalCommand(Rotation2d.fromDegrees(36))))
                 .onFalse(m_shooter.stopCommand());
         // 13ft shot
         m_operatorController.povRight()
                 .onTrue(m_shooter
-                        .setVelocityCommand(BobotState.kLeftShooterSpeed,
-                                BobotState.kRightShooterSpeed)
+                        .setVelocityCommand(ShooterConstants.kLeftShooterSpeed,
+                                ShooterConstants.kRightShooterSpeed)
                         .alongWith(m_pivot.setGoalCommand(Rotation2d.fromDegrees(28.5))))
                 .onFalse(m_shooter.stopCommand());
 
@@ -500,8 +501,8 @@ public class RobotContainer {
                 "SubwayShot",
                 Commands.sequence(
                         m_shooter.setVelocityCommand(
-                                BobotState.kLeftShooterSpeed,
-                                BobotState.kRightShooterSpeed),
+                                ShooterConstants.kLeftShooterSpeed,
+                                ShooterConstants.kRightShooterSpeed),
                         m_pivot.setGoalCommand(PivotLocation.kSubwooferScoringPosition.angle),
                         Commands.waitUntil(m_pivot.isNearGoal()),
                         // Commands.waitSeconds(0.75),

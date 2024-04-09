@@ -224,6 +224,10 @@ public final class Constants {
         public static final int kLeftShooterCanID = 3;
         public static final int kRightShooterCanID = 4;
         public static final int kBeambreakChannel = 1;
+
+        public static final double kLeftShooterSpeed = 88.0;
+        public static final double kRightShooterSpeed = 73.0;
+
     }
 
     public static final class FeederConstants {

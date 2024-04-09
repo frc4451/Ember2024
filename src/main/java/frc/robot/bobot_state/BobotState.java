@@ -34,9 +34,6 @@ public class BobotState extends VirtualSubsystem {
     private static final SpeakerInterpolator speakerInterpolator = new SpeakerInterpolator();
     private static final FloorInterpolator floorInterpolator = new FloorInterpolator();
 
-    public static final double kLeftShooterSpeed = 88.0;
-
-    public static final double kRightShooterSpeed = 73.0;
     private static final Map<String, TargetInterpolator> targetInterpolators = Map.of(
             "Speaker", speakerInterpolator,
             "Floor", floorInterpolator);
