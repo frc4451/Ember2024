@@ -264,6 +264,21 @@ public class RobotContainer {
                 .whileTrue(m_pivot.runPercentCommand(() -> -m_operatorController.getRightY() / 3.0))
                 .onFalse(m_pivot.setEverythingCurrentCommand());
 
+        // Allred and Owen pooped
+        m_operatorController.b()
+                .whileTrue(new ParallelCommandGroup(
+                        m_pivot.controlGoalToPoopCommand(),
+                        m_shooter.rampUpSpeedToPoopCommand()))
+                .onFalse(m_shooter.stopCommand());
+
+        // TODO: Make this also wait until finished pivoting to finally shoot complete
+        // the drop sequence, as per Lewis's amp shot sequence
+        m_operatorController.x()
+                .whileTrue(new ParallelCommandGroup(
+                        m_pivot.controlGoalToAmpShotCommand(),
+                        m_shooter.shootIntoAmpCommand()))
+                .onFalse(m_shooter.stopCommand());
+
         // presets
         // Subwoofer shot
         // This could be made into a singular command sequence.

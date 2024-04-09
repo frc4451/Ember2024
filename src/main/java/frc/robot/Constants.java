@@ -228,6 +228,8 @@ public final class Constants {
         public static final double kLeftShooterSpeed = 88.0;
         public static final double kRightShooterSpeed = 73.0;
 
+        public static final double kLeftShooterPoopSpeed = 40.0;
+        public static final double kRightShooterPoopSpeed = 40.0;
     }
 
     public static final class FeederConstants {

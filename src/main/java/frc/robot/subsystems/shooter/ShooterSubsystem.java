@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.bobot_state.BobotState;
 import frc.robot.bobot_state.interpolation.ShootingInterpolator;
@@ -84,6 +85,13 @@ public class ShooterSubsystem extends SubsystemBase {
         return new RunCommand(() -> {
             ShootingInterpolator.InterpolatedCalculation shootingCalculation = BobotState.getFloorCalculation();
             setVelocity(shootingCalculation.leftSpeedRotPerSec(), shootingCalculation.rightSpeedRotPerSec());
+        }, this).andThen(stopCommand());
+    }
+
+    public Command rampUpSpeedToPoopCommand() {
+        return new RunCommand(() -> {
+            setVelocity(Constants.ShooterConstants.kLeftShooterPoopSpeed,
+                    Constants.ShooterConstants.kRightShooterPoopSpeed);
         }, this).andThen(stopCommand());
     }
 

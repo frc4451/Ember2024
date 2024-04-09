@@ -203,6 +203,18 @@ public class PivotSubsystem extends SubsystemBase {
         });
     }
 
+    public Command controlGoalToPoopCommand() {
+        return new RunCommand(() -> {
+            setGoal(PivotLocation.kSoftMin.angle);
+        });
+    }
+
+    public Command controlGoalToAmpShotCommand() {
+        return new RunCommand(() -> {
+            setGoal(PivotLocation.kNewAmpShot.angle);
+        });
+    }
+
     // /**
     // * The Pivot cannot exceed 42degrees when the elevator is down.
     // */
