@@ -1,7 +1,7 @@
-package frc.robot.bobot_state;
+package frc.robot.bobot_state.interpolation;
 
 import edu.wpi.first.math.util.Units;
-import frc.robot.bobot_state.ShootingInterpolator.DistanceAngleSpeedEntry;
+import frc.robot.bobot_state.interpolation.ShootingInterpolator.DistanceAngleSpeedEntry;
 import frc.robot.subsystems.vision.apriltag.OffsetTags;
 
 public class FloorInterpolator extends TargetInterpolator {

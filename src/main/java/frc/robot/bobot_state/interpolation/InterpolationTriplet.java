@@ -1,6 +1,6 @@
-package frc.robot.bobot_state;
+package frc.robot.bobot_state.interpolation;
 
-import frc.robot.bobot_state.ShootingInterpolator.InterpolatedCalculation;
+import frc.robot.bobot_state.interpolation.ShootingInterpolator.InterpolatedCalculation;
 
 // aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, sometimes i want pythonic typed lists
 public class InterpolationTriplet {

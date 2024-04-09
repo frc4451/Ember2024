@@ -1,7 +1,7 @@
 package frc.robot.bobot_state;
 
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -13,9 +13,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.bobot_state.ShootingInterpolator.InterpolatedCalculation;
 import frc.robot.bobot_state.TargetAngleTrackers.NoteAngleTracker;
 import frc.robot.bobot_state.TargetAngleTrackers.SpeakerAngleTracker;
+import frc.robot.bobot_state.interpolation.FloorInterpolator;
+import frc.robot.bobot_state.interpolation.SpeakerInterpolator;
+import frc.robot.bobot_state.interpolation.TargetInterpolator;
+import frc.robot.bobot_state.interpolation.ShootingInterpolator.InterpolatedCalculation;
 import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
 import frc.robot.subsystems.vision.apriltag.OffsetTags;
 import frc.utils.VirtualSubsystem;
@@ -28,15 +31,25 @@ import frc.utils.VirtualSubsystem;
 public class BobotState extends VirtualSubsystem {
     private static final String logRoot = "BobotState/";
 
-    private static final InterpolationTriplet speakerTriplet = new InterpolationTriplet(
-            "Speaker",
-            new SpeakerInterpolator());
+    // private static final InterpolationTriplet speakerTriplet = new
+    // InterpolationTriplet(
+    // "Speaker",
+    // new SpeakerInterpolator());
 
-    private static final InterpolationTriplet floorTriplet = new InterpolationTriplet(
-            "Floor",
-            new FloorInterpolator());
+    // private static final InterpolationTriplet floorTriplet = new
+    // InterpolationTriplet(
+    // "Floor",
+    // new FloorInterpolator());
 
-    private static final List<InterpolationTriplet> interpolationTriplets = List.of(speakerTriplet, floorTriplet);
+    // private static final List<InterpolationTriplet> interpolationTriplets =
+    // List.of(speakerTriplet, floorTriplet);
+
+    private static final SpeakerInterpolator kSpeakerInterpolator = new SpeakerInterpolator();
+    private static final FloorInterpolator kFloorInterpolator = new FloorInterpolator();
+
+    private static final Map<String, TargetInterpolator> kTargetInterpolators = Map.of(
+            "Speaker", kSpeakerInterpolator,
+            "Floor", kFloorInterpolator);
 
     public static final double kLeftShooterSpeed = 88.0;
 
@@ -98,11 +111,11 @@ public class BobotState extends VirtualSubsystem {
     }
 
     public static InterpolatedCalculation getSpeakerCalculation() {
-        return speakerTriplet.calculation;
+        return kSpeakerInterpolator.getCalculation();
     }
 
     public static InterpolatedCalculation getFloorCalculation() {
-        return floorTriplet.calculation;
+        return kFloorInterpolator.getCalculation();
     }
 
     public static void updateAimingMode(AimingMode newAimingMode) {
@@ -143,18 +156,18 @@ public class BobotState extends VirtualSubsystem {
             Logger.recordOutput(calcLogRoot + "Predicted", predictedPose);
         }
 
-        interpolationTriplets.forEach((InterpolationTriplet triplet) -> {
-            triplet.interpolator.update(robotPose);
+        kTargetInterpolators.forEach((String name, TargetInterpolator interpolator) -> {
+            interpolator.update(robotPose);
+            InterpolatedCalculation calculation = interpolator.getCalculation();
 
-            double distanceFromSpeaker = triplet.interpolator.getDistanceFromTarget();
-            triplet.calculation = triplet.interpolator.calculateInterpolation();
+            double distanceFromSpeaker = interpolator.getDistanceFromTarget();
 
-            String calcLogRoot = logRoot + "Interpolators/" + triplet.name + "/";
+            String calcLogRoot = logRoot + "Interpolators/" + name + "/";
             Logger.recordOutput(calcLogRoot + "DistanceMeters", distanceFromSpeaker);
             Logger.recordOutput(calcLogRoot + "DistanceFeet", Units.metersToFeet(distanceFromSpeaker));
-            Logger.recordOutput(calcLogRoot + "AngleDegrees", triplet.calculation.angleDegrees());
-            Logger.recordOutput(calcLogRoot + "LeftSpeedRotPerSec", triplet.calculation.leftSpeedRotPerSec());
-            Logger.recordOutput(calcLogRoot + "RightSpeedRotPerSec", triplet.calculation.rightSpeedRotPerSec());
+            Logger.recordOutput(calcLogRoot + "AngleDegrees", calculation.angleDegrees());
+            Logger.recordOutput(calcLogRoot + "LeftSpeedRotPerSec", calculation.leftSpeedRotPerSec());
+            Logger.recordOutput(calcLogRoot + "RightSpeedRotPerSec", calculation.rightSpeedRotPerSec());
         });
 
         {

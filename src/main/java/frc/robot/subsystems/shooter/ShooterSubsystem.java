@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.bobot_state.BobotState;
-import frc.robot.bobot_state.ShootingInterpolator;
+import frc.robot.bobot_state.interpolation.ShootingInterpolator;
 
 public class ShooterSubsystem extends SubsystemBase {
     private double targetVelocityRotPerSecondLeft = 0;

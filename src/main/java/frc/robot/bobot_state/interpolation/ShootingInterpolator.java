@@ -1,4 +1,4 @@
-package frc.robot.bobot_state;
+package frc.robot.bobot_state.interpolation;
 
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import frc.robot.subsystems.pivot.PivotLocation;
