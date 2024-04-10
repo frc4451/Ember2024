@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.85,
-        "y": 3.09
+        "x": 3.3,
+        "y": 2.8
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.85,
-        "y": 1.5899999999999999
+        "x": 3.3,
+        "y": 1.2999999999999998
       },
       "isLocked": false,
       "linkedName": "WendysShot"

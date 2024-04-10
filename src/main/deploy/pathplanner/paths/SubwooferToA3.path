@@ -3,50 +3,50 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.28,
-        "y": 2.45
+        "x": 1.4,
+        "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.040054186775039,
-        "y": 0.9761620523241048
+        "x": 2.1660444431189783,
+        "y": 4.907212390313461
       },
       "isLocked": false,
-      "linkedName": "WendysInnermoreVARC"
+      "linkedName": "SubwooferFront"
     },
     {
       "anchor": {
-        "x": 3.3,
-        "y": 2.8
+        "x": 2.6,
+        "y": 4.0
       },
       "prevControl": {
-        "x": 3.9600099982122674,
-        "y": 1.5342908047930015
+        "x": 2.1,
+        "y": 4.0
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "WendysShot"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.7,
+    "maxVelocity": 3.5,
     "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -38.860000000000014,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Wendys",
+  "folder": "Note2Location",
   "previewStartingState": {
-    "rotation": 22.0,
+    "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

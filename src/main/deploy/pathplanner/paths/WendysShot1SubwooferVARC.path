@@ -3,34 +3,52 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.28,
-        "y": 2.45
+        "x": 0.7,
+        "y": 4.44
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.040054186775039,
-        "y": 0.9761620523241048
+        "x": 1.466044443118978,
+        "y": 3.797212390313461
       },
       "isLocked": false,
-      "linkedName": "WendysInnermoreVARC"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.3,
-        "y": 2.8
+        "x": 8.4,
+        "y": 0.76
       },
       "prevControl": {
-        "x": 3.9600099982122674,
-        "y": 1.5342908047930015
+        "x": 4.4,
+        "y": 0.76
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "WendysShot"
+      "linkedName": "WendysOutermostNote"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "TargetNote",
+      "waypointRelativePos": 0.8,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "TargetNote"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.7,
     "maxAcceleration": 3.5,
@@ -39,13 +57,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -38.860000000000014,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "Wendys",
   "previewStartingState": {
-    "rotation": 22.0,
+    "rotation": -60.0,
     "velocity": 0
   },
   "useDefaultConstraints": false
