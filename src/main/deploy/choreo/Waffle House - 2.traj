@@ -478,24 +478,6 @@
           "name": "TargetSpeaker"
         }
       }
-    },
-    {
-      "timestamp": 3.1721955898024508,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": ""
-        }
-      }
-    },
-    {
-      "timestamp": 2.4256785967218866,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": ""
-        }
-      }
     }
   ]
 }

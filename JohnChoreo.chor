@@ -2839,15 +2839,15 @@
                     }
                 },
                 {
-                    "name": "Marker",
-                    "target": "last",
+                    "name": "Speaker VARC",
+                    "target": 2,
                     "trajTargetIndex": 2,
                     "targetTimestamp": 1.6247565176584344,
-                    "offset": -0.5,
+                    "offset": 0,
                     "command": {
                         "type": "named",
                         "data": {
-                            "name": ""
+                            "name": "TargetSpeaker"
                         }
                     }
                 }
@@ -3166,6 +3166,19 @@
                         "type": "named",
                         "data": {
                             "name": "IntakeOn"
+                        }
+                    }
+                },
+                {
+                    "name": "No VARC",
+                    "target": 0,
+                    "trajTargetIndex": 0,
+                    "targetTimestamp": 0,
+                    "offset": 0,
+                    "command": {
+                        "type": "named",
+                        "data": {
+                            "name": "TargetRotation"
                         }
                     }
                 }
@@ -7088,7 +7101,7 @@
                     "command": {
                         "type": "named",
                         "data": {
-                            "name": "Intak"
+                            "name": "IntakeOff"
                         }
                     }
                 }
@@ -9736,7 +9749,7 @@
                     "target": 3,
                     "trajTargetIndex": 3,
                     "targetTimestamp": 2.2887883354306204,
-                    "offset": -0.5,
+                    "offset": -0.75,
                     "command": {
                         "type": "parallel",
                         "data": {
@@ -10422,32 +10435,6 @@
                         "type": "named",
                         "data": {
                             "name": "TargetSpeaker"
-                        }
-                    }
-                },
-                {
-                    "name": "Marker",
-                    "target": 4,
-                    "trajTargetIndex": 4,
-                    "targetTimestamp": 3.1721955898024508,
-                    "offset": 0,
-                    "command": {
-                        "type": "named",
-                        "data": {
-                            "name": ""
-                        }
-                    }
-                },
-                {
-                    "name": "Marker",
-                    "target": 3,
-                    "trajTargetIndex": 3,
-                    "targetTimestamp": 2.4256785967218866,
-                    "offset": 0,
-                    "command": {
-                        "type": "named",
-                        "data": {
-                            "name": ""
                         }
                     }
                 }

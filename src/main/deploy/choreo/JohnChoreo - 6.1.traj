@@ -228,11 +228,11 @@
       }
     },
     {
-      "timestamp": 1.1247565176584344,
+      "timestamp": 1.6247565176584344,
       "command": {
         "type": "named",
         "data": {
-          "name": ""
+          "name": "TargetSpeaker"
         }
       }
     }

@@ -18,7 +18,7 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "deadline",
           "data": {
             "commands": [
               {
@@ -40,14 +40,39 @@
                             "data": {
                               "name": "RunIntakeReal"
                             }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Interpolate"
+                            }
                           }
                         ]
                       }
                     },
                     {
-                      "type": "path",
+                      "type": "deadline",
                       "data": {
-                        "pathName": "WendysOutermostToShotVARC"
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "WendysOutermostToShotVARC"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Interpolate"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "TargetSpeaker"
+                            }
+                          }
+                        ]
                       }
                     },
                     {
@@ -77,14 +102,39 @@
                             "data": {
                               "name": "RunIntakeReal"
                             }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Interpolate"
+                            }
                           }
                         ]
                       }
                     },
                     {
-                      "type": "path",
+                      "type": "named",
                       "data": {
-                        "pathName": "WendysInnermoreToShotVARC"
+                        "name": "TargetSpeaker"
+                      }
+                    },
+                    {
+                      "type": "deadline",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "WendysInnermoreToShot"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Interpolate"
+                            }
+                          }
+                        ]
                       }
                     },
                     {
@@ -94,12 +144,6 @@
                       }
                     }
                   ]
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Interpolate"
                 }
               }
             ]

@@ -493,7 +493,7 @@ public class RobotContainer {
                         m_feeder.stopCommand()));
 
         NamedCommands.registerCommand(
-                "NewFireHS",
+                "NewFireHs",
                 Commands.sequence(
                         Commands.waitSeconds(0.1),
                         m_feeder.setVelocityCommand(FeederConstants.kShootVelocity),
