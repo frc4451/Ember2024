@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.4388253688812256,
+      "y": 5.567087650299072
+    },
+    "rotation": -8.127841247479794e-29
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Big Mac - 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Big Mac - 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Big Mac - 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Big Mac - 4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Big Mac - 5"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": true
+}
