@@ -14414,7 +14414,7 @@
                     "command": {
                         "type": "named",
                         "data": {
-                            "name": "NewFireHS"
+                            "name": "NewFireHs"
                         }
                     }
                 }
@@ -15043,7 +15043,7 @@
                     "command": {
                         "type": "named",
                         "data": {
-                            "name": "NewFireHS"
+                            "name": "NewFireHs"
                         }
                     }
                 }
@@ -15486,7 +15486,7 @@
                     "command": {
                         "type": "named",
                         "data": {
-                            "name": "NewFireHS"
+                            "name": "NewFireHs"
                         }
                     }
                 }
@@ -15880,7 +15880,7 @@
                                 {
                                     "type": "named",
                                     "data": {
-                                        "name": "NewFireHS"
+                                        "name": "NewFireHs"
                                     }
                                 },
                                 {
@@ -16643,7 +16643,7 @@
                     "command": {
                         "type": "named",
                         "data": {
-                            "name": "NewFireHS"
+                            "name": "NewFireHs"
                         }
                     }
                 }
@@ -17308,7 +17308,7 @@
                     "command": {
                         "type": "named",
                         "data": {
-                            "name": "NewFireHS"
+                            "name": "NewFireHs"
                         }
                     }
                 }

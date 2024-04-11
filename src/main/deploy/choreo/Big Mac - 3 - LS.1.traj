@@ -209,7 +209,7 @@
       "command": {
         "type": "named",
         "data": {
-          "name": "NewFireHS"
+          "name": "NewFireHs"
         }
       }
     }
