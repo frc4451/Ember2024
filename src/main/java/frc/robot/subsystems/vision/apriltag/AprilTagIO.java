@@ -1,11 +1,7 @@
 package frc.robot.subsystems.vision.apriltag;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.littletonrobotics.junction.AutoLog;
 import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.geometry.Pose3d;
 
