@@ -145,6 +145,9 @@ public final class VisionConstants {
 
     public static final Set<Integer> ANDERSON_TAGS = Set.of(1, 2, 5, 6, 9, 10, 11, 12, 13, 14, 15, 16);
 
+    public static final double BLUE_LINE_X = 5.9;
+    public static final double RED_LINE_X = 10.7;
+
     // Shorthand for generating all possible combinations of April Tags
     public static final List<Set<Integer>> POSSIBLE_FRAME_FID_COMBOS = List.of(RED_TAG_FIDS, BLUE_TAG_FIDS);
 

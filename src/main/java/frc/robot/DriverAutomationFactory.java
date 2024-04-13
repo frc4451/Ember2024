@@ -5,9 +5,9 @@ import java.util.Set;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.Constants.FeederConstants;
 import frc.robot.commands.PositionWithAmp;
 import frc.robot.commands.PositionWithStageSingleClimb;
+import frc.robot.commands.StrafeAndAimToPose;
 import frc.robot.commands.StrafeAndAimToSpeaker;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.feeder.FeederSubsystem;
@@ -126,18 +126,26 @@ public class DriverAutomationFactory {
     }
 
     public Command ampShot() {
-        Rotation2d startAngle = PivotLocation.kNewAmpShot.angle;
-        Rotation2d finalAngle = PivotLocation.kNewAmpShot.angle.plus(Rotation2d.fromDegrees(15));
+        Rotation2d shootAngle = PivotLocation.kNewAmpShot.angle.minus(Rotation2d.fromDegrees(10));
+        Rotation2d finalAngle = PivotLocation.kNewAmpShot.angle;
 
         return Commands.sequence(
-                shooter.setVelocityCommand(25, 25),
-                pivot.setGoalCommand(startAngle),
-                Commands.waitUntil(pivot.isNearGoal()),
                 pivot.setGoalCommand(finalAngle),
-                // Commands.waitSeconds(0),
-                feeder.setVelocityCommand(FeederConstants.kShootVelocity),
-                Commands.waitSeconds(0.1),
+                shooter.shootIntoAmpCommand(),
+                Commands.waitUntil(pivot.isNearAngle(shootAngle)),
+                feeder.feedIntoAmpCommand(),
+                Commands.waitSeconds(0.25),
                 shooter.stopCommand(),
                 feeder.stopCommand());
+    }
+
+    public Command strafeAndAimToAmpFeed() {
+        return new StrafeAndAimToPose(
+                () -> -driverController.getLeftY(),
+                () -> -driverController.getLeftX(),
+                OffsetTags.FLOOR_SHOT::getOffsetPose,
+                drive,
+                true);
+
     }
 }

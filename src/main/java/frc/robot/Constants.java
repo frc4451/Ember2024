@@ -133,7 +133,7 @@ public final class Constants {
          * Effective wheel diameter of wheel. See for the calculation
          * {@link frc.robot.commands.WheelRadiusCharacterization}
          */
-        public static final double kWheelDiameterMeters = Units.inchesToMeters(2.9326994708055216);
+        public static final double kWheelDiameterMeters = Units.inchesToMeters(2.718196388549846);
         public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
         // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
         // teeth on the bevel pinion
@@ -230,6 +230,8 @@ public final class Constants {
 
         public static final double kLeftShooterPoopSpeed = 40.0;
         public static final double kRightShooterPoopSpeed = 40.0;
+
+        public static final double kAmpSpeed = 12.0;
     }
 
     public static final class FeederConstants {
@@ -237,6 +239,7 @@ public final class Constants {
         public static final double kIntakeVelocity = 20.0;
         public static final double kShootVelocity = 50.0;
         public static final double kReverseVelocity = -20.0;
+        public static final double kAmpVelocity = 12.0;
     }
 
     public static final class ClimberConstants {

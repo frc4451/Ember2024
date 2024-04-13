@@ -1,7 +1,7 @@
 package frc.robot.commands;
 
-import java.util.Set;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -11,22 +11,14 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.VisionConstants;
-import frc.robot.bobot_state.BobotState;
 import frc.robot.subsystems.drive.DriveSubsystem;
-import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
-import frc.robot.subsystems.vision.apriltag.AprilTagAlgorithms;
 
-/**
- * Command for centering the robot relative to an April Tag that the user
- * specifies. The ID must be a valid Fiducial ID.
- */
-public class StrafeAndAimToAprilTag extends Command {
+public class StrafeAndAimToPose extends Command {
     private final PIDController thetaController = new PIDController(5, 0, 0.1);
     private final String logRoot;
 
     private final DriveSubsystem drive;
-    private final int targetFiducialId;
+    private final Supplier<Pose3d> poseSupplier;
     private final DoubleSupplier xSupplier;
     private final DoubleSupplier ySupplier;
     private final boolean fieldRelative;
@@ -36,19 +28,19 @@ public class StrafeAndAimToAprilTag extends Command {
     private Pose3d targetPose = new Pose3d();
     private boolean hasSeenTag = false;
 
-    public StrafeAndAimToAprilTag(
+    public StrafeAndAimToPose(
             DoubleSupplier xSupplier,
             DoubleSupplier ySupplier,
-            int targetFiducialId,
+            Supplier<Pose3d> poseSupplier,
             DriveSubsystem drive,
             boolean fieldRelative) {
-        this(xSupplier, ySupplier, targetFiducialId, drive, fieldRelative, Math.PI);
+        this(xSupplier, ySupplier, poseSupplier, drive, fieldRelative, Math.PI);
     }
 
-    public StrafeAndAimToAprilTag(
+    public StrafeAndAimToPose(
             DoubleSupplier xSupplier,
             DoubleSupplier ySupplier,
-            int targetFiducialId,
+            Supplier<Pose3d> poseSupplier,
             DriveSubsystem drive,
             boolean fieldRelative,
             double yawMeasurementOffset) {
@@ -59,49 +51,36 @@ public class StrafeAndAimToAprilTag extends Command {
 
         this.xSupplier = xSupplier;
         this.ySupplier = ySupplier;
-        this.targetFiducialId = targetFiducialId;
+        this.poseSupplier = poseSupplier;
         this.drive = drive;
         this.fieldRelative = fieldRelative;
         this.yawMeasurementOffset = yawMeasurementOffset;
         this.yawErrorRad = yawMeasurementOffset;
 
-        targetPose = VisionConstants.FIELD_LAYOUT.getTagPose(targetFiducialId).get();
-
         thetaController.setTolerance(Units.degreesToRadians(0.1));
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
     }
 
-    public StrafeAndAimToAprilTag(
+    public StrafeAndAimToPose(
             DoubleSupplier xSupplier,
             DoubleSupplier ySupplier,
-            int targetFiducialId,
+            Supplier<Pose3d> poseSupplier,
             DriveSubsystem drive) {
-        this(xSupplier, ySupplier, targetFiducialId, drive, true);
+        this(xSupplier, ySupplier, poseSupplier, drive, true);
     }
 
     @Override
     public void initialize() {
         drive.runVelocity(new ChassisSpeeds());
+        targetPose = poseSupplier.get();
 
         Logger.recordOutput(logRoot + "IsRunning", true);
     }
 
     @Override
     public void execute() {
+        targetPose = poseSupplier.get();
         Pose3d robotPose = new Pose3d(drive.getPose());
-
-        Set<TargetWithSource> targets = BobotState.getVisibleAprilTags();
-        AprilTagAlgorithms.filterTags(targets.stream(), targetFiducialId)
-                .reduce((targetWithSourceA,
-                        targetWithSourceB) -> targetWithSourceA.target().getPoseAmbiguity() <= targetWithSourceB
-                                .target().getPoseAmbiguity()
-                                        ? targetWithSourceA
-                                        : targetWithSourceB)
-                .ifPresent(
-                        targetWithSource -> {
-                            hasSeenTag = true;
-                            targetPose = targetWithSource.getTargetPoseFrom(robotPose);
-                        });
 
         yawErrorRad = targetPose.relativeTo(robotPose).getTranslation().toTranslation2d().getAngle().getRadians();
 
@@ -109,7 +88,6 @@ public class StrafeAndAimToAprilTag extends Command {
 
         double offsetYawRad = yawErrorRad + yawMeasurementOffset;
 
-        Logger.recordOutput(logRoot + "TargetID", targetFiducialId);
         Logger.recordOutput(logRoot + "TargetPose", targetPose);
         Logger.recordOutput(logRoot + "HasSeenTarget", hasSeenTag);
         Logger.recordOutput(logRoot + "TargetYawRad", yawErrorRad);

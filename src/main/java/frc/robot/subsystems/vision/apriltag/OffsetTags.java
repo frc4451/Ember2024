@@ -36,7 +36,7 @@ public enum OffsetTags {
             VisionConstants.BLUE_HUMAN_PLAYER_INSIDE,
             1.0,
             new Rotation3d(0, 0, Math.PI)),
-    FLOOR_SHOT(VisionConstants.RED_AMP_TAG, VisionConstants.BLUE_AMP_TAG, 1.0);
+    FLOOR_SHOT(VisionConstants.RED_AMP_TAG, VisionConstants.BLUE_AMP_TAG, 2.0);
 
     private final int redId;
     private final int blueId;

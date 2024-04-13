@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.AdvantageKitConstants.Mode;
+import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.FeederConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
@@ -234,6 +235,13 @@ public class RobotContainer {
         m_driverController.rightBumper()
                 .whileTrue(m_automation.aimAtSpeakerAssist());
 
+        m_driverController.leftBumper()
+                .and(m_driverController.a().negate())
+                .and(m_driverController.b().negate())
+                .and(m_driverController.x().negate())
+                .and(m_driverController.y().negate())
+                .whileTrue(m_automation.strafeAndAimToAmpFeed());
+
         m_driverController.start()
                 .whileTrue(m_automation.humanPlayerStationPath());
 
@@ -252,7 +260,7 @@ public class RobotContainer {
                         m_shooter.rampUpSpeedToFloorCommand()))
                 .onFalse(m_shooter.stopCommand());
 
-        m_operatorController.rightTrigger()
+        m_operatorController.rightTrigger().and(m_operatorController.x().negate())
                 .onTrue(m_feeder.setVelocityCommand(FeederConstants.kShootVelocity))
                 .onFalse(m_feeder.stopCommand());
 
@@ -271,13 +279,43 @@ public class RobotContainer {
                         m_shooter.rampUpSpeedToPoopCommand()))
                 .onFalse(m_shooter.stopCommand());
 
-        // TODO: Make this also wait until finished pivoting to finally shoot complete
-        // the drop sequence, as per Lewis's amp shot sequence
+        // m_operatorController.x()
+        // .whileTrue(m_pivot.controlGoalToAmpShotCommand())
+        // .onTrue(m_shooter.shootIntoAmpCommand())
+        // .onFalse(m_shooter.stopCommand());
+
+        // m_operatorController.x().and(m_operatorController.rightTrigger())
+        // .whileTrue(m_feeder.feedIntoAmpCommand())
+        // .onFalse(m_feeder.stopCommand());
+
+        Rotation2d shootAngle = PivotLocation.kNewAmpShot.angle.minus(Rotation2d.fromDegrees(10));
+        Rotation2d finalAngle = PivotLocation.kNewAmpShot.angle;
+
         m_operatorController.x()
-                .whileTrue(new ParallelCommandGroup(
-                        m_pivot.controlGoalToAmpShotCommand(),
+                .onTrue(new ParallelCommandGroup(
+                        m_pivot.setGoalCommand(shootAngle),
                         m_shooter.shootIntoAmpCommand()))
                 .onFalse(m_shooter.stopCommand());
+
+        m_operatorController.x().and(m_operatorController.rightTrigger())
+                .onTrue(Commands.parallel(
+                        m_pivot.setGoalCommand(finalAngle),
+                        m_feeder.feedIntoAmpCommand()))
+                .onFalse(m_feeder.stopCommand());
+
+        m_operatorController.a()
+                .onTrue(m_climber.setSetpointCommand(ClimberConstants.kMaxHeightInches));
+
+        // m_operatorController.x()
+        // .onTrue(m_automation.ampShot());
+
+        m_operatorController.povUp()
+                .whileTrue(new ParallelCommandGroup(
+                        m_feeder.feedIntoAmpCommand(),
+                        m_shooter.shootIntoAmpCommand()))
+                .onFalse(new ParallelCommandGroup(
+                        m_shooter.stopCommand(),
+                        m_feeder.stopCommand()));
 
         // presets
         // Subwoofer shot
@@ -308,21 +346,20 @@ public class RobotContainer {
         // .onFalse(m_shooter.stopCommand());
 
         // 15 ft
-        m_operatorController.povUp()
-                .onTrue(
-                        m_shooter.setVelocityCommand(ShooterConstants.kLeftShooterSpeed,
-                                ShooterConstants.kRightShooterSpeed)
-                                .alongWith(m_pivot.setGoalCommand(
-                                        Rotation2d.fromDegrees(26.9))))
-                .onFalse(m_shooter.stopCommand());
+        // m_operatorController.povUp()
+        // .onTrue(
+        // m_shooter.setVelocityCommand(ShooterConstants.kLeftShooterSpeed,
+        // ShooterConstants.kRightShooterSpeed)
+        // .alongWith(m_pivot.setGoalCommand(
+        // Rotation2d.fromDegrees(26.9))))
+        // .onFalse(m_shooter.stopCommand());
 
         // 10ft shot
         // 10ft shot
         m_operatorController.povLeft()
                 .onTrue(m_shooter
-                        .setVelocityCommand(ShooterConstants.kLeftShooterSpeed,
-                                ShooterConstants.kRightShooterSpeed)
-                        .alongWith(m_pivot.setGoalCommand(Rotation2d.fromDegrees(36))))
+                        .setVelocityCommand(57.5, 57.5)
+                        .alongWith(m_pivot.setGoalCommand(Rotation2d.fromDegrees(45))))
                 .onFalse(m_shooter.stopCommand());
         // 13ft shot
         m_operatorController.povRight()
@@ -402,9 +439,15 @@ public class RobotContainer {
         m_feeder.beambreakIsObstructed()
                 .onTrue(m_blinkin.addStateCommand(BlinkinState.NOTE))
                 .onFalse(m_blinkin.removeStateCommand(BlinkinState.NOTE));
+
         m_feeder.beambreakIsObstructed().and(BobotState.inRangeOfSpeakerInterpolation())
                 .onTrue(m_blinkin.addStateCommand(BlinkinState.IN_RANGE))
                 .onFalse(m_blinkin.removeStateCommand(BlinkinState.IN_RANGE));
+
+        BobotState.pastOppWing().and(m_feeder.beambreakIsObstructed())
+                .onTrue(m_blinkin.addStateCommand(BlinkinState.PAST_OPP_WING))
+                .onFalse(m_blinkin.removeStateCommand(BlinkinState.PAST_OPP_WING));
+
     }
 
     /**
@@ -487,17 +530,17 @@ public class RobotContainer {
         NamedCommands.registerCommand(
                 "NewFireOne",
                 Commands.sequence(
-                        Commands.waitSeconds(0.1),
+                        Commands.waitSeconds(0.75),
                         m_feeder.setVelocityCommand(FeederConstants.kShootVelocity),
-                        Commands.waitSeconds(0.9),
+                        Commands.waitSeconds(0.25),
                         m_feeder.stopCommand()));
 
         NamedCommands.registerCommand(
                 "NewFireHs",
                 Commands.sequence(
-                        Commands.waitSeconds(0.1),
+                        Commands.waitSeconds(0.25),
                         m_feeder.setVelocityCommand(FeederConstants.kShootVelocity),
-                        Commands.waitSeconds(0.4),
+                        Commands.waitSeconds(0.25),
                         m_feeder.stopCommand()));
 
         NamedCommands.registerCommand(
@@ -516,11 +559,11 @@ public class RobotContainer {
                 "SubwayShot",
                 Commands.sequence(
                         m_shooter.setVelocityCommand(
-                                ShooterConstants.kLeftShooterSpeed,
-                                ShooterConstants.kRightShooterSpeed),
+                                ShooterConstants.kLeftShooterSpeed / 1.5,
+                                ShooterConstants.kRightShooterSpeed / 1.5),
                         m_pivot.setGoalCommand(PivotLocation.kSubwooferScoringPosition.angle),
-                        Commands.waitUntil(m_pivot.isNearGoal()),
-                        // Commands.waitSeconds(0.75),
+                        // Commands.waitUntil(m_pivot.isNearGoal()),
+                        Commands.waitSeconds(0.75),
                         m_feeder.setVelocityCommand(FeederConstants.kShootVelocity),
                         Commands.waitSeconds(0.4)));
 

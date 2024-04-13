@@ -14,10 +14,24 @@ public class FloorInterpolator extends TargetInterpolator {
     static {
         interpolator.addEntries(
                 new DistanceAngleSpeedEntry(
-                        Units.feetToMeters(0),
-                        26.9,
-                        88.0,
-                        73.0));
+                        Units.feetToMeters(25),
+                        50.0,
+                        50.0,
+                        50.0));
+
+        interpolator.addEntries(
+                new DistanceAngleSpeedEntry(
+                        Units.feetToMeters(28),
+                        50.0,
+                        55.0,
+                        55.0));
+
+        interpolator.addEntries(
+                new DistanceAngleSpeedEntry(
+                        Units.feetToMeters(30.5),
+                        45,
+                        57.5,
+                        57.5));
     }
 
     public FloorInterpolator() {

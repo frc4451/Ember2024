@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.AdvantageKitConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.bobot_state.BobotState;
 import frc.robot.bobot_state.interpolation.ShootingInterpolator;
 
@@ -96,9 +97,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public Command shootIntoAmpCommand() {
-        return new InstantCommand(() -> {
-            setVelocity(25.0, 25.0);
-        }, this);
+        return new InstantCommand(() -> setVelocity(ShooterConstants.kAmpSpeed, ShooterConstants.kAmpSpeed), this);
     }
 
     public Trigger shooterNearTarget() {
