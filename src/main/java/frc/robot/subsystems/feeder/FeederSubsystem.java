@@ -100,8 +100,8 @@ public class FeederSubsystem extends SubsystemBase {
     }
 
     public Command feedIntoAmpCommand() {
-        return new RunCommand(() -> {
-            setVelocity(FeederConstants.kShootVelocity);
-        }, this).andThen(stopCommand());
+        return new InstantCommand(() -> {
+            setVelocity(FeederConstants.kAmpVelocity);
+        }, this);
     }
 }

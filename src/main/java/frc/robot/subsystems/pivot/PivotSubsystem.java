@@ -92,7 +92,8 @@ public class PivotSubsystem extends SubsystemBase {
         Logger.recordOutput("Pivot/SetpointAngle", setpoint.position);
         Logger.recordOutput("Pivot/GoalAngle", goal.position);
 
-        Logger.recordOutput("Pivot/IsBelowElevatorThreshold", this.isBelowElevatorConflictTresholdBoolean());
+        // Logger.recordOutput("Pivot/IsBelowElevatorThreshold",
+        // this.isBelowElevatorConflictTresholdBoolean());
 
         // Log Mechanisms - This needs to be recorded in Radians
         measuredVisualizer.update(angle.getRadians());
@@ -145,27 +146,27 @@ public class PivotSubsystem extends SubsystemBase {
         return new RunCommand(this::runTrapezoidProfile, this);
     }
 
-    public double getUpperLimit() {
-        return BobotState.isElevatorUp()
-                ? PivotLocation.kElevatorDownSoftMax.angle.getDegrees()
-                : PivotLocation.kElevatorUpSoftMax.angle.getDegrees();
-    }
+    // public double getUpperLimit() {
+    // return BobotState.isElevatorUp()
+    // ? PivotLocation.kElevatorDownSoftMax.angle.getDegrees()
+    // : PivotLocation.kElevatorUpSoftMax.angle.getDegrees();
+    // }
 
-    /**
-     * Forces the pivot out of the way of the Elevator.
-     *
-     * We're using empirically gathered angles, but long term we should consider
-     * a linear interpolation table for this.
-     */
-    public Command controlOutOfTheElevatorsWay() {
-        return new RunCommand(() -> {
-            setGoal(
-                    Rotation2d.fromDegrees(MathUtil.clamp(
-                            this.angle.getDegrees(),
-                            PivotLocation.INITIAL.angle.getDegrees(),
-                            PivotLocation.kElevatorDownSoftMax.angle.getDegrees())));
-        });
-    }
+    // /**
+    // * Forces the pivot out of the way of the Elevator.
+    // *
+    // * We're using empirically gathered angles, but long term we should consider
+    // * a linear interpolation table for this.
+    // */
+    // public Command controlOutOfTheElevatorsWay() {
+    // return new RunCommand(() -> {
+    // setGoal(
+    // Rotation2d.fromDegrees(MathUtil.clamp(
+    // this.angle.getDegrees(),
+    // PivotLocation.INITIAL.angle.getDegrees(),
+    // PivotLocation.kElevatorDownSoftMax.angle.getDegrees())));
+    // });
+    // }
 
     public Command setGoalToAmpScoringPosition() {
         return new InstantCommand(() -> {
@@ -185,56 +186,74 @@ public class PivotSubsystem extends SubsystemBase {
                     percentDecimal.getAsDouble(),
                     getAngle().getDegrees(),
                     PivotLocation.kSoftMin.angle.getDegrees(),
-                    getUpperLimit());
+                    PivotLocation.kSoftMax.angle.getDegrees());
             io.setPercentOutput(output);
         }, this);
     }
 
     public Command controlGoalToSpeakerCommand() {
         return new RunCommand(() -> {
-            setGoal(Rotation2d.fromDegrees(BobotState.getShootingCalculation().angleDegrees()));
+            setGoal(Rotation2d.fromDegrees(BobotState.getSpeakerCalculation().angleDegrees()));
         });
     }
 
-    /**
-     * The Pivot cannot exceed 42degrees when the elevator is down.
-     */
-    public Trigger isBelowElevatorConflictTreshold() {
-        return new Trigger(this::isBelowElevatorConflictTresholdBoolean);
+    public Command controlGoalToFloorCommand() {
+        return new RunCommand(() -> {
+            setGoal(Rotation2d.fromDegrees(BobotState.getFloorCalculation().angleDegrees()));
+        });
     }
 
-    /**
-     * The Pivot cannot exceed 42degrees when the elevator is down.
-     */
-    private boolean isBelowElevatorConflictTresholdBoolean() {
-        return this.getAngle().getDegrees() <= PivotLocation.kElevatorDownHardMax.angle.getDegrees();
+    public Command controlGoalToPoopCommand() {
+        return new RunCommand(() -> {
+            setGoal(PivotLocation.kSoftMin.angle);
+        });
+    }
+
+    public Command controlGoalToAmpShotCommand() {
+        return new RunCommand(() -> {
+            setGoal(PivotLocation.kNewAmpShot.angle);
+        });
+    }
+
+    // /**
+    // * The Pivot cannot exceed 42degrees when the elevator is down.
+    // */
+    // public Trigger isBelowElevatorConflictTreshold() {
+    // return new Trigger(this::isBelowElevatorConflictTresholdBoolean);
+    // }
+
+    // /**
+    // * The Pivot cannot exceed 42degrees when the elevator is down.
+    // */
+    // private boolean isBelowElevatorConflictTresholdBoolean() {
+    // return this.getAngle().getDegrees() <=
+    // PivotLocation.kElevatorDownHardMax.angle.getDegrees();
+    // }
+
+    public Trigger isNearAngle(double angleDegrees) {
+        return new Trigger(() -> MathUtil.isNear(
+                angleDegrees,
+                getAngle().getDegrees(),
+                1.0));
+    }
+
+    public Trigger isNearAngle(Rotation2d angle) {
+        return isNearAngle(angle.getDegrees());
     }
 
     public Trigger isNearAmpScoringAngle() {
-        return new Trigger(() -> MathUtil.isNear(
-                PivotLocation.kAmpScoringPosition.angle.getDegrees(),
-                this.getAngle().getDegrees(),
-                1.0));
+        return isNearAngle(PivotLocation.kAmpScoringPosition.angle);
     }
 
     public Trigger isNearTrapScoringAngle() {
-        return new Trigger(() -> MathUtil.isNear(
-                PivotLocation.kTrapScoringPosition.angle.getDegrees(),
-                this.getAngle().getDegrees(),
-                1.0));
+        return isNearAngle(PivotLocation.kTrapScoringPosition.angle);
     }
 
     public Trigger isNearBottom() {
-        return new Trigger(() -> MathUtil.isNear(
-                PivotLocation.INITIAL.angle.getDegrees(),
-                this.getAngle().getDegrees(),
-                1.0));
+        return isNearAngle(PivotLocation.INITIAL.angle);
     }
 
     public Trigger isNearGoal() {
-        return new Trigger(() -> MathUtil.isNear(
-                getGoal().position,
-                getAngle().getDegrees(),
-                1.0));
+        return isNearAngle(getGoal().position);
     }
 }

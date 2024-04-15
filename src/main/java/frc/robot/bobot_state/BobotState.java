@@ -1,6 +1,7 @@
 package frc.robot.bobot_state;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -12,10 +13,16 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.VisionConstants;
 import frc.robot.bobot_state.TargetAngleTrackers.NoteAngleTracker;
 import frc.robot.bobot_state.TargetAngleTrackers.SpeakerAngleTracker;
+import frc.robot.bobot_state.interpolation.FloorInterpolator;
+import frc.robot.bobot_state.interpolation.ShootingInterpolator.InterpolatedCalculation;
+import frc.robot.bobot_state.interpolation.SpeakerInterpolator;
+import frc.robot.bobot_state.interpolation.TargetInterpolator;
 import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
 import frc.robot.subsystems.vision.apriltag.OffsetTags;
+import frc.utils.GarageUtils;
 import frc.utils.VirtualSubsystem;
 
 /**
@@ -26,13 +33,12 @@ import frc.utils.VirtualSubsystem;
 public class BobotState extends VirtualSubsystem {
     private static final String logRoot = "BobotState/";
 
-    private static final ShootingInterpolator shootingInterpolator = new ShootingInterpolator();
+    private static final SpeakerInterpolator speakerInterpolator = new SpeakerInterpolator();
+    private static final FloorInterpolator floorInterpolator = new FloorInterpolator();
 
-    private static ShootingInterpolator.InterpolatedCalculation shootingCalculation;
-
-    public static final double kLeftShooterSpeed = 88.0;
-
-    public static final double kRightShooterSpeed = 73.0;
+    private static final Map<String, TargetInterpolator> targetInterpolators = Map.of(
+            "Speaker", speakerInterpolator,
+            "Floor", floorInterpolator);
 
     private static Pose2d robotPose = new Pose2d();
 
@@ -53,68 +59,19 @@ public class BobotState extends VirtualSubsystem {
     private static final SpeakerAngleTracker speakerAngleTracker = new SpeakerAngleTracker();
     private static final NoteAngleTracker noteAngleTracker = new NoteAngleTracker();
 
-    static {
-        final double kCloseFudgeFactor = 1.0;
-        final double kFarFudgeFactor = 0.4;
-
-        shootingInterpolator.addEntries(
-                new ShootingInterpolator.DistanceAngleSpeedEntry(
-                        Units.feetToMeters(7),
-                        42.0,
-                        kLeftShooterSpeed,
-                        kRightShooterSpeed),
-
-                new ShootingInterpolator.DistanceAngleSpeedEntry(
-                        Units.feetToMeters(8),
-                        40.0 + kCloseFudgeFactor,
-                        kLeftShooterSpeed,
-                        kRightShooterSpeed),
-
-                new ShootingInterpolator.DistanceAngleSpeedEntry(
-                        Units.feetToMeters(9),
-                        37.0 + kCloseFudgeFactor,
-                        kLeftShooterSpeed,
-                        kRightShooterSpeed),
-
-                new ShootingInterpolator.DistanceAngleSpeedEntry(
-                        Units.feetToMeters(10),
-                        34.0 + kCloseFudgeFactor,
-                        kLeftShooterSpeed,
-                        kRightShooterSpeed),
-
-                new ShootingInterpolator.DistanceAngleSpeedEntry(
-                        Units.feetToMeters(11),
-                        31.5 + kCloseFudgeFactor,
-                        kLeftShooterSpeed,
-                        kRightShooterSpeed),
-
-                new ShootingInterpolator.DistanceAngleSpeedEntry(
-                        Units.feetToMeters(12),
-                        30 + kFarFudgeFactor,
-                        kLeftShooterSpeed,
-                        kRightShooterSpeed),
-
-                new ShootingInterpolator.DistanceAngleSpeedEntry(
-                        Units.feetToMeters(13),
-                        28.5 + kFarFudgeFactor,
-                        kLeftShooterSpeed,
-                        kRightShooterSpeed),
-
-                new ShootingInterpolator.DistanceAngleSpeedEntry(
-                        Units.feetToMeters(14),
-                        27.5 + kFarFudgeFactor,
-                        kLeftShooterSpeed,
-                        kRightShooterSpeed),
-
-                new ShootingInterpolator.DistanceAngleSpeedEntry(
-                        Units.feetToMeters(15),
-                        26.9 + kFarFudgeFactor,
-                        kLeftShooterSpeed,
-                        kRightShooterSpeed));
+    public static Trigger inRangeOfSpeakerInterpolation() {
+        return new Trigger(() -> OffsetTags.SPEAKER_AIM.getDistanceFrom(robotPose) < Units.feetToMeters(15));
     }
 
-    public static Trigger inRangeOfInterpolation() {
-        return new Trigger(() -> OffsetTags.SPEAKER_AIM.getDistanceFrom(robotPose) < Units.feetToMeters(15));
+    public static Trigger pastOppWing() {
+        return new Trigger(() -> {
+            double bumperishSizedOffset = Units.inchesToMeters(36) / 2.0;
+            if (GarageUtils.isBlueAlliance()) {
+                return robotPose.getX() - bumperishSizedOffset < VisionConstants.RED_LINE_X;
+            } else {
+                return robotPose.getX() + bumperishSizedOffset > VisionConstants.BLUE_LINE_X;
+            }
+        });
     }
 
     public static void updateRobotPose(Pose2d pose) {
@@ -149,8 +106,12 @@ public class BobotState extends VirtualSubsystem {
         return closestObject;
     }
 
-    public static ShootingInterpolator.InterpolatedCalculation getShootingCalculation() {
-        return shootingCalculation;
+    public static InterpolatedCalculation getSpeakerCalculation() {
+        return speakerInterpolator.getCalculation();
+    }
+
+    public static InterpolatedCalculation getFloorCalculation() {
+        return floorInterpolator.getCalculation();
     }
 
     public static void updateAimingMode(AimingMode newAimingMode) {
@@ -191,17 +152,19 @@ public class BobotState extends VirtualSubsystem {
             Logger.recordOutput(calcLogRoot + "Predicted", predictedPose);
         }
 
-        {
-            double distanceFromSpeaker = OffsetTags.SPEAKER_AIM.getDistanceFrom(robotPose);
-            shootingCalculation = shootingInterpolator.calculateInterpolation(distanceFromSpeaker);
+        targetInterpolators.forEach((String name, TargetInterpolator interpolator) -> {
+            interpolator.update(robotPose);
+            InterpolatedCalculation calculation = interpolator.getCalculation();
 
-            String calcLogRoot = logRoot + "ShootingCalculation/";
+            double distanceFromSpeaker = interpolator.getDistanceFromTarget();
+
+            String calcLogRoot = logRoot + "Interpolators/" + name + "/";
             Logger.recordOutput(calcLogRoot + "DistanceMeters", distanceFromSpeaker);
             Logger.recordOutput(calcLogRoot + "DistanceFeet", Units.metersToFeet(distanceFromSpeaker));
-            Logger.recordOutput(calcLogRoot + "AngleDegrees", shootingCalculation.angleDegrees());
-            Logger.recordOutput(calcLogRoot + "LeftSpeedRotPerSec", shootingCalculation.leftSpeedRotPerSec());
-            Logger.recordOutput(calcLogRoot + "RightSpeedRotPerSec", shootingCalculation.rightSpeedRotPerSec());
-        }
+            Logger.recordOutput(calcLogRoot + "AngleDegrees", calculation.angleDegrees());
+            Logger.recordOutput(calcLogRoot + "LeftSpeedRotPerSec", calculation.leftSpeedRotPerSec());
+            Logger.recordOutput(calcLogRoot + "RightSpeedRotPerSec", calculation.rightSpeedRotPerSec());
+        });
 
         {
             String calcLogRoot = logRoot + "VisionCalculations/";

@@ -1,0 +1,73 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.346500039100647,
+      "y": 5.551700115203857
+    },
+    "rotation": 0.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Big Mac - 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Big Mac - 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Big Mac - 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Big Mac - 3 - UG"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Big Mac - 3 - US"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Big Mac - 3 - LG"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Big Mac - 3 - LS"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Big Mac - 4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Big Mac - 5"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": true
+}

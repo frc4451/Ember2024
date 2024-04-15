@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.28,
+        "y": 5.65
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.139049549930932,
+        "y": 6.250756074845484
+      },
+      "isLocked": false,
+      "linkedName": "B2"
+    },
+    {
+      "anchor": {
+        "x": 4.065842576129597,
+        "y": 6.114215561764457
+      },
+      "prevControl": {
+        "x": 5.576581153162307,
+        "y": 6.7555668444670225
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "WaffleShot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 5.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Waffle House",
+  "previewStartingState": null,
+  "useDefaultConstraints": true
+}

@@ -25,11 +25,11 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.AdvantageKitConstants.Mode;
-import frc.robot.Constants.AmpTrapConstants;
-import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.FeederConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.bobot_state.AimingMode;
 import frc.robot.bobot_state.BobotState;
 import frc.robot.commands.AimAtNote;
@@ -40,12 +40,10 @@ import frc.robot.commands.TeleopDrive;
 import frc.robot.commands.WheelRadiusCharacterization;
 import frc.robot.pathplanner.PathPlannerUtils;
 import frc.robot.pathplanner.paths.PathPlannerPoses;
-import frc.robot.subsystems.amptrap.AmpTrapSubsystem;
 import frc.robot.subsystems.blinkin.BlinkinState;
 import frc.robot.subsystems.blinkin.BlinkinSubsystem;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
-import frc.robot.subsystems.elevator.ElevatorSubsystem;
 import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.pivot.PivotLocation;
@@ -92,16 +90,19 @@ public class RobotContainer {
 
     public final FeederSubsystem m_feeder = new FeederSubsystem();
 
-    public final AmpTrapSubsystem m_ampTrap = new AmpTrapSubsystem();
+    // public final AmpTrapSubsystem m_ampTrap = new AmpTrapSubsystem();
 
     public final ClimberSubsystem m_climber = new ClimberSubsystem();
 
-    public final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
+    // public final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
 
     public final DriverAutomationFactory m_automation = new DriverAutomationFactory(
             m_driverController,
             m_operatorController,
-            m_robotDrive);
+            m_robotDrive,
+            m_pivot,
+            m_shooter,
+            m_feeder);
 
     public final BlinkinSubsystem m_blinkin = new BlinkinSubsystem();
 
@@ -143,7 +144,7 @@ public class RobotContainer {
                         true));
         m_pivot.setDefaultCommand(m_pivot.runTrapezoidProfileCommand());
         m_climber.setDefaultCommand(m_climber.pidCommand());
-        m_elevator.setDefaultCommand(m_elevator.pidCommand());
+        // m_elevator.setDefaultCommand(m_elevator.pidCommand());
         // Build an auto chooser. You can make a default auto by passing in their name
         m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
 
@@ -234,6 +235,13 @@ public class RobotContainer {
         m_driverController.rightBumper()
                 .whileTrue(m_automation.aimAtSpeakerAssist());
 
+        m_driverController.leftBumper()
+                .and(m_driverController.a().negate())
+                .and(m_driverController.b().negate())
+                .and(m_driverController.x().negate())
+                .and(m_driverController.y().negate())
+                .whileTrue(m_automation.strafeAndAimToAmpFeed());
+
         m_driverController.start()
                 .whileTrue(m_automation.humanPlayerStationPath());
 
@@ -246,7 +254,13 @@ public class RobotContainer {
                         m_shooter.rampUpSpeedToSpeakerCommand()))
                 .onFalse(m_shooter.stopCommand());
 
-        m_operatorController.rightTrigger()
+        m_operatorController.leftBumper()
+                .whileTrue(new ParallelCommandGroup(
+                        m_pivot.controlGoalToFloorCommand(),
+                        m_shooter.rampUpSpeedToFloorCommand()))
+                .onFalse(m_shooter.stopCommand());
+
+        m_operatorController.rightTrigger().and(m_operatorController.x().negate())
                 .onTrue(m_feeder.setVelocityCommand(FeederConstants.kShootVelocity))
                 .onFalse(m_feeder.stopCommand());
 
@@ -258,60 +272,100 @@ public class RobotContainer {
                 .whileTrue(m_pivot.runPercentCommand(() -> -m_operatorController.getRightY() / 3.0))
                 .onFalse(m_pivot.setEverythingCurrentCommand());
 
+        // Allred and Owen pooped
+        m_operatorController.b()
+                .whileTrue(new ParallelCommandGroup(
+                        m_pivot.controlGoalToPoopCommand(),
+                        m_shooter.rampUpSpeedToPoopCommand()))
+                .onFalse(m_shooter.stopCommand());
+
+        // m_operatorController.x()
+        // .whileTrue(m_pivot.controlGoalToAmpShotCommand())
+        // .onTrue(m_shooter.shootIntoAmpCommand())
+        // .onFalse(m_shooter.stopCommand());
+
+        // m_operatorController.x().and(m_operatorController.rightTrigger())
+        // .whileTrue(m_feeder.feedIntoAmpCommand())
+        // .onFalse(m_feeder.stopCommand());
+
+        Rotation2d shootAngle = PivotLocation.kNewAmpShot.angle.minus(Rotation2d.fromDegrees(10));
+        Rotation2d finalAngle = PivotLocation.kNewAmpShot.angle;
+
+        m_operatorController.x()
+                .onTrue(new ParallelCommandGroup(
+                        m_pivot.setGoalCommand(shootAngle),
+                        m_shooter.shootIntoAmpCommand()))
+                .onFalse(m_shooter.stopCommand());
+
+        m_operatorController.x().and(m_operatorController.rightTrigger())
+                .onTrue(Commands.parallel(
+                        m_pivot.setGoalCommand(finalAngle),
+                        m_feeder.feedIntoAmpCommand()))
+                .onFalse(m_feeder.stopCommand());
+
+        m_operatorController.a()
+                .onTrue(m_climber.setSetpointCommand(ClimberConstants.kMaxHeightInches));
+
+        // m_operatorController.x()
+        // .onTrue(m_automation.ampShot());
+
+        m_operatorController.povUp()
+                .whileTrue(new ParallelCommandGroup(
+                        m_feeder.feedIntoAmpCommand(),
+                        m_shooter.shootIntoAmpCommand()))
+                .onFalse(new ParallelCommandGroup(
+                        m_shooter.stopCommand(),
+                        m_feeder.stopCommand()));
+
         // presets
         // Subwoofer shot
         // This could be made into a singular command sequence.
-        // m_operatorController.povDown()
-        // .onTrue(new ParallelCommandGroup(
-        // m_shooter.setVelocityShooterCommand(
-        // BobotState.kLeftShooterSpeed,
-        // BobotState.kRightShooterSpeed),
-        // m_elevator.setSetpointCommand(ElevatorConstants.kSubwooferShotHeightInches)))
-        // .whileTrue(Commands.waitUntil(m_elevator.elevatorIsAtSubwooferShot())
-        // .andThen(m_pivot.setGoalCommand(PivotLocation.kSubwooferScoringPosition.angle)))
-        // .onFalse(new ParallelCommandGroup(
-        // m_shooter.stopShooterCommand(),
-        // m_pivot.controlOutOfTheElevatorsWay()));
+        m_operatorController.povDown()
+                .onTrue(new ParallelCommandGroup(
+                        m_shooter.setVelocityCommand(
+                                ShooterConstants.kLeftShooterSpeed,
+                                ShooterConstants.kRightShooterSpeed),
+                        m_pivot.setGoalCommand(Rotation2d.fromDegrees(55.0))))
+                .onFalse(new ParallelCommandGroup(m_shooter.stopShooterCommand()));
 
-        m_operatorController.povDown()
-                .and(m_elevator.elevatorIsAtSubwooferShot().negate())
-                .onTrue(new ParallelCommandGroup(
-                        m_elevator.setSetpointCommand(
-                                ElevatorConstants.kSubwooferShotHeightInches),
-                        m_shooter.setVelocityCommand(
-                                BobotState.kLeftShooterSpeed,
-                                BobotState.kRightShooterSpeed)));
-        m_operatorController.povDown()
-                .and(m_elevator.elevatorIsAtSubwooferShot())
-                .onTrue(new ParallelCommandGroup(
-                        m_pivot.setGoalCommand(PivotLocation.kSubwooferScoringPosition.angle),
-                        m_shooter.setVelocityCommand(
-                                BobotState.kLeftShooterSpeed,
-                                BobotState.kRightShooterSpeed)))
-                .onFalse(m_shooter.stopCommand());
+        // m_operatorController.povDown()
+        // .and(m_elevator.elevatorIsAtSubwooferShot().negate())
+        // .onTrue(new ParallelCommandGroup(
+        // m_elevator.setSetpointCommand(
+        // ElevatorConstants.kSubwooferShotHeightInches),
+        // m_shooter.setVelocityCommand(
+        // 60.0,
+        // 50.0)));
+        // m_operatorController.povDown()
+        // .and(m_elevator.elevatorIsAtSubwooferShot())
+        // .onTrue(new ParallelCommandGroup(
+        // m_pivot.setGoalCommand(PivotLocation.kSubwooferScoringPosition.angle),
+        // m_shooter.setVelocityCommand(
+        // 60.0,
+        // 50.0)))
+        // .onFalse(m_shooter.stopCommand());
 
         // 15 ft
-        m_operatorController.povUp()
-                .onTrue(
-                        m_shooter.setVelocityCommand(BobotState.kLeftShooterSpeed,
-                                BobotState.kRightShooterSpeed)
-                                .alongWith(m_pivot.setGoalCommand(
-                                        Rotation2d.fromDegrees(26.9))))
-                .onFalse(m_shooter.stopCommand());
+        // m_operatorController.povUp()
+        // .onTrue(
+        // m_shooter.setVelocityCommand(ShooterConstants.kLeftShooterSpeed,
+        // ShooterConstants.kRightShooterSpeed)
+        // .alongWith(m_pivot.setGoalCommand(
+        // Rotation2d.fromDegrees(26.9))))
+        // .onFalse(m_shooter.stopCommand());
 
         // 10ft shot
         // 10ft shot
         m_operatorController.povLeft()
                 .onTrue(m_shooter
-                        .setVelocityCommand(BobotState.kLeftShooterSpeed,
-                                BobotState.kRightShooterSpeed)
-                        .alongWith(m_pivot.setGoalCommand(Rotation2d.fromDegrees(34))))
+                        .setVelocityCommand(57.5, 57.5)
+                        .alongWith(m_pivot.setGoalCommand(Rotation2d.fromDegrees(45))))
                 .onFalse(m_shooter.stopCommand());
         // 13ft shot
         m_operatorController.povRight()
                 .onTrue(m_shooter
-                        .setVelocityCommand(BobotState.kLeftShooterSpeed,
-                                BobotState.kRightShooterSpeed)
+                        .setVelocityCommand(ShooterConstants.kLeftShooterSpeed,
+                                ShooterConstants.kRightShooterSpeed)
                         .alongWith(m_pivot.setGoalCommand(Rotation2d.fromDegrees(28.5))))
                 .onFalse(m_shooter.stopCommand());
 
@@ -328,71 +382,54 @@ public class RobotContainer {
         // m_pivot.pivotToSpeakerCommand(),
         // m_shooter.fireAtSpeakerCommand(FeederConstants.kFeederShootVelocity)));
 
-        // Move the Pivot before raising or lowering the Elevator
-        m_operatorController.y()
-                .and(m_elevator.elevatorIsAtTrap().negate())
-                .onTrue(m_elevator.setSetpointCommand(ElevatorConstants.kMaxHeightInches));
+        // // Get the Pivot out of the way before lowering the Elevator
+        // m_operatorController.x()
+        // .onTrue(m_pivot.controlOutOfTheElevatorsWay()
+        // .until(m_pivot.isBelowElevatorConflictTreshold())
+        // .andThen(m_elevator.setSetpointCommand(
+        // ElevatorConstants.kMinHeightInches)));
 
-        // Get the Pivot out of the way before lowering the Elevator
-        m_operatorController.x()
-                .onTrue(m_pivot.controlOutOfTheElevatorsWay()
-                        .until(m_pivot.isBelowElevatorConflictTreshold())
-                        .andThen(m_elevator.setSetpointCommand(
-                                ElevatorConstants.kMinHeightInches)));
+        // // AMP Scoring
+        // m_operatorController.b()
+        // .and(m_elevator.elevatorIsAtAmp().negate())
+        // .onTrue(m_elevator.setSetpointCommand(ElevatorConstants.kAmpScoreHeightInches));
 
-        // Move the Pivot out of the elevators way, then move the elevator to AMP score
-        // mode, then move pivot to feed the AMP.
-        m_operatorController.b()
-                .and(m_elevator.elevatorIsAtAmp().negate())
-                .onTrue(m_elevator.setSetpointCommand(ElevatorConstants.kAmpScoreHeightInches));
+        // m_operatorController.b()
+        // .and(m_elevator.elevatorIsAtAmp())
+        // .onTrue(m_pivot.setGoalCommand(PivotLocation.kAmpScoringPosition.angle));
 
-        // Assuming that the Operator set the setpoint, we move the pivot to fit
-        // into the Amp/Trap mechanism.
-        m_operatorController.b().and(m_operatorController.rightBumper())
-                .and(m_elevator.elevatorIsAtAmp())
-                .onTrue(m_pivot.setGoalToAmpScoringPosition());
+        // // Assuming that both the PivotAngle and the Elevator Height are right,
+        // // score into the Trap.
+        // m_operatorController.b().and(m_operatorController.rightTrigger())
+        // .and(m_elevator.elevatorIsAtAmp())
+        // .and(m_pivot.isNearAmpScoringAngle())
+        // .onTrue(new ParallelCommandGroup(
+        // m_ampTrap.setVelocityCommand(AmpTrapConstants.kAmpSpeed),
+        // m_shooter.shootIntoAmpCommand()))
+        // .onFalse(new ParallelCommandGroup(
+        // m_ampTrap.stopCommand(),
+        // m_shooter.stopCommand()));
 
-        // Assuming that both the PivotAngle and the Elevator Height are right,
-        // score into the AMP.
-        m_operatorController.b().and(m_operatorController.rightTrigger())
-                .and(m_elevator.elevatorIsAtAmp())
-                .and(m_pivot.isNearAmpScoringAngle())
-                .whileTrue(m_shooter.shootIntoAmpCommand())
-                .onTrue(m_ampTrap.setVelocityCommand(AmpTrapConstants.kAmpSpeed))
-                .onFalse(m_shooter.stopCommand().alongWith(m_ampTrap.stopCommand()));
+        // // Trap
+        // m_operatorController.y()
+        // .and(m_elevator.elevatorIsAtTrap().negate())
+        // .onTrue(m_elevator.setSetpointCommand(ElevatorConstants.kTrapScoreHeightInches));
 
-        // Trap
-        // Move the Pivot out of the elevators way, then move the elevator to Trap score
-        // mode, then move pivot to feed the AMP.
-        m_operatorController.y()
-                .and(m_elevator.elevatorIsDown())
-                .onTrue(m_elevator.setSetpointCommand(ElevatorConstants.kTrapScoreHeightInches));
+        // m_operatorController.y()
+        // .and(m_elevator.elevatorIsAtTrap())
+        // .onTrue(m_pivot.setGoalCommand(PivotLocation.kTrapScoringPosition.angle));
 
-        // Assuming that the Operator set the setpoint, we move the pivot to fit into
-        // the Trap mechanism.
-        m_operatorController.y().and(m_operatorController.rightBumper())
-                .and(m_elevator.elevatorIsAtTrap())
-                .onTrue(m_pivot.setGoalToTrapScoringPosition());
-
-        // Assuming that both the PivotAngle and the Elevator Height are right,
-        // score into the Trap.
-        m_operatorController.y().and(m_operatorController.rightTrigger())
-                .and(m_elevator.elevatorIsAtTrap())
-                .and(m_pivot.isNearTrapScoringAngle())
-                .whileTrue(m_shooter.shootIntoAmpCommand())
-                .onTrue(m_ampTrap.setVelocityCommand(AmpTrapConstants.kTrapSpeed))
-                .onFalse(m_shooter.stopCommand().alongWith(m_ampTrap.stopCommand()));
-
-        // @TODO add controls for Trap, should look similar to the AMP scoring controls
-
-        // m_pivot.movePivotOutOfTheElevatorsWay()
-        // .until(m_pivot.pivotIsBelowElevatorMax())
-        // .andThen(m_elevator.setSetpointCommand(ElevatorConstants.kAmpScoreHeightInches))
-        // .until(m_elevator.elevatorIsUp())
-        // .andThen(m_pivot.movePivotToAmpScoringPosition())
-
-        // .whileTrue(m_pivot.runTrapezoidProfileCommand())
-        // .onTrue(m_pivot.setSetpointStateCommand(PivotLocation.INITIAL.angle).andThen(Commands.none()));
+        // // Assuming that both the PivotAngle and the Elevator Height are right,
+        // // score into the Trap.
+        // m_operatorController.y().and(m_operatorController.rightTrigger())
+        // .and(m_elevator.elevatorIsAtTrap())
+        // .and(m_pivot.isNearTrapScoringAngle())
+        // .onTrue(new ParallelCommandGroup(
+        // m_ampTrap.setVelocityCommand(AmpTrapConstants.kTrapSpeed),
+        // m_shooter.shootIntoAmpCommand()))
+        // .onFalse(new ParallelCommandGroup(
+        // m_ampTrap.stopCommand(),
+        // m_shooter.stopCommand()));
     }
 
     private void configureProgrammerBindings() {
@@ -402,9 +439,15 @@ public class RobotContainer {
         m_feeder.beambreakIsObstructed()
                 .onTrue(m_blinkin.addStateCommand(BlinkinState.NOTE))
                 .onFalse(m_blinkin.removeStateCommand(BlinkinState.NOTE));
-        m_feeder.beambreakIsObstructed().and(BobotState.inRangeOfInterpolation())
+
+        m_feeder.beambreakIsObstructed().and(BobotState.inRangeOfSpeakerInterpolation())
                 .onTrue(m_blinkin.addStateCommand(BlinkinState.IN_RANGE))
                 .onFalse(m_blinkin.removeStateCommand(BlinkinState.IN_RANGE));
+
+        BobotState.pastOppWing().and(m_feeder.beambreakIsObstructed())
+                .onTrue(m_blinkin.addStateCommand(BlinkinState.PAST_OPP_WING))
+                .onFalse(m_blinkin.removeStateCommand(BlinkinState.PAST_OPP_WING));
+
     }
 
     /**
@@ -487,13 +530,13 @@ public class RobotContainer {
         NamedCommands.registerCommand(
                 "NewFireOne",
                 Commands.sequence(
-                        Commands.waitSeconds(0.5),
+                        Commands.waitSeconds(0.75),
                         m_feeder.setVelocityCommand(FeederConstants.kShootVelocity),
-                        Commands.waitSeconds(0.5),
+                        Commands.waitSeconds(0.25),
                         m_feeder.stopCommand()));
 
         NamedCommands.registerCommand(
-                "NewFireHS",
+                "NewFireHs",
                 Commands.sequence(
                         Commands.waitSeconds(0.25),
                         m_feeder.setVelocityCommand(FeederConstants.kShootVelocity),
@@ -516,23 +559,13 @@ public class RobotContainer {
                 "SubwayShot",
                 Commands.sequence(
                         m_shooter.setVelocityCommand(
-                                BobotState.kLeftShooterSpeed,
-                                BobotState.kRightShooterSpeed),
-                        m_elevator.setSetpointCommand(
-                                ElevatorConstants.kSubwooferShotHeightInches),
-                        Commands.waitUntil(m_elevator.elevatorIsAtSubwooferShot()),
+                                ShooterConstants.kLeftShooterSpeed / 1.5,
+                                ShooterConstants.kRightShooterSpeed / 1.5),
                         m_pivot.setGoalCommand(PivotLocation.kSubwooferScoringPosition.angle),
+                        // Commands.waitUntil(m_pivot.isNearGoal()),
                         Commands.waitSeconds(0.75),
                         m_feeder.setVelocityCommand(FeederConstants.kShootVelocity),
-                        Commands.waitSeconds(0.25)));
-
-        NamedCommands.registerCommand(
-                "SubwayReset",
-                Commands.sequence(
-                        m_shooter.stopCommand(),
-                        m_pivot.controlOutOfTheElevatorsWay()
-                                .until(m_pivot.isBelowElevatorConflictTreshold()),
-                        m_elevator.setSetpointCommand(ElevatorConstants.kMinHeightInches)));
+                        Commands.waitSeconds(0.4)));
 
         // New Auto Structure Commands:
         // Using event markers in pp/choreo, we can move any commands we want run

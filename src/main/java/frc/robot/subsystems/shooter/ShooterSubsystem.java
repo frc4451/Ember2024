@@ -13,9 +13,11 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants;
 import frc.robot.Constants.AdvantageKitConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.bobot_state.BobotState;
-import frc.robot.bobot_state.ShootingInterpolator;
+import frc.robot.bobot_state.interpolation.ShootingInterpolator;
 
 public class ShooterSubsystem extends SubsystemBase {
     private double targetVelocityRotPerSecondLeft = 0;
@@ -75,15 +77,27 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public Command rampUpSpeedToSpeakerCommand() {
         return new RunCommand(() -> {
-            ShootingInterpolator.InterpolatedCalculation shootingCalculation = BobotState.getShootingCalculation();
+            ShootingInterpolator.InterpolatedCalculation shootingCalculation = BobotState.getSpeakerCalculation();
             setVelocity(shootingCalculation.leftSpeedRotPerSec(), shootingCalculation.rightSpeedRotPerSec());
         }, this).andThen(stopCommand());
     }
 
-    public Command shootIntoAmpCommand() {
+    public Command rampUpSpeedToFloorCommand() {
         return new RunCommand(() -> {
-            setVelocity(25.0, 25.0);
+            ShootingInterpolator.InterpolatedCalculation shootingCalculation = BobotState.getFloorCalculation();
+            setVelocity(shootingCalculation.leftSpeedRotPerSec(), shootingCalculation.rightSpeedRotPerSec());
         }, this).andThen(stopCommand());
+    }
+
+    public Command rampUpSpeedToPoopCommand() {
+        return new RunCommand(() -> {
+            setVelocity(Constants.ShooterConstants.kLeftShooterPoopSpeed,
+                    Constants.ShooterConstants.kRightShooterPoopSpeed);
+        }, this).andThen(stopCommand());
+    }
+
+    public Command shootIntoAmpCommand() {
+        return new InstantCommand(() -> setVelocity(ShooterConstants.kAmpSpeed, ShooterConstants.kAmpSpeed), this);
     }
 
     public Trigger shooterNearTarget() {

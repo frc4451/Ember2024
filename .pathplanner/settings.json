@@ -1,14 +1,15 @@
 {
-  "robotWidth": 0.89,
-  "robotLength": 0.89,
+  "robotWidth": 0.85725,
+  "robotLength": 0.85725,
   "holonomicMode": true,
   "pathFolders": [
     "Ember Tuning",
     "Kates Paths",
-    "Rotation Correction Test",
+    "Waffle House",
     "Note2Location",
     "Note2Note",
     "PathSegments",
+    "Rotation Correction Test",
     "Test Paths",
     "Walton",
     "Wendys"

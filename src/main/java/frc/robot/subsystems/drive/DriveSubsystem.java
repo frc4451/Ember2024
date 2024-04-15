@@ -245,13 +245,17 @@ public class DriveSubsystem extends SubsystemBase {
      * Predicts what our pose will be in the future.
      *
      */
-    public Pose2d getPredictedPose() {
+    public Pose2d getPredictedPose(double lookaheadTimeSeconds) {
         Twist2d velocity = getVelocityTwist();
         return getPose().exp(
                 new Twist2d(
-                        velocity.dx * kLookaheadTimeSeconds,
-                        velocity.dy * kLookaheadTimeSeconds,
-                        velocity.dtheta * kLookaheadTimeSeconds));
+                        velocity.dx * lookaheadTimeSeconds,
+                        velocity.dy * lookaheadTimeSeconds,
+                        velocity.dtheta * lookaheadTimeSeconds));
+    }
+
+    public Pose2d getPredictedPose() {
+        return getPredictedPose(kLookaheadTimeSeconds);
     }
 
     /**
