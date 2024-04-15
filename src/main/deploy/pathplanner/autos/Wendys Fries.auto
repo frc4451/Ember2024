@@ -12,12 +12,6 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "SubwayShot"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -25,6 +19,12 @@
                 "type": "sequential",
                 "data": {
                   "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "SubwayShot"
+                      }
+                    },
                     {
                       "type": "deadline",
                       "data": {
@@ -40,19 +40,6 @@
                             "data": {
                               "name": "InterpolateSetpoint"
                             }
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "type": "deadline",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "path",
-                            "data": {
-                              "pathName": "WendysShot1ToOutermostNote"
-                            }
                           },
                           {
                             "type": "named",
@@ -61,6 +48,12 @@
                             }
                           }
                         ]
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "TargetSpeaker"
                       }
                     },
                     {
@@ -89,13 +82,19 @@
                       }
                     },
                     {
+                      "type": "named",
+                      "data": {
+                        "name": "TargetRotation"
+                      }
+                    },
+                    {
                       "type": "deadline",
                       "data": {
                         "commands": [
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "WendysShotToInnermore"
+                              "pathName": "WendysShotToInnermoreVARC"
                             }
                           },
                           {
@@ -105,6 +104,12 @@
                             }
                           }
                         ]
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "TargetSpeaker"
                       }
                     },
                     {

@@ -3,43 +3,43 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.3,
-        "y": 2.8
+        "x": 3.04,
+        "y": 7.07
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.160364654526569,
-        "y": 1.5712719335665124
+        "x": 3.9060254037844384,
+        "y": 7.57
       },
       "isLocked": false,
-      "linkedName": "WendysShot"
+      "linkedName": "McNote2"
     },
     {
       "anchor": {
-        "x": 8.4,
-        "y": 0.76
+        "x": 8.29,
+        "y": 7.45
       },
       "prevControl": {
-        "x": 3.4000000000000004,
-        "y": 0.76
+        "x": 7.789999999999999,
+        "y": 7.45
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "WendysOutermostNote"
+      "linkedName": "B1"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.75,
+      "waypointRelativePos": 0.7,
       "rotationDegrees": 0,
-      "rotateFast": true
+      "rotateFast": false
     }
   ],
   "constraintZones": [],
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.8,
+      "waypointRelativePos": 0.5,
       "command": {
         "type": "sequential",
         "data": {
@@ -56,7 +56,7 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.7,
+    "maxVelocity": 3.5,
     "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
@@ -67,10 +67,10 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Wendys",
+  "folder": "Note2Note",
   "previewStartingState": {
-    "rotation": -49.5,
+    "rotation": 30.0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

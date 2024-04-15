@@ -2,34 +2,15 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.4,
-      "y": 5.55
+      "x": 0.688059153896086,
+      "y": 6.6985578415601275
     },
-    "rotation": 0
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
-        {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "SubwayShot"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "PivotPID"
-                }
-              }
-            ]
-          }
-        },
         {
           "type": "parallel",
           "data": {
@@ -38,6 +19,37 @@
                 "type": "sequential",
                 "data": {
                   "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "SubwayShot"
+                      }
+                    },
+                    {
+                      "type": "deadline",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "Waffle Start"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "RunIntakeReal"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "InterpolatePivot"
+                            }
+                          }
+                        ]
+                      }
+                    },
                     {
                       "type": "named",
                       "data": {
@@ -51,13 +63,13 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "SubwooferToA3"
+                              "pathName": "WaffleShootB1"
                             }
                           },
                           {
                             "type": "named",
                             "data": {
-                              "name": "RunIntakeReal"
+                              "name": "InterpolateSetpoint"
                             }
                           }
                         ]
@@ -66,7 +78,13 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "NewFireHs"
+                        "name": "FireOne"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "TargetRotation"
                       }
                     },
                     {
@@ -76,13 +94,19 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "A3toA2"
+                              "pathName": "WaffleGetB2"
                             }
                           },
                           {
                             "type": "named",
                             "data": {
                               "name": "RunIntakeReal"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "InterpolatePivot"
                             }
                           }
                         ]
@@ -91,7 +115,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "NewFireHs"
+                        "name": "TargetSpeaker"
                       }
                     },
                     {
@@ -101,13 +125,13 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "A2toA1"
+                              "pathName": "WaffleShootB2"
                             }
                           },
                           {
                             "type": "named",
                             "data": {
-                              "name": "RunIntakeReal"
+                              "name": "InterpolateSetpoint"
                             }
                           }
                         ]
@@ -116,10 +140,16 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "NewFireHs"
+                        "name": "FireOne"
                       }
                     }
                   ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PivotPID"
                 }
               }
             ]

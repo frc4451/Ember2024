@@ -12,13 +12,7 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "SubwayShot"
-          }
-        },
-        {
-          "type": "deadline",
+          "type": "parallel",
           "data": {
             "commands": [
               {
@@ -26,87 +20,31 @@
                 "data": {
                   "commands": [
                     {
+                      "type": "named",
+                      "data": {
+                        "name": "SubwayShot"
+                      }
+                    },
+                    {
                       "type": "deadline",
                       "data": {
                         "commands": [
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "WendysShot1SubwooferVARC"
+                              "pathName": "Wendys Frosty Start"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "InterpolateSetpoint"
                             }
                           },
                           {
                             "type": "named",
                             "data": {
                               "name": "RunIntakeReal"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Interpolate"
-                            }
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "type": "deadline",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "path",
-                            "data": {
-                              "pathName": "WendysOutermostToShotVARC"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Interpolate"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "TargetSpeaker"
-                            }
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "FireOne"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "TargetRotation"
-                      }
-                    },
-                    {
-                      "type": "deadline",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "path",
-                            "data": {
-                              "pathName": "WendysShotToInnermoreVARC"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "RunIntakeReal"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Interpolate"
                             }
                           }
                         ]
@@ -131,7 +69,63 @@
                           {
                             "type": "named",
                             "data": {
-                              "name": "Interpolate"
+                              "name": "InterpolateSetpoint"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "FireOne"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "TargetRotation"
+                      }
+                    },
+                    {
+                      "type": "deadline",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "WendysShot1ToOutermostNoteVARC"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "RunIntakeReal"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "TargetSpeaker"
+                      }
+                    },
+                    {
+                      "type": "deadline",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "WendysOutermostToShot"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "InterpolateSetpoint"
                             }
                           }
                         ]
@@ -144,6 +138,12 @@
                       }
                     }
                   ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PivotPID"
                 }
               }
             ]

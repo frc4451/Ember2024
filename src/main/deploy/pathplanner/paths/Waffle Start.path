@@ -1,0 +1,108 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.688059153896086,
+        "y": 6.6985578415601275
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 0.6603937571898761,
+        "y": 7.670755888608138
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.55744644822623,
+        "y": 7.63920638952389
+      },
+      "prevControl": {
+        "x": 0.55744644822623,
+        "y": 7.63920638952389
+      },
+      "nextControl": {
+        "x": 2.5574464482262265,
+        "y": 7.63920638952389
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.305788389354557,
+        "y": 7.63920638952389
+      },
+      "prevControl": {
+        "x": 4.707024213219993,
+        "y": 7.63920638952389
+      },
+      "nextControl": {
+        "x": 6.501462293655742,
+        "y": 7.63920638952389
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.29,
+        "y": 7.45
+      },
+      "prevControl": {
+        "x": 7.349351452036237,
+        "y": 7.392990997093106
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "B1"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 0,
+      "rotateFast": true
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 2.4000000000000004,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "TargetNote"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Waffle House",
+  "previewStartingState": {
+    "rotation": 60.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

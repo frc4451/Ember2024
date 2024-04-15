@@ -3,43 +3,43 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.3,
-        "y": 2.8
+        "x": 4.065842576129597,
+        "y": 6.114215561764457
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.160364654526569,
-        "y": 1.5712719335665124
+        "x": 5.605085654615755,
+        "y": 6.71281009228685
       },
       "isLocked": false,
-      "linkedName": "WendysShot"
+      "linkedName": "WaffleShot"
     },
     {
       "anchor": {
-        "x": 8.4,
-        "y": 0.76
+        "x": 8.28,
+        "y": 5.65
       },
       "prevControl": {
-        "x": 3.4000000000000004,
-        "y": 0.76
+        "x": 6.802274715660543,
+        "y": 6.484774080659273
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "WendysOutermostNote"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.75,
-      "rotationDegrees": 0,
-      "rotateFast": true
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": -15.0,
+      "rotateFast": false
     }
   ],
   "constraintZones": [],
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.8,
+      "waypointRelativePos": 0.7,
       "command": {
         "type": "sequential",
         "data": {
@@ -56,21 +56,21 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.7,
+    "maxVelocity": 3.5,
     "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 0,
+    "velocity": 0.0,
+    "rotation": -10.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Wendys",
+  "folder": "Waffle House",
   "previewStartingState": {
-    "rotation": -49.5,
+    "rotation": 5.0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

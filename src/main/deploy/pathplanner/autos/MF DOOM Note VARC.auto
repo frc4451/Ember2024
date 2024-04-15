@@ -94,7 +94,7 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "A1toB1"
+                              "pathName": "A1toB1 NV"
                             }
                           },
                           {
@@ -156,7 +156,7 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "15FTtoB2"
+                              "pathName": "15FTtoB2 NV"
                             }
                           },
                           {

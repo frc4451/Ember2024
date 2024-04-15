@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.4,
-        "y": 5.55
+        "x": 8.28,
+        "y": 5.65
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.4576806931391644,
-        "y": 4.061891457116247
+        "x": 7.139049549930932,
+        "y": 6.250756074845484
       },
       "isLocked": false,
-      "linkedName": "SubwooferFront"
+      "linkedName": "B2"
     },
     {
       "anchor": {
-        "x": 2.5,
-        "y": 4.118900460023142
+        "x": 4.065842576129597,
+        "y": 6.114215561764457
       },
       "prevControl": {
-        "x": 2.0,
-        "y": 4.118900460023142
+        "x": 5.576581153162307,
+        "y": 6.7555668444670225
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "WaffleShot"
     }
   ],
   "rotationTargets": [],
@@ -39,14 +39,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 5.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Note2Location",
-  "previewStartingState": {
-    "rotation": 0,
-    "velocity": 0
-  },
+  "folder": "Waffle House",
+  "previewStartingState": null,
   "useDefaultConstraints": true
 }
