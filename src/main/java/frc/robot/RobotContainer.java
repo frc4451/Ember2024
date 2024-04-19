@@ -528,6 +528,17 @@ public class RobotContainer {
                         m_feeder.stopCommand()));
 
         NamedCommands.registerCommand(
+                "Fire75",
+                new SequentialCommandGroup(
+                        new ParallelDeadlineGroup(
+                                new WaitCommand(0.75),
+                                m_pivot.controlGoalToSpeakerCommand(),
+                                m_intake.setPercentOutputCommand(IntakeConstants.kIntakePercent),
+                                m_shooter.rampUpSpeedToSpeakerCommand(),
+                                m_feeder.setVelocityCommand(FeederConstants.kShootVelocity)),
+                        m_feeder.stopCommand()));
+
+        NamedCommands.registerCommand(
                 "NewFireOne",
                 Commands.sequence(
                         Commands.waitSeconds(0.75),
