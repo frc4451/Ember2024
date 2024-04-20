@@ -114,6 +114,9 @@ public class SwerveModuleSparks implements SwerveModuleIO {
             m_turningSparkMax.setIdleMode(ModuleConstants.kTurningMotorIdleMode);
             m_drivingSparkFlex.setSmartCurrentLimit(ModuleConstants.kDrivingMotorCurrentLimit);
             m_turningSparkMax.setSmartCurrentLimit(ModuleConstants.kTurningMotorCurrentLimit);
+            // m_turningSparkMax.setSmartCurrentLimit(ModuleConstants.kTurningMotorCurrentLimit,
+            // 20);
+            // m_turningSparkMax.setSecondaryCurrentLimit(insertThing);
 
             m_drivingEncoder.setPosition(0);
         }
