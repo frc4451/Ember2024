@@ -8,7 +8,7 @@ public enum PivotLocation {
     k45(Rotation2d.fromDegrees(45.0)),
     kSoftMin(Rotation2d.fromDegrees(28.0)),
     kSoftMax(Rotation2d.fromDegrees(101.0)),
-    kNewAmpShot(Rotation2d.fromDegrees(101.0)),
+    kNewAmpShot(Rotation2d.fromDegrees(100.0)),
     // kElevatorDownSoftMax(Rotation2d.fromDegrees(40.0)),
     // kElevatorDownHardMax(Rotation2d.fromDegrees(42.0)),
     kSubwooferScoringPosition(Rotation2d.fromDegrees(55.0)),
