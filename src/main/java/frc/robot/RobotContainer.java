@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.AdvantageKitConstants.Mode;
 import frc.robot.Constants.ClimberConstants;
@@ -122,6 +123,8 @@ public class RobotContainer {
         // Configure PathPlanner logging with AdvantageKit
         PathPlannerUtils.configureLogging();
 
+        m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
+
         // Configure the button bindings
         configureNamedCommands();
         configureDriverBindings();
@@ -129,6 +132,7 @@ public class RobotContainer {
         configureProgrammerBindings();
         configureLights();
         configureLaneChooser();
+        configureCustomAutos();
 
         // Configure default commands
         // m_robotDrive.
@@ -146,8 +150,16 @@ public class RobotContainer {
         m_climber.setDefaultCommand(m_climber.pidCommand());
         // m_elevator.setDefaultCommand(m_elevator.pidCommand());
         // Build an auto chooser. You can make a default auto by passing in their name
-        m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
+    }
 
+    private void addSysIdAutos(String name, SysIdRoutine routine) {
+        m_autoChooser.addOption(name + " Characterization (Qu+)", routine.quasistatic(SysIdRoutine.Direction.kForward));
+        m_autoChooser.addOption(name + " Characterization (Qu-)", routine.quasistatic(SysIdRoutine.Direction.kReverse));
+        m_autoChooser.addOption(name + " Characterization (Dy+)", routine.dynamic(SysIdRoutine.Direction.kForward));
+        m_autoChooser.addOption(name + " Characterization (Dy-)", routine.dynamic(SysIdRoutine.Direction.kReverse));
+    }
+
+    private void configureCustomAutos() {
         m_autoChooser.addOption(
                 "Drive Wheel Radius Characterization",
                 // Since we don't anything in the drive subsystem to easily orient the
@@ -162,6 +174,8 @@ public class RobotContainer {
                         new WheelRadiusCharacterization(
                                 m_robotDrive,
                                 WheelRadiusCharacterization.Direction.COUNTER_CLOCKWISE)));
+
+        addSysIdAutos("Drive", m_robotDrive.getSysIdRoutine());
     }
 
     private void configureDriverBindings() {

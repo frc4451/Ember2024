@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.drive;
 
+import static edu.wpi.first.units.Units.Volts;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
@@ -25,6 +27,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
@@ -75,6 +78,17 @@ public class DriveSubsystem extends SubsystemBase {
             m_wheelOnlyPoseEstimator);
 
     private final Supplier<VisionMeasurement> m_visionMeasurementSupplier;
+
+    private final SysIdRoutine sysIdRoutine = new SysIdRoutine(
+            new SysIdRoutine.Config(),
+            new SysIdRoutine.Mechanism(
+                    voltage -> {
+                        for (SwerveModuleIO module : m_modules) {
+                            module.runDriveCharacterization(voltage.in(Volts));
+                        }
+                    },
+                    null,
+                    this));
 
     /** Creates a new DriveSubsystem. */
     public DriveSubsystem(Supplier<VisionMeasurement> visionMeasurementSupplier) {
@@ -392,5 +406,9 @@ public class DriveSubsystem extends SubsystemBase {
 
     private Twist2d getVelocityTwist() {
         return GeomUtils.toTwist2d(getVelocitySpeeds());
+    }
+
+    public SysIdRoutine getSysIdRoutine() {
+        return sysIdRoutine;
     }
 }

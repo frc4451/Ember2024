@@ -138,6 +138,7 @@ public class SwerveModuleSparks implements SwerveModuleIO {
     public void updateInputs(SwerveModuleIOInputs inputs) {
         inputs.drivePositionMeters = m_drivingEncoder.getPosition();
         inputs.driveVelocityMetersPerSec = m_drivingEncoder.getVelocity();
+        inputs.driveAppliedDutyCycle = m_drivingSparkFlex.getAppliedOutput();
         inputs.driveAppliedVoltage = m_drivingSparkFlex.getAppliedOutput() * m_drivingSparkFlex.getBusVoltage();
         inputs.driveCurrentAmps = m_drivingSparkFlex.getOutputCurrent();
         inputs.driveTemperatureCelsius = m_drivingSparkFlex.getMotorTemperature();
@@ -145,6 +146,7 @@ public class SwerveModuleSparks implements SwerveModuleIO {
         inputs.turnAbsolutePositionRad = m_turningEncoder.getPosition();
         inputs.turnAngularOffsetPositionRad = m_turningEncoder.getPosition() - m_chassisAngularOffset;
         inputs.turnVelocityRadPerSec = m_turningEncoder.getVelocity();
+        inputs.turnAppliedDutyCycle = m_turningSparkMax.getAppliedOutput();
         inputs.turnAppliedVoltage = m_turningSparkMax.getAppliedOutput() * m_turningSparkMax.getBusVoltage();
         inputs.turnCurrentAmps = m_turningSparkMax.getOutputCurrent();
         inputs.turnTemperatureCelsius = m_turningSparkMax.getMotorTemperature();
@@ -180,5 +182,14 @@ public class SwerveModuleSparks implements SwerveModuleIO {
                 CANSparkFlex.ControlType.kPosition);
 
         m_desiredState = desiredState;
+    }
+
+    @Override
+    public void runDriveCharacterization(double voltage) {
+        m_drivingSparkFlex.setVoltage(voltage);
+
+        m_turningPIDController.setReference(
+                m_chassisAngularOffset,
+                CANSparkFlex.ControlType.kPosition);
     }
 }
