@@ -16,6 +16,8 @@ import org.littletonrobotics.urcl.URCL;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -37,6 +39,8 @@ import frc.utils.VirtualSubsystem;
 public class Robot extends LoggedRobot {
     private Command m_autoCommand;
     private RobotContainer m_robotContainer;
+
+    private final Timer m_autoTimer = new Timer();
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -169,12 +173,22 @@ public class Robot extends LoggedRobot {
 
         if (m_autoCommand != null) {
             m_autoCommand.schedule();
+            m_autoTimer.restart();
         }
     }
 
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
+        if (m_autoTimer.hasElapsed(15)) {
+            DriverStationSim.setEnabled(false);
+            DriverStationSim.setAutonomous(false);
+        }
+    }
+
+    @Override
+    public void autonomousExit() {
+        m_autoTimer.stop();
     }
 
     @Override
