@@ -1,22 +1,27 @@
-# MAXSwerve Java Template v2023.1
-
-See [the online changelog](https://github.com/REVrobotics/MAXSwerve-Java-Template/blob/main/CHANGELOG.md) for information about updates to the template that may have been released since you created your project.
-
-## Description
-
-A template project for an FRC swerve drivetrain that uses REV MAXSwerve Modules.
-
-Note that this is meant to be used with a drivetrain composed of four MAXSwerve Modules, each configured with two SPARKS MAX, a NEO as the driving motor, a NEO 550 as the turning motor, and a REV Through Bore Encoder as the absolute turning encoder.
-
-To get started, make sure you have calibrated the zero offsets for the absolute encoders in the Hardware Client using the `Absolute Encoder` tab under the associated turning SPARK MAX devices.
+# EMBER, FRC 4451's Crescendo Robot
 
 ## Prerequisites
 
-* SPARK MAX Firmware v1.6.2 - Adds features that are required for swerve
-* REVLib v2023.1.2 - Includes APIs for the new firmware features
+- Latest version of WPILib
+- VSCode or other editor with WPILib installed
+- AdvantageScope, if not installed with WPILib
 
-## Configuration
+## Getting Started
 
-It is possible that this project will not work for your robot right out of the box. Various things like the CAN IDs, PIDF gains, chassis configuration, etc. must be determined for your own robot!
+1. Clone this repository
+2. Open the codebase using the WPILib version of VS Code from the WPILib installer
+3. Run `WPILib: Build Robot Code` to generate your build constants for AdvantageKit
 
-These values can be adjusted in the `Constants.java` file.
+## Simulating robot code
+
+Our robot code was built entirely with simulation-first development. We utilized AdvantageKit's structure to build out the subsystems, then IO layer, then Sim layer, then motor controller(s) for each subsystem. Some components, such as the `pivot` and `elevator` subsystems also leverage the `Mechanism2d` construct to help us visualize angle/height setpoints to ensure robot parts will not collide.
+
+Assuming you have built robot code, you can run `WPILib: Simulate Robot Code` to start the WPILib simulator and observe our logged properties in AdvantageScope.
+
+- You can read more on simulation controls from [WPILib](https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-simulation/introduction.html)
+
+When running the robot in `SIM` mode, `PhotonSim` is enabled and updated for each April Tag and Object Detection camera established in the codebase.
+
+- You can read more on PhotonSim from [PhotonVision](https://docs.photonvision.org/en/latest/docs/simulation/simulation.html#visualizing-results)
+
+From our robot code, ports 1181\~1188 are used by the four April Tag cameras. Ports 1189\~1190 are used for Object Detection. If you add/remove cameras, expect the port designations to change.
