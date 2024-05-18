@@ -71,7 +71,7 @@ public final class Constants {
     public static final class DriveConstants {
         // Driving Parameters - Note that these are not the maximum capable speeds of
         // the robot, rather the allowed maximum speeds
-        public static final double kMaxSpeedMetersPerSecond = 4.8;
+        public static final double kMaxSpeedMetersPerSecond = 4.6;
         public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
         public static final double kDirectionSlewRate = 1.2; // radians per second
@@ -88,6 +88,11 @@ public final class Constants {
                 new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
                 new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
                 new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
+
+        // The radius of the drivetrain (distance from center to each module) (meters)
+        public static final double kRadius = Math.hypot(
+                DriveConstants.kWheelBase / 2,
+                DriveConstants.kTrackWidth / 2);
 
         // Angular offsets of the modules relative to the chassis in radians
         public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
@@ -115,7 +120,7 @@ public final class Constants {
         // This changes the drive speed of the module (a pinion gear with more teeth
         // will result in a
         // robot that drives faster).
-        public static final int kDrivingMotorPinionTeeth = 13;
+        public static final int kDrivingMotorPinionTeeth = 14;
 
         // Invert the turning encoder, since the output shaft rotates in the opposite
         // direction of
@@ -124,7 +129,11 @@ public final class Constants {
 
         // Calculations required for driving motor conversion factors and feed forward
         public static final double kDrivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60;
-        public static final double kWheelDiameterMeters = Units.inchesToMeters(3);
+        /**
+         * Effective wheel diameter of wheel. See for the calculation
+         * {@link frc.robot.commands.WheelRadiusCharacterization}
+         */
+        public static final double kWheelDiameterMeters = Units.inchesToMeters(2.8838535737008);
         public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
         // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
         // teeth on the bevel pinion
@@ -143,14 +152,14 @@ public final class Constants {
         public static final double kTurningEncoderPositionPIDMinInput = 0; // radians
         public static final double kTurningEncoderPositionPIDMaxInput = kTurningEncoderPositionFactor; // radians
 
-        public static final double kDrivingP = 0.04;
+        public static final double kDrivingP = 0.085;
         public static final double kDrivingI = 0;
         public static final double kDrivingD = 0;
-        public static final double kDrivingFF = 1 / kDriveWheelFreeSpeedRps;
+        public static final double kDrivingFF = 0.23;
         public static final double kDrivingMinOutput = -1;
         public static final double kDrivingMaxOutput = 1;
 
-        public static final double kTurningP = 1;
+        public static final double kTurningP = 1.2;
         public static final double kTurningI = 0;
         public static final double kTurningD = 0;
         public static final double kTurningFF = 0;
@@ -160,7 +169,7 @@ public final class Constants {
         public static final IdleMode kDrivingMotorIdleMode = IdleMode.kBrake;
         public static final IdleMode kTurningMotorIdleMode = IdleMode.kBrake;
 
-        public static final int kDrivingMotorCurrentLimit = 50; // amps
+        public static final int kDrivingMotorCurrentLimit = 60; // amps
         public static final int kTurningMotorCurrentLimit = 20; // amps
     }
 
@@ -175,21 +184,26 @@ public final class Constants {
         public static final double kFreeSpeedRpm = 6784;
     }
 
-    public static final class IntakeConstants {
-        public static final int kBeambreakChannel = 0;
-
+    public static final class PivotConstants {
         public static final double kPivotReduction = 80.0;
 
         public static final int kPivotLeaderCanId = 6;
         public static final int kPivotFollowerCanId = 7;
-        public static final double kPivotVelocityRadiansPerSecond = Units.degreesToRadians(15.0);
 
-        public static final double kPivotP = 0.3;
-        public static final double kPivotI = 0.0;
-        public static final double kPivotD = 0.0;
+        // TrapezoidProfile Constraints
+        public static final double kMaxVelocityRadiansPerSecond = Units.degreesToRadians(160.0);
+        public static final double kMaxAccelerationRadiansPerSecondSquared = kMaxVelocityRadiansPerSecond;
+    }
+
+    public static final class IntakeConstants {
+        public static final int kReduction = 3;
+
+        public static final int kBeambreakChannel = 0;
 
         public static final int kIntakeCanId = 1;
-        public static final double kIntakeVelocity = 20.0;
+
+        public static final double kIntakePercent = 0.60;
+        public static final double kIntakeReversePercent = -0.50;
     }
 
     public static final class AmpTrapConstants {
@@ -198,19 +212,10 @@ public final class Constants {
                 .withSupplyCurrentThreshold(35.0)
                 .withSupplyTimeThreshold(0.5);
 
-        // public static final double kPivotMinDegrees = 10.0;
-        // public static final double kPivotMaxDegrees = 167.25;
-
-        public static final double kPivotReduction = 5.0;
-
         public static final int kCanId = 9;
-        public static final double kPivotVelocityRadiansPerSecond = Units.degreesToRadians(15.0);
 
-        public static final double kPivotP = 0.3;
-        public static final double kPivotI = 0.0;
-        public static final double kPivotD = 0.0;
-
-        public static final double kShootSpeed = 50.0;
+        public static final double kAmpSpeed = 75.0;
+        public static final double kTrapSpeed = 50.0;
 
         public static final int kBeambreakChannel = 2;
     }
@@ -218,11 +223,23 @@ public final class Constants {
     public static final class ShooterConstants {
         public static final int kLeftShooterCanID = 3;
         public static final int kRightShooterCanID = 4;
-        public static final int kFeederCanID = 2;
         public static final int kBeambreakChannel = 1;
 
-        public static final double kFeederIntakeVelocity = 20.0;
-        public static final double kFeederShootVelocity = 50.0;
+        public static final double kLeftShooterSpeed = 88.0;
+        public static final double kRightShooterSpeed = 73.0;
+
+        public static final double kLeftShooterPoopSpeed = 40.0;
+        public static final double kRightShooterPoopSpeed = 40.0;
+
+        public static final double kAmpSpeed = 11.0;
+    }
+
+    public static final class FeederConstants {
+        public static final int kCanID = 2;
+        public static final double kIntakeVelocity = 20.0;
+        public static final double kShootVelocity = 50.0;
+        public static final double kReverseVelocity = -20.0;
+        public static final double kAmpVelocity = 12.0;
     }
 
     public static final class ClimberConstants {
@@ -243,9 +260,10 @@ public final class Constants {
 
     public static final class ElevatorConstants {
         public static final double kMinHeightInches = 0.0;
-        public static final double kMaxHeightInches = 22.5;
+        public static final double kMaxHeightInches = 23.5;
 
         public static final double kAmpScoreHeightInches = 15.0;
+        public static final double kSubwooferShotHeightInches = 8.0;
         public static final double kTrapScoreHeightInches = kMaxHeightInches;
 
         public static final double kPivotClearanceHeightInches = 15.0;
@@ -261,6 +279,9 @@ public final class Constants {
     }
 
     public static final class PhoenixConstants {
-        public static final int defaultStatusSignalFrequencyHz = 50;
+        public static final int kDefaultStatusSignalFrequencyHz = 50;
+        public static final int kStatusSignalFrequencyHz = 50;
+
+        public static final String kCANivoreName = "SUSBus";
     }
 }

@@ -1,0 +1,70 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.4,
+        "y": 0.76
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.174306437501763,
+        "y": 1.0307927638077492
+      },
+      "isLocked": false,
+      "linkedName": "WendysOutermostNote"
+    },
+    {
+      "anchor": {
+        "x": 3.3,
+        "y": 2.8
+      },
+      "prevControl": {
+        "x": 4.2308339677172615,
+        "y": 2.232708110858057
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "WendysShot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "TargetSpeaker",
+      "waypointRelativePos": 0.25,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "TargetSpeaker"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.7,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -38.860000000000014,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Wendys",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

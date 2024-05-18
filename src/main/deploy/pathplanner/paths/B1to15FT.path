@@ -3,12 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.1,
+        "x": 8.29,
         "y": 7.45
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.944797299204208,
+        "x": 7.134797299204208,
         "y": 7.354161374989417
       },
       "isLocked": false,
@@ -16,24 +16,24 @@
     },
     {
       "anchor": {
-        "x": 3.2677165354330717,
-        "y": 6.983602856094601
+        "x": 3.04,
+        "y": 7.07
       },
       "prevControl": {
-        "x": 4.137103829763216,
-        "y": 7.083368611181667
+        "x": 3.909387294330145,
+        "y": 7.169765755087067
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "center15ft"
+      "linkedName": "McNote2"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.2,
-    "maxAcceleration": 4.2,
+    "maxVelocity": 3.7,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

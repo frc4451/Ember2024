@@ -3,12 +3,16 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import frc.robot.Constants.IntakeConstants;
 
 public class IntakeIOSim implements IntakeIO {
     // private static double momentOfInertiaKgMSquared = 0.0000032998;
     private static double momentOfInertiaKgMSquared = 1.0;
 
-    private final FlywheelSim wheelSim = new FlywheelSim(DCMotor.getFalcon500(1), 1, momentOfInertiaKgMSquared);
+    private final FlywheelSim wheelSim = new FlywheelSim(
+            DCMotor.getFalcon500(1),
+            IntakeConstants.kReduction,
+            momentOfInertiaKgMSquared);
 
     private final PIDController pidController = new PIDController(1, 0, 0);
 
@@ -28,6 +32,7 @@ public class IntakeIOSim implements IntakeIO {
         wheelSim.update(0.02); // 20 ms is the standard periodic loop time
 
         inputs.appliedVoltage = appliedVoltage;
+        inputs.appliedDutyCycle = appliedVoltage / 12.0;
         inputs.currentAmperage = wheelSim.getCurrentDrawAmps();
         inputs.velocityRotPerSecond = wheelSim.getAngularVelocityRPM() / 60.0;
     }
@@ -36,6 +41,11 @@ public class IntakeIOSim implements IntakeIO {
     public void setVelocity(double velocityRotPerSecond) {
         closedLoop = true;
         this.velocityRotPerSecond = velocityRotPerSecond;
+    }
+
+    @Override
+    public void setPercentOutput(double percentDecimal) {
+        setVelocity(12 * percentDecimal);
     }
 
     @Override

@@ -24,7 +24,8 @@ public class AprilTagAlgorithms {
     public static Optional<VisionMeasurement> findVisionMeasurement(EstimatedRobotPose estimatedPose) {
         // Empty if we only have one target, and it's not good enough to read
         if (estimatedPose.targetsUsed.size() == 1
-                && (estimatedPose.targetsUsed.get(0).getPoseAmbiguity() > VisionConstants.POSE_AMBIGUITY_CUTOFF
+                && (estimatedPose.targetsUsed.get(0)
+                        .getPoseAmbiguity() > VisionConstants.POSE_AMBIGUITY_CUTOFF
                         || estimatedPose.targetsUsed.get(0).getPoseAmbiguity() == -1)) {
             return Optional.empty();
         }
@@ -40,8 +41,10 @@ public class AprilTagAlgorithms {
                             Transform3d targetPosition = target.getBestCameraToTarget();
                             return Math.sqrt(
                                     Math.pow(targetPosition.getX(), 2)
-                                            + Math.pow(targetPosition.getY(), 2)
-                                            + Math.pow(targetPosition.getZ(), 2));
+                                            + Math.pow(targetPosition
+                                                    .getY(), 2)
+                                            + Math.pow(targetPosition
+                                                    .getZ(), 2));
                         })
                 .sum();
 
@@ -65,7 +68,7 @@ public class AprilTagAlgorithms {
             PhotonPipelineResult frame,
             PhotonPoseEstimator estimator) {
         // Check if our frame has invalid targets
-        if (AprilTagFiltering.shouldIgnoreFrame(frame, AprilTagFiltering.getAllowedIDs())) {
+        if (AprilTagFiltering.shouldIgnoreFrame(frame, VisionConstants.ALL_TAGS)) {
             return Optional.empty();
         } else {
             return estimator.update(frame);
@@ -79,9 +82,10 @@ public class AprilTagAlgorithms {
     public static Optional<TargetWithSource> reduceToLeastAmbiguous(Stream<TargetWithSource> stream) {
         return stream
                 .reduce((targetWithSourceA,
-                        targetWithSourceB) -> targetWithSourceA.target().getPoseAmbiguity() <= targetWithSourceB
-                                .target().getPoseAmbiguity()
-                                        ? targetWithSourceA
-                                        : targetWithSourceB);
+                        targetWithSourceB) -> targetWithSourceA.target()
+                                .getPoseAmbiguity() <= targetWithSourceB
+                                        .target().getPoseAmbiguity()
+                                                ? targetWithSourceA
+                                                : targetWithSourceB);
     }
 }

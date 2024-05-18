@@ -1,0 +1,76 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.065842576129597,
+        "y": 6.114215561764457
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.605085654615755,
+        "y": 6.71281009228685
+      },
+      "isLocked": false,
+      "linkedName": "WaffleShot"
+    },
+    {
+      "anchor": {
+        "x": 8.28,
+        "y": 5.65
+      },
+      "prevControl": {
+        "x": 6.802274715660543,
+        "y": 6.484774080659273
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": -15.0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.7,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "TargetNote"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": -10.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Waffle House",
+  "previewStartingState": {
+    "rotation": 5.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

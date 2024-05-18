@@ -15,10 +15,14 @@ public class AmpTrapIOSim implements AmpTrapIO {
     private double appliedVoltage = 0.0;
     private double velocityRotPerSecond = 0.0;
 
+    private boolean closedLoop = false;
+
     @Override
     public void updateInputs(AmpTrapIOInputs inputs) {
-        appliedVoltage = 12.0
-                * rollerPidController.calculate(rollerSim.getAngularVelocityRPM() / 60.0, velocityRotPerSecond);
+        if (closedLoop) {
+            appliedVoltage = 12.0
+                    * rollerPidController.calculate(rollerSim.getAngularVelocityRPM() / 60.0, velocityRotPerSecond);
+        }
 
         appliedVoltage = MathUtil.clamp(appliedVoltage, -12.0, 12.0);
 
@@ -34,13 +38,14 @@ public class AmpTrapIOSim implements AmpTrapIO {
 
     @Override
     public void setVelocity(double velocityRotPerSecond) {
+        closedLoop = true;
         this.velocityRotPerSecond = velocityRotPerSecond;
     }
 
     @Override
     public void setVoltage(double voltage) {
-        voltage = MathUtil.clamp(voltage, -12.0, 12.0);
-        appliedVoltage = voltage;
+        closedLoop = false;
+        appliedVoltage = MathUtil.clamp(voltage, -12.0, 12.0);
     }
 
     @Override

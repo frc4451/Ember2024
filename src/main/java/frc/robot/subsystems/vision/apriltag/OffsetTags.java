@@ -6,6 +6,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
@@ -18,24 +19,39 @@ import frc.robot.subsystems.vision.VisionSubsystem.TargetWithSource;
 import frc.utils.GarageUtils;
 
 public enum OffsetTags {
-    STAGE_HUMAN(VisionConstants.RED_STAGE_HUMAN, VisionConstants.BLUE_STAGE_HUMAN, 1.0),
-    STAGE_AMP(VisionConstants.RED_STAGE_AMP, VisionConstants.BLUE_STAGE_AMP, 1.0),
-    STAGE_CENTER(VisionConstants.RED_STAGE_CENTER, VisionConstants.BLUE_STAGE_CENTER, 1.0),
+    STAGE_HUMAN(VisionConstants.RED_STAGE_HUMAN, VisionConstants.BLUE_STAGE_HUMAN, 1.0, new Rotation3d(0, 0, Math.PI)),
+    STAGE_AMP(VisionConstants.RED_STAGE_AMP, VisionConstants.BLUE_STAGE_AMP, 1.0, new Rotation3d(0, 0, Math.PI)),
+    STAGE_CENTER(
+            VisionConstants.RED_STAGE_CENTER,
+            VisionConstants.BLUE_STAGE_CENTER,
+            1.0,
+            new Rotation3d(0, 0, Math.PI)),
     SPEAKER_AIM(VisionConstants.RED_SPEAKER_CENTER, VisionConstants.BLUE_SPEAKER_CENTER, 0.0),
     SPEAKER_10FT(VisionConstants.RED_SPEAKER_CENTER, VisionConstants.BLUE_SPEAKER_CENTER, Units.feetToMeters(10)),
     SPEAKER_15FT(VisionConstants.RED_SPEAKER_CENTER, VisionConstants.BLUE_SPEAKER_CENTER, Units.feetToMeters(15)),
-    AMP(VisionConstants.RED_AMP_TAG, VisionConstants.BLUE_AMP_TAG, 1.0),
-    OTHER_AMP(VisionConstants.BLUE_AMP_TAG, VisionConstants.RED_AMP_TAG, 1.0),
-    HUMAN_PLAYER(VisionConstants.RED_HUMAN_PLAYER_INSIDE, VisionConstants.BLUE_HUMAN_PLAYER_INSIDE, 1.0);
+    AMP(VisionConstants.RED_AMP_TAG, VisionConstants.BLUE_AMP_TAG, 1.0, new Rotation3d(0, 0, Math.PI)),
+    OTHER_AMP(VisionConstants.BLUE_AMP_TAG, VisionConstants.RED_AMP_TAG, 1.0, new Rotation3d(0, 0, Math.PI)),
+    HUMAN_PLAYER(
+            VisionConstants.RED_HUMAN_PLAYER_INSIDE,
+            VisionConstants.BLUE_HUMAN_PLAYER_INSIDE,
+            1.0,
+            new Rotation3d(0, 0, Math.PI)),
+    FLOOR_SHOT(VisionConstants.RED_AMP_TAG, VisionConstants.BLUE_AMP_TAG, 2.0);
 
     private final int redId;
     private final int blueId;
     private final double poseOffsetMeters;
+    private final Rotation3d extraRotation;
 
     private OffsetTags(int red, int blue, double poseOffsetMeters) {
+        this(red, blue, poseOffsetMeters, new Rotation3d());
+    }
+
+    private OffsetTags(int red, int blue, double poseOffsetMeters, Rotation3d extraRotation) {
         this.redId = red;
         this.blueId = blue;
         this.poseOffsetMeters = poseOffsetMeters;
+        this.extraRotation = extraRotation;
     }
 
     public Pose3d getOffsetPoseFrom(Pose3d pose) {
@@ -45,7 +61,7 @@ public enum OffsetTags {
                                 poseOffsetMeters * Math.cos(pose.getRotation().getZ()),
                                 poseOffsetMeters * Math.sin(pose.getRotation().getZ()),
                                 0)),
-                pose.getRotation());
+                pose.getRotation().plus(extraRotation));
     }
 
     public Pose3d getOffsetPose() {

@@ -1,16 +1,18 @@
 {
-  "robotWidth": 0.89,
-  "robotLength": 0.89,
+  "robotWidth": 0.85725,
+  "robotLength": 0.85725,
   "holonomicMode": true,
   "pathFolders": [
     "Ember Tuning",
     "Kates Paths",
-    "Wendys",
-    "New New Folder",
+    "Waffle House",
     "Note2Location",
     "Note2Note",
     "PathSegments",
-    "Test Paths"
+    "Rotation Correction Test",
+    "Test Paths",
+    "Walton",
+    "Wendys"
   ],
   "autoFolders": [],
   "defaultMaxVel": 3.5,

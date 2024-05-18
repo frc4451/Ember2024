@@ -1,12 +1,17 @@
 package frc.robot.subsystems.vision.apriltag;
 
+import java.util.Arrays;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import frc.robot.VisionConstants;
 import frc.robot.VisionConstants.VisionSource;
@@ -15,6 +20,8 @@ public class AprilTagPhotonSim implements AprilTagIO {
     private final PhotonCamera camera;
     private final PhotonPoseEstimator estimator;
     private final DuplicateTracker duplicateTracker = new DuplicateTracker();
+
+    private final NetworkTableEntry heartbeatEntry;
 
     private PhotonCameraSim cameraSim;
 
@@ -40,6 +47,11 @@ public class AprilTagPhotonSim implements AprilTagIO {
                 source.robotToCamera());
 
         estimator.setMultiTagFallbackStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
+
+        heartbeatEntry = NetworkTableInstance.getDefault()
+                .getTable("photonvision")
+                .getSubTable(source.name())
+                .getEntry("heartbeat");
 
         VisionConstants.VISION_SYSTEM_SIM.ifPresent((visionSim) -> {
             SimCameraProperties simCameraProperties = new SimCameraProperties();
@@ -67,8 +79,11 @@ public class AprilTagPhotonSim implements AprilTagIO {
     private PhotonPipelineResult frame = new PhotonPipelineResult();
     private boolean isDuplicateFrame = false;
     private EstimatedPose estimatedPose = new EstimatedPose();
+    private int heartbeat = 0;
 
     private void periodic() {
+        heartbeat = (int) heartbeatEntry.getInteger(-1);
+
         PhotonPipelineResult frame = camera.getLatestResult();
 
         isDuplicateFrame = duplicateTracker.isDuplicateFrame(frame);
@@ -89,6 +104,18 @@ public class AprilTagPhotonSim implements AprilTagIO {
         inputs.frame = frame;
         inputs.isDuplicateFrame = isDuplicateFrame;
         inputs.estimatedPose = estimatedPose;
+        inputs.isConnected = camera.isConnected();
+        inputs.heartbeat = heartbeat;
+
+        inputs.visibleIds = inputs.frame.getTargets().stream()
+                .filter(target -> VisionConstants.ALL_TAGS.contains(target.getFiducialId()))
+                .mapToInt(PhotonTrackedTarget::getFiducialId)
+                .toArray();
+
+        inputs.visiblePoses = Arrays.stream(inputs.visibleIds)
+                .boxed()
+                .map(id -> VisionConstants.FIELD_LAYOUT.getTagPose(id).get())
+                .toArray(Pose3d[]::new);
     }
 
     public void updateFieldPoseEstimate() {

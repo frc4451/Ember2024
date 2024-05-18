@@ -3,36 +3,42 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.85,
-        "y": 3.0999999999999996
+        "x": 3.3,
+        "y": 2.8
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.1822030310782643,
-        "y": 1.8057835915626106
+        "x": 3.3,
+        "y": 1.2999999999999998
       },
       "isLocked": false,
       "linkedName": "WendysShot"
     },
     {
       "anchor": {
-        "x": 8.28,
-        "y": 0.7
+        "x": 8.4,
+        "y": 0.76
       },
       "prevControl": {
-        "x": 7.279999999999999,
-        "y": 0.7
+        "x": 3.4000000000000004,
+        "y": 0.76
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "WendysOutermostNote"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.75,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.5,
+    "maxVelocity": 3.7,
     "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
@@ -45,8 +51,8 @@
   "reversed": false,
   "folder": "Wendys",
   "previewStartingState": {
-    "rotation": -49.50385804849708,
+    "rotation": -49.5,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

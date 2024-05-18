@@ -3,38 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4583935305750524,
-        "y": 5.551483304597447
+        "x": 2.8,
+        "y": 5.555088802485298
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5311346007307418,
-        "y": 5.870830972431175
+        "x": 1.8990529176511775,
+        "y": 5.148668010235098
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "McNote3"
     },
     {
       "anchor": {
-        "x": 2.25580673383569,
-        "y": 4.418197725284339
+        "x": 2.483842745463269,
+        "y": 4.30417971947055
       },
       "prevControl": {
-        "x": 1.5146896960460592,
-        "y": 4.532215731098129
+        "x": 1.1690009313351968,
+        "y": 4.787422459289363
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "McNote4"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 1,
-      "rotationDegrees": -25.0,
-      "rotateFast": true
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -45,7 +39,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -30.0,
+    "rotation": -28.300755766006333,
     "rotateFast": false
   },
   "reversed": false,

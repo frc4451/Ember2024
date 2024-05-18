@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.28,
-        "y": 0.6900000000000001
+        "x": 8.4,
+        "y": 0.76
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.054306437501762,
-        "y": 0.9607927638077493
+        "x": 7.174306437501763,
+        "y": 1.0307927638077492
       },
       "isLocked": false,
       "linkedName": "WendysOutermostNote"
     },
     {
       "anchor": {
-        "x": 2.85,
-        "y": 3.0999999999999996
+        "x": 3.3,
+        "y": 2.8
       },
       "prevControl": {
-        "x": 3.780797561595124,
-        "y": 2.53264837863009
+        "x": 4.2308339677172615,
+        "y": 2.232708110858057
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,14 +32,14 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.5,
+    "maxVelocity": 3.7,
     "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -46.5,
+    "rotation": -38.860000000000014,
     "rotateFast": false
   },
   "reversed": false,
@@ -48,5 +48,5 @@
     "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

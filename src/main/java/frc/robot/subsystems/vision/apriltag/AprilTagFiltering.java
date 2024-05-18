@@ -20,7 +20,6 @@ public class AprilTagFiltering {
      * Our criteria for ignoring a frame is either:<br>
      * 1) We don't have targets to capture<br>
      * 2) The number of targets we see exceed our max threshold.
-     * As of now, this is 4. We shouldn't see 4 tags on one alliance.<br>
      * 3) Targets within a frame do not meet our possible combinations<br>
      *
      * @param frame      - Current {@link PhotonPipelineResult} we process
@@ -37,11 +36,15 @@ public class AprilTagFiltering {
         List<Integer> ids = frame.targets.stream().map(t -> t.getFiducialId()).toList();
 
         boolean allowedCombinations = allowedIds.containsAll(ids);
-        boolean possibleCombinations = VisionConstants.POSSIBLE_FRAME_FID_COMBOS.stream()
-                .anyMatch(
-                        possibleFidCombo -> (possibleFidCombo.containsAll(ids) && allowedCombinations));
 
-        return !possibleCombinations;
+        return !allowedCombinations;
+        // boolean possibleCombinations =
+        // VisionConstants.POSSIBLE_FRAME_FID_COMBOS.stream()
+        // .anyMatch(
+        // possibleFidCombo -> (possibleFidCombo.containsAll(ids) &&
+        // allowedCombinations));
+
+        // return !possibleCombinations;
     }
 
     /**

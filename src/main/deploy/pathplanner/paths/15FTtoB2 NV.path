@@ -1,0 +1,73 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.04,
+        "y": 7.07
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.009615506024417,
+        "y": 6.72270364466614
+      },
+      "isLocked": false,
+      "linkedName": "McNote2"
+    },
+    {
+      "anchor": {
+        "x": 8.28,
+        "y": 5.65
+      },
+      "prevControl": {
+        "x": 6.310384493975583,
+        "y": 5.997296355333861
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "B2"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": -15.0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.6,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "TargetNote"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.7,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": -10.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Note2Location",
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}

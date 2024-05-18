@@ -7,11 +7,11 @@ import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.PivotConstants;
 
 public class PivotIOSparkMax implements PivotIO {
-    private final CANSparkMax pivotLeader = new CANSparkMax(IntakeConstants.kPivotLeaderCanId, MotorType.kBrushless);
-    private final CANSparkMax pivotFollower = new CANSparkMax(IntakeConstants.kPivotFollowerCanId,
+    private final CANSparkMax pivotLeader = new CANSparkMax(PivotConstants.kPivotLeaderCanId, MotorType.kBrushless);
+    private final CANSparkMax pivotFollower = new CANSparkMax(PivotConstants.kPivotFollowerCanId,
             MotorType.kBrushless);
 
     private final RelativeEncoder leaderEncoder = pivotLeader.getEncoder();
@@ -24,8 +24,8 @@ public class PivotIOSparkMax implements PivotIO {
         this.pivotLeader.setInverted(true);
         this.pivotLeader.burnFlash();
 
-        this.leaderEncoder.setPositionConversionFactor(2.0 * Math.PI / IntakeConstants.kPivotReduction);
-        this.followerEncoder.setPositionConversionFactor(2.0 * Math.PI / IntakeConstants.kPivotReduction);
+        this.leaderEncoder.setPositionConversionFactor(2.0 * Math.PI / PivotConstants.kPivotReduction);
+        this.followerEncoder.setPositionConversionFactor(2.0 * Math.PI / PivotConstants.kPivotReduction);
         this.leaderEncoder.setPosition(0);
         this.followerEncoder.setPosition(0);
 

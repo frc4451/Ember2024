@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.198995286879464,
+        "x": 8.36,
         "y": 2.5
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.030310727288123,
-        "y": 1.6876217085767502
+        "x": 7.120054186775039,
+        "y": 1.0261620523241046
       },
       "isLocked": false,
       "linkedName": "WendysInnermore"
     },
     {
       "anchor": {
-        "x": 2.85,
-        "y": 3.09
+        "x": 3.3,
+        "y": 2.8
       },
       "prevControl": {
-        "x": 3.5100099982122677,
-        "y": 1.8242908047930018
+        "x": 3.9600099982122674,
+        "y": 1.5342908047930015
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,21 +32,21 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.5,
+    "maxVelocity": 3.7,
     "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -46.5,
+    "rotation": -38.860000000000014,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "Wendys",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 22.0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

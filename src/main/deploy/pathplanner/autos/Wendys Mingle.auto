@@ -1,0 +1,87 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.37,
+      "y": 4.55
+    },
+    "rotation": 3.114561604710482e-20
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Wendys Mingle - 1"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "NewFireHs"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Wendys Mingle - 2"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Wendys Mingle - 3"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "NewFireHs"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Wendys Mingle - 4"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Wendys Mingle - 5"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "NewFireHs"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "InterpolateSetpoint"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": true
+}

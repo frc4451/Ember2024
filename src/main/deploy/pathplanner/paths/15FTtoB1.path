@@ -16,11 +16,11 @@
     },
     {
       "anchor": {
-        "x": 8.1,
+        "x": 8.29,
         "y": 7.45
       },
       "prevControl": {
-        "x": 7.160307379214091,
+        "x": 7.35030737921409,
         "y": 7.107979856674332
       },
       "nextControl": null,
@@ -32,8 +32,8 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.2,
-    "maxAcceleration": 4.2,
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -45,5 +45,5 @@
   "reversed": false,
   "folder": "Note2Location",
   "previewStartingState": null,
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
