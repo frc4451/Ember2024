@@ -96,13 +96,14 @@ public class RobotContainer {
 
     // public final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
 
-    public final DriverAutomationFactory m_automation = new DriverAutomationFactory(
-            m_driverController,
-            m_operatorController,
-            m_robotDrive,
-            m_pivot,
-            m_shooter,
-            m_feeder);
+    // public final DriverAutomationFactory m_automation = new
+    // DriverAutomationFactory(
+    // m_driverController,
+    // m_operatorController,
+    // m_robotDrive,
+    // m_pivot,
+    // m_shooter,
+    // m_feeder);
 
     public final BlinkinSubsystem m_blinkin = new BlinkinSubsystem();
 
@@ -132,16 +133,16 @@ public class RobotContainer {
 
         // Configure default commands
         // m_robotDrive.
-        m_robotDrive.setDefaultCommand(
-                // The left stick controls translation of the robot.
-                // Turning is controlled by the X axis of the right stick.
-                TeleopDrive.asCommand(
-                        m_robotDrive,
-                        () -> -m_driverController.getLeftY(),
-                        () -> -m_driverController.getLeftX(),
-                        () -> -m_driverController.getRightX(),
-                        true,
-                        true));
+        // m_robotDrive.setDefaultCommand(
+        // // The left stick controls translation of the robot.
+        // // Turning is controlled by the X axis of the right stick.
+        // TeleopDrive.asCommand(
+        // m_robotDrive,
+        // () -> -m_driverController.getLeftY(),
+        // () -> -m_driverController.getLeftX(),
+        // () -> -m_driverController.getRightX(),
+        // true,
+        // true));
         m_pivot.setDefaultCommand(m_pivot.runTrapezoidProfileCommand());
         m_climber.setDefaultCommand(m_climber.pidCommand());
         // m_elevator.setDefaultCommand(m_elevator.pidCommand());
@@ -180,26 +181,26 @@ public class RobotContainer {
                                 .alongWith(m_feeder.setVelocityBeambreakCommand(
                                         FeederConstants.kIntakeVelocity)));
 
-        m_driverController.rightTrigger()
-                .and(m_feeder.beambreakIsObstructed().negate())
-                .whileTrue(
-                        new ParallelCommandGroup(
-                                Commands.defer(
-                                        () -> new AimAtNote(
-                                                m_vision::getClosestObject,
-                                                () -> -m_driverController
-                                                        .getLeftY(),
-                                                () -> -m_driverController
-                                                        .getLeftX(),
-                                                () -> -m_driverController
-                                                        .getRightX(),
-                                                m_robotDrive),
-                                        Set.of(m_robotDrive)),
-                                m_intake.setPercentOutputThenStopCommand(
-                                        IntakeConstants.kIntakePercent)
-                                        .alongWith(m_feeder
-                                                .setVelocityBeambreakCommand(
-                                                        FeederConstants.kIntakeVelocity))));
+        // m_driverController.rightTrigger()
+        // .and(m_feeder.beambreakIsObstructed().negate())
+        // .whileTrue(
+        // new ParallelCommandGroup(
+        // Commands.defer(
+        // () -> new AimAtNote(
+        // m_vision::getClosestObject,
+        // () -> -m_driverController
+        // .getLeftY(),
+        // () -> -m_driverController
+        // .getLeftX(),
+        // () -> -m_driverController
+        // .getRightX(),
+        // m_robotDrive),
+        // Set.of(m_robotDrive)),
+        // m_intake.setPercentOutputThenStopCommand(
+        // IntakeConstants.kIntakePercent)
+        // .alongWith(m_feeder
+        // .setVelocityBeambreakCommand(
+        // FeederConstants.kIntakeVelocity))));
 
         // m_driverController.leftBumper()
         // .whileTrue(Commands.deferredProxy(() ->
@@ -208,42 +209,42 @@ public class RobotContainer {
         // .whileTrue(Commands.deferredProxy(() ->
         // m_laneAssistChooser.get().aimingCommand()));
 
-        m_driverController.a() // .and(m_driverController.leftBumper().negate())
-                .whileTrue(m_automation.ampPath());
+        // m_driverController.a() // .and(m_driverController.leftBumper().negate())
+        // .whileTrue(m_automation.ampPath());
 
-        m_driverController.a().and(m_driverController.leftBumper())
-                .whileTrue(m_automation.ampAssist());
+        // m_driverController.a().and(m_driverController.leftBumper())
+        // .whileTrue(m_automation.ampAssist());
 
-        m_driverController.b() // .and(m_driverController.leftBumper().negate())
-                .whileTrue(m_automation.stageRightPath());
+        // m_driverController.b() // .and(m_driverController.leftBumper().negate())
+        // .whileTrue(m_automation.stageRightPath());
 
-        m_driverController.b().and(m_driverController.leftBumper())
-                .whileTrue(m_automation.stageRightAssist());
+        // m_driverController.b().and(m_driverController.leftBumper())
+        // .whileTrue(m_automation.stageRightAssist());
 
-        m_driverController.y() // .and(m_driverController.leftBumper().negate())
-                .whileTrue(m_automation.stageCenterPath());
+        // m_driverController.y() // .and(m_driverController.leftBumper().negate())
+        // .whileTrue(m_automation.stageCenterPath());
 
-        m_driverController.y().and(m_driverController.leftBumper())
-                .whileTrue(m_automation.stageCenterAssist());
+        // m_driverController.y().and(m_driverController.leftBumper())
+        // .whileTrue(m_automation.stageCenterAssist());
 
-        m_driverController.x() // .and(m_driverController.leftBumper().negate())
-                .whileTrue(m_automation.stageLeftPath());
+        // m_driverController.x() // .and(m_driverController.leftBumper().negate())
+        // .whileTrue(m_automation.stageLeftPath());
 
-        m_driverController.x().and(m_driverController.leftBumper())
-                .whileTrue(m_automation.stageLeftAssist());
+        // m_driverController.x().and(m_driverController.leftBumper())
+        // .whileTrue(m_automation.stageLeftAssist());
 
-        m_driverController.rightBumper()
-                .whileTrue(m_automation.aimAtSpeakerAssist());
+        // m_driverController.rightBumper()
+        // .whileTrue(m_automation.aimAtSpeakerAssist());
 
-        m_driverController.leftBumper()
-                .and(m_driverController.a().negate())
-                .and(m_driverController.b().negate())
-                .and(m_driverController.x().negate())
-                .and(m_driverController.y().negate())
-                .whileTrue(m_automation.strafeAndAimToAmpFeed());
+        // m_driverController.leftBumper()
+        // .and(m_driverController.a().negate())
+        // .and(m_driverController.b().negate())
+        // .and(m_driverController.x().negate())
+        // .and(m_driverController.y().negate())
+        // .whileTrue(m_automation.strafeAndAimToAmpFeed());
 
-        m_driverController.start()
-                .whileTrue(m_automation.humanPlayerStationPath());
+        // m_driverController.start()
+        // .whileTrue(m_automation.humanPlayerStationPath());
 
     }
 
@@ -522,9 +523,11 @@ public class RobotContainer {
                         new ParallelDeadlineGroup(
                                 new WaitCommand(1),
                                 m_pivot.controlGoalToSpeakerCommand(),
-                                m_intake.setPercentOutputCommand(IntakeConstants.kIntakePercent),
+                                m_intake.setPercentOutputCommand(
+                                        IntakeConstants.kIntakePercent),
                                 m_shooter.rampUpSpeedToSpeakerCommand(),
-                                m_feeder.setVelocityCommand(FeederConstants.kShootVelocity)),
+                                m_feeder.setVelocityCommand(
+                                        FeederConstants.kShootVelocity)),
                         m_feeder.stopCommand()));
 
         NamedCommands.registerCommand(
@@ -533,9 +536,11 @@ public class RobotContainer {
                         new ParallelDeadlineGroup(
                                 new WaitCommand(0.75),
                                 m_pivot.controlGoalToSpeakerCommand(),
-                                m_intake.setPercentOutputCommand(IntakeConstants.kIntakePercent),
+                                m_intake.setPercentOutputCommand(
+                                        IntakeConstants.kIntakePercent),
                                 m_shooter.rampUpSpeedToSpeakerCommand(),
-                                m_feeder.setVelocityCommand(FeederConstants.kShootVelocity)),
+                                m_feeder.setVelocityCommand(
+                                        FeederConstants.kShootVelocity)),
                         m_feeder.stopCommand()));
 
         NamedCommands.registerCommand(
@@ -649,21 +654,23 @@ public class RobotContainer {
         // proxy the deferred command to run while the button is held.
         m_laneAssistChooser = new LoggedDashboardChooser<>("LaneAssist", new SendableChooser<>());
 
-        m_laneAssistCommands.put("Amp",
-                new LaneAssist(m_automation.ampPath(), m_automation.ampAssist()));
-        m_laneAssistCommands.put("Other Amp",
-                new LaneAssist(OffsetTags.OTHER_AMP.getDeferredCommand(), otherAmpCommand));
-        m_laneAssistCommands.put("Human Player",
-                new LaneAssist(PathPlannerPoses.HUMAN_PLAYER.getDeferredCommand(),
-                        new InstantCommand()));
-        m_laneAssistCommands.put("Aim at Speaker",
-                new LaneAssist(Commands.none(), m_automation.aimAtSpeakerAssist()));
-        m_laneAssistCommands.put("Stage Center",
-                new LaneAssist(m_automation.stageCenterPath(), m_automation.stageCenterAssist()));
-        m_laneAssistCommands.put("Stage Human",
-                new LaneAssist(m_automation.stageHumanPath(), m_automation.stageHumanPath()));
-        m_laneAssistCommands.put("Stage Amp",
-                new LaneAssist(m_automation.stageAmpPath(), m_automation.stageAmpAssist()));
+        // m_laneAssistCommands.put("Amp",
+        // new LaneAssist(m_automation.ampPath(), m_automation.ampAssist()));
+        // m_laneAssistCommands.put("Other Amp",
+        // new LaneAssist(OffsetTags.OTHER_AMP.getDeferredCommand(), otherAmpCommand));
+        // m_laneAssistCommands.put("Human Player",
+        // new LaneAssist(PathPlannerPoses.HUMAN_PLAYER.getDeferredCommand(),
+        // new InstantCommand()));
+        // m_laneAssistCommands.put("Aim at Speaker",
+        // new LaneAssist(Commands.none(), m_automation.aimAtSpeakerAssist()));
+        // m_laneAssistCommands.put("Stage Center",
+        // new LaneAssist(m_automation.stageCenterPath(),
+        // m_automation.stageCenterAssist()));
+        // m_laneAssistCommands.put("Stage Human",
+        // new LaneAssist(m_automation.stageHumanPath(),
+        // m_automation.stageHumanPath()));
+        // m_laneAssistCommands.put("Stage Amp",
+        // new LaneAssist(m_automation.stageAmpPath(), m_automation.stageAmpAssist()));
         m_laneAssistCommands.put("Speaker (10 ft)",
                 new LaneAssist(OffsetTags.SPEAKER_10FT.getDeferredCommand(), speakerPosition10Command));
         m_laneAssistCommands.put("Speaker (15 ft)",
