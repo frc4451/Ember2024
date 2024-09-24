@@ -33,7 +33,9 @@ public class ClimberSubsystem extends SubsystemBase {
     public ClimberSubsystem() {
         switch (AdvantageKitConstants.getMode()) {
             case REAL:
-                io = new ClimberIOTalonFX(ClimberConstants.kClimberCanId, false);
+                // io = new ClimberIOTalonFX(ClimberConstants.kClimberCanId, false);
+                io = new ClimberIO() {
+                };
                 break;
             case SIM:
                 io = new ClimberIOSim();
