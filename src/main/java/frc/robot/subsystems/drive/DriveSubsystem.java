@@ -142,6 +142,8 @@ public class DriveSubsystem extends SubsystemBase {
                 };
                 break;
         }
+
+        SparkMaxOdometryThread.getInstance().start();
     }
 
     public SwerveModuleState[] getModuleStates() {
@@ -162,12 +164,17 @@ public class DriveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        m_gyro.updateInputs(m_gyroInputs);
-        Logger.processInputs("Drive/Gyro", m_gyroInputs);
+        SparkMaxOdometryThread.odometryLock.lock();
+        try {
+            m_gyro.updateInputs(m_gyroInputs);
+            Logger.processInputs("Drive/Gyro", m_gyroInputs);
 
-        for (int i = 0; i < m_modules.length; i++) {
-            m_modules[i].updateInputs(m_moduleInputs[i]);
-            Logger.processInputs("Drive/Module" + Integer.toString(i), m_moduleInputs[i]);
+            for (int i = 0; i < m_modules.length; i++) {
+                m_modules[i].updateInputs(m_moduleInputs[i]);
+                Logger.processInputs("Drive/Module" + Integer.toString(i), m_moduleInputs[i]);
+            }
+        } finally {
+            SparkMaxOdometryThread.odometryLock.unlock();
         }
 
         SwerveModuleState[] states = getModuleStates();

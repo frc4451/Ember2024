@@ -173,6 +173,11 @@ public final class Constants {
         public static final int kTurningMotorCurrentLimit = 20; // amps
     }
 
+    public static final class OdometryConstants {
+        public static final int kCacheCapacity = 20;
+        public static final double kFrequency = 250;
+    }
+
     public static final class OIConstants {
         public static final int kDriverControllerPort = 0;
         public static final int kOperatorControllerPort = 1;
