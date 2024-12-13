@@ -3,7 +3,6 @@ package frc.robot.subsystems.quest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.FloatArraySubscriber;
 import edu.wpi.first.networktables.IntegerPublisher;
@@ -24,7 +23,7 @@ class QuestReal implements QuestIO {
 
     // Subscribe to the Network Tables oculus data topics
     // Availabe frame data found here:
-    // https://github.com/juchong/QuestNav/blob/main/unity/Assets/Robot/MotionStreamer.cs#L104
+    // https://github.com/juchong/QuestNav/blob/main/unity/Assets/Robot/MotionStreamer.cs#L90
     private DoubleSubscriber questTimestamp = nt4Table
             .getDoubleTopic("timestamp")
             .subscribe(0.0f);
