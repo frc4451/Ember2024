@@ -23,9 +23,8 @@ class QuestReal implements QuestIO {
     private IntegerPublisher questMosi = nt4Table.getIntegerTopic("mosi").publish();
 
     // Subscribe to the Network Tables oculus data topics
-    // private IntegerSubscriber questFrameCount = nt4Table
-    // .getIntegerTopic("frameCount")
-    // .subscribe(0);
+    // Availabe frame data found here:
+    // https://github.com/juchong/QuestNav/blob/main/unity/Assets/Robot/MotionStreamer.cs#L104
     private DoubleSubscriber questTimestamp = nt4Table
             .getDoubleTopic("timestamp")
             .subscribe(0.0f);
@@ -42,22 +41,22 @@ class QuestReal implements QuestIO {
             .getDoubleTopic("batteryLevel")
             .subscribe(0.0f);
 
-    // Not entirely sure what this is for but I'll keep it for now
-    private float yawOffset = 0.0f;
-
-    /**
-     * This pose is used to offset the headset's origin (0, 0) so that wherever the
+    /*
+     * These are used to offset the headset's origin (0, 0) so that wherever the
      * robot is recentered will match with the expected field pose.
      */
-    private Pose2d relativePoseOffset = new Pose2d();
+    private Translation2d translationOffset = new Translation2d();
+    private double yawOffsetRad = 0.0;
 
     public void updateInputs(QuestIOInputs inputs) {
-        inputs.relativePose = getCompensatedPose();
-        inputs.compensatedPose = getCompensatedPose().relativeTo(relativePoseOffset);
+        inputs.pose = getPose();
         inputs.yawRad = getYawRad();
 
         inputs.timestamp = questTimestamp.get();
         inputs.batteryLevel = questBattery.get();
+
+        inputs.rawPose = getRawPose();
+        inputs.rawYawRad = getRawYawRad();
 
         inputs.rawPosition = questPosition.get();
         inputs.rawQuaternion = questQuaternion.get();
@@ -67,7 +66,8 @@ class QuestReal implements QuestIO {
 
     /** Sets supplied pose as origin of all calculations */
     public void resetPose(Pose2d pose) {
-        relativePoseOffset = pose;
+        translationOffset = pose.getTranslation();
+        yawOffsetRad = pose.getRotation().getRadians();
         zeroAbsolutePosition();
     }
 
@@ -94,35 +94,32 @@ class QuestReal implements QuestIO {
     /**
      * Gets the yaw Euler angle of the headset
      */
-    private double getYawRad() {
+    private double getRawYawRad() {
         float[] eulerAngles = questEulerAngles.get();
-        var ret = eulerAngles[1] - yawOffset;
-        ret %= 360;
-        if (ret < 0) {
-            ret += 360;
-        }
-        return Math.toRadians(ret); // may need MathUtil.angleModulus, not sure
+        return Math.toRadians(eulerAngles[1]); // may need MathUtil.angleModulus(), not sure
     }
 
-    private Translation2d getUncompensatedTranslation() {
+    /**
+     * Gets the yaw Euler angle of the headset with yaw offset applied
+     */
+    private double getYawRad() {
+        return getRawYawRad() - yawOffsetRad; // may need MathUtil.angleModulus(), not sure
+    }
+
+    private Translation2d getRawTranslation() {
         float[] oculusPosition = questPosition.get();
         return new Translation2d(oculusPosition[2], -oculusPosition[0]);
     }
 
-    private Translation2d getCompensatedTranslation() {
-        // not sure where this 6.5 in came from?
-        // maybe it's the size of the headset?
-        // if this needs to be tuned it should be a constant
-        return getUncompensatedTranslation().minus(new Translation2d(0, Units.inchesToMeters(6.5)));
+    private Translation2d getTranslation() {
+        return getRawTranslation().plus(translationOffset);
     }
 
-    /**
-     * The pose pipeline can be understood as follows:<br>
-     * 1) Get raw translation & yaw from Quest<br>
-     * 2) Subtract compensation translation offset (~6.5 in)<br>
-     * 3) Add relative pose offset<br>
-     */
-    private Pose2d getCompensatedPose() {
-        return new Pose2d(getCompensatedTranslation(), Rotation2d.fromRadians(getYawRad()));
+    private Pose2d getRawPose() {
+        return new Pose2d(getRawTranslation(), Rotation2d.fromRadians(getRawYawRad()));
+    }
+
+    private Pose2d getPose() {
+        return new Pose2d(getTranslation(), Rotation2d.fromRadians(getYawRad()));
     }
 }
