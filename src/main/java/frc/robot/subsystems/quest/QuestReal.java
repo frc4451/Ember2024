@@ -72,7 +72,7 @@ class QuestReal implements QuestIO {
     }
 
     /**
-     * Zeros the absolute 3D position of the robot
+     * Zeroes the absolute 3D position of the robot
      * (similar to long-pressing the quest logo)
      */
     private void zeroAbsolutePosition() {
@@ -82,8 +82,8 @@ class QuestReal implements QuestIO {
     }
 
     /**
-     * IMPORTANT: run periodically after processing.<br>
-     * Cleans up oculus subroutine messages after processing on the headset
+     * IMPORTANT: Run periodically after processing.<br>
+     * Cleans up Oculus subroutine messages after processing on the headset
      */
     private void cleanUpOculusMessages() {
         if (questMiso.get() == 99) {
@@ -119,7 +119,7 @@ class QuestReal implements QuestIO {
     /**
      * The pose pipeline can be understood as follows:<br>
      * 1) Get raw translation & yaw from Quest<br>
-     * 2) Subtract compesation translation offset (~6.5 in)<br>
+     * 2) Subtract compensation translation offset (~6.5 in)<br>
      * 3) Add relative pose offset<br>
      */
     private Pose2d getCompensatedPose() {
