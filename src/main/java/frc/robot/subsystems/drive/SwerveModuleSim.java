@@ -61,10 +61,12 @@ public class SwerveModuleSim implements SwerveModuleIO {
         inputs.state = new SwerveModuleState(fakeSpeed, angle);
         inputs.position = new SwerveModulePosition(fakePos, angle);
 
-        // Update odometry inputs (high-frequency odometry doesn't matter in sim so don't bother with registering)
-        inputs.odometryTimestamps = new double[] {Timer.getFPGATimestamp()};
-        inputs.odometryDrivePositionsMeters = new double[] {inputs.drivePositionMeters};
-        inputs.odometryTurnPositionsRad = new double[] {inputs.turnAngularOffsetPositionRad};
+        // Update odometry inputs (high-frequency odometry doesn't matter in sim so
+        // don't bother with registering)
+        inputs.odometryTimestamps = new double[] { Timer.getFPGATimestamp() };
+        inputs.odometryDrivePositionsMeters = new double[] { inputs.drivePositionMeters };
+        inputs.odometryTurnPositionsRad = new double[] { inputs.turnAngularOffsetPositionRad };
+        inputs.odometryPositions = calculateOdometryPositions(inputs);
     }
 
     /**
@@ -92,5 +94,9 @@ public class SwerveModuleSim implements SwerveModuleIO {
         fakePos += fakeSpeed * dt;
 
         state = optimizedState;
+    }
+
+    public void stop() {
+        fakeSpeed = 0;
     }
 }

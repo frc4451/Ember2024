@@ -182,6 +182,7 @@ public class SwerveModuleSparks implements SwerveModuleIO {
                 .stream()
                 .mapToDouble((Double value) -> value - m_chassisAngularOffset)
                 .toArray();
+        inputs.odometryPositions = calculateOdometryPositions(inputs);
 
         timestampQueue.clear();
         drivePositionQueue.clear();
@@ -214,5 +215,10 @@ public class SwerveModuleSparks implements SwerveModuleIO {
                 CANSparkFlex.ControlType.kPosition);
 
         m_desiredState = desiredState;
+    }
+
+    public void stop() {
+        m_drivingPIDController.setReference(0, CANSparkFlex.ControlType.kVelocity);
+        m_turningPIDController.setReference(0, CANSparkFlex.ControlType.kVelocity);
     }
 }

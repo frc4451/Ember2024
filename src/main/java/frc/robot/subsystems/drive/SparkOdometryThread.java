@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.DoubleSupplier;
 
 import com.revrobotics.CANSparkBase;
@@ -46,6 +48,9 @@ public class SparkOdometryThread {
     private static SparkOdometryThread instance = null;
     private Notifier notifier = new Notifier(this::run);
 
+    /** Used to prevent odometry updates while locked */
+    static final Lock odometryLock = new ReentrantLock();
+
     public static SparkOdometryThread getInstance() {
         if (instance == null) {
             instance = new SparkOdometryThread();
@@ -66,13 +71,13 @@ public class SparkOdometryThread {
     /** Registers a Spark signal to be read from the thread. */
     public Queue<Double> registerSignal(CANSparkBase spark, DoubleSupplier signal) {
         Queue<Double> queue = new ArrayBlockingQueue<>(OdometryConstants.kCacheCapacity);
-        // Drive.odometryLock.lock();
+        odometryLock.lock();
         try {
             sparks.add(spark);
             sparkSignals.add(signal);
             sparkQueues.add(queue);
         } finally {
-            // Drive.odometryLock.unlock();
+            odometryLock.unlock();
         }
         return queue;
     }
@@ -80,12 +85,12 @@ public class SparkOdometryThread {
     /** Registers a generic signal to be read from the thread. */
     public Queue<Double> registerSignal(DoubleSupplier signal) {
         Queue<Double> queue = new ArrayBlockingQueue<>(OdometryConstants.kCacheCapacity);
-        // Drive.odometryLock.lock();
+        odometryLock.lock();
         try {
             genericSignals.add(signal);
             genericQueues.add(queue);
         } finally {
-            // Drive.odometryLock.unlock();
+            odometryLock.unlock();
         }
         return queue;
     }
@@ -93,18 +98,18 @@ public class SparkOdometryThread {
     /** Returns a new queue that returns timestamp values for each sample. */
     public Queue<Double> makeTimestampQueue() {
         Queue<Double> queue = new ArrayBlockingQueue<>(OdometryConstants.kCacheCapacity);
-        // Drive.odometryLock.lock();
+        odometryLock.lock();
         try {
             timestampQueues.add(queue);
         } finally {
-            // Drive.odometryLock.unlock();
+            odometryLock.unlock();
         }
         return queue;
     }
 
     private void run() {
         // Save new data to queues
-        // Drive.odometryLock.lock();
+        odometryLock.lock();
         try {
             // Get sample timestamp
             double timestamp = RobotController.getFPGATime() / 1e6;
@@ -132,7 +137,7 @@ public class SparkOdometryThread {
                 }
             }
         } finally {
-            // Drive.odometryLock.unlock();
+            odometryLock.unlock();
         }
     }
 }

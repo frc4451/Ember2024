@@ -24,6 +24,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AdvantageKitConstants;
 import frc.robot.Constants.DriveConstants;
@@ -45,6 +46,14 @@ public class DriveSubsystem extends SubsystemBase {
             new SwerveModuleIOInputsAutoLogged(),
     };
 
+    private SwerveModulePosition[] m_lastModulePositions = // For delta tracking
+            new SwerveModulePosition[] {
+                    new SwerveModulePosition(),
+                    new SwerveModulePosition(),
+                    new SwerveModulePosition(),
+                    new SwerveModulePosition()
+            };
+
     // Gyro
     private final SwerveGyroIO m_gyro;
     private final SwerveGyroIOInputsAutoLogged m_gyroInputs = new SwerveGyroIOInputsAutoLogged();
@@ -54,19 +63,19 @@ public class DriveSubsystem extends SubsystemBase {
     private final SwerveDrivePoseEstimator m_combinedPoseEstimator = new SwerveDrivePoseEstimator(
             DriveConstants.kDriveKinematics,
             m_trackedRotation,
-            getModulePositions(),
+            m_lastModulePositions,
             new Pose2d());
 
     private final SwerveDrivePoseEstimator m_visionOnlyPoseEstimator = new SwerveDrivePoseEstimator(
             DriveConstants.kDriveKinematics,
             m_trackedRotation,
-            getModulePositions(),
+            m_lastModulePositions,
             new Pose2d());
 
     private final SwerveDrivePoseEstimator m_wheelOnlyPoseEstimator = new SwerveDrivePoseEstimator(
             DriveConstants.kDriveKinematics,
             m_trackedRotation,
-            getModulePositions(),
+            m_lastModulePositions,
             new Pose2d());
 
     private final List<SwerveDrivePoseEstimator> m_poseEstimators = List.of(
@@ -143,10 +152,10 @@ public class DriveSubsystem extends SubsystemBase {
                 break;
         }
 
-        SparkMaxOdometryThread.getInstance().start();
+        SparkOdometryThread.getInstance().start();
     }
 
-    public SwerveModuleState[] getModuleStates() {
+    private SwerveModuleState[] getModuleStates() {
         SwerveModuleState[] states = new SwerveModuleState[m_modules.length];
         for (int i = 0; i < m_moduleInputs.length; i++) {
             states[i] = m_moduleInputs[i].state;
@@ -154,7 +163,7 @@ public class DriveSubsystem extends SubsystemBase {
         return states;
     }
 
-    public SwerveModulePosition[] getModulePositions() {
+    private SwerveModulePosition[] getModulePositions() {
         SwerveModulePosition[] positions = new SwerveModulePosition[m_modules.length];
         for (int i = 0; i < m_moduleInputs.length; i++) {
             positions[i] = m_moduleInputs[i].position;
@@ -164,7 +173,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SparkMaxOdometryThread.odometryLock.lock();
+        // Prevents odometry updates while reading data
+        SparkOdometryThread.odometryLock.lock();
         try {
             m_gyro.updateInputs(m_gyroInputs);
             Logger.processInputs("Drive/Gyro", m_gyroInputs);
@@ -174,28 +184,56 @@ public class DriveSubsystem extends SubsystemBase {
                 Logger.processInputs("Drive/Module" + Integer.toString(i), m_moduleInputs[i]);
             }
         } finally {
-            SparkMaxOdometryThread.odometryLock.unlock();
+            SparkOdometryThread.odometryLock.unlock();
         }
 
-        SwerveModuleState[] states = getModuleStates();
-        SwerveModulePosition[] positions = getModulePositions();
+        // Update odometry (ty 6328)
+        double[] sampleTimestamps = m_moduleInputs[0].odometryTimestamps; // All signals are sampled together
+        int sampleCount = sampleTimestamps.length;
+        for (int i = 0; i < sampleCount; i++) {
+            // Read wheel positions and deltas from each module
+            SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
+            SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
+            for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
+                modulePositions[moduleIndex] = m_moduleInputs[moduleIndex].odometryPositions[i];
+                moduleDeltas[moduleIndex] = new SwerveModulePosition(
+                        modulePositions[moduleIndex].distanceMeters
+                                - m_lastModulePositions[moduleIndex].distanceMeters,
+                        modulePositions[moduleIndex].angle);
+                m_lastModulePositions[moduleIndex] = modulePositions[moduleIndex];
+            }
 
-        Logger.recordOutput("SwerveStates/Measured", states);
+            // If a gyro is connected we'll just read that directly.
+            // Otherwise add to our tracked value by calculating a twist from modules.
+            if (m_gyroInputs.isConnected) {
+                // Use the real gyro angle
+                m_trackedRotation = new Rotation2d(m_gyroInputs.odometryYawPositionsRad[i]);
+            } else {
+                // Use the angle delta from the kinematics & module deltas to calculate a Twist.
+                // The Twist2d represents the difference in robot state since the last
+                // loop cycle in x, y, and theta, in this case based on only the modules
+                // without a gyro.
+                // The gyro is always disconnected in simulation.
+                ChassisSpeeds twist = DriveConstants.kDriveKinematics.toChassisSpeeds(getModuleStates());
+                m_trackedRotation = m_trackedRotation.plus(new Rotation2d(twist.omegaRadiansPerSecond * 0.02));
+            }
 
-        // If a gyro is connected we'll just read that directly.
-        // Otherwise add to our tracked value by calculating a twist from modules.
-        if (m_gyroInputs.isConnected) {
-            m_trackedRotation = new Rotation2d(m_gyroInputs.yawPositionRad);
-        } else {
-            // The ChassisSpeeds represents the motion of the robot since the last
-            // loop cycle in x, y, and theta based on only the modules,
-            // without the gyro. The gyro is always disconnected in simulation.
-            ChassisSpeeds speeds = DriveConstants.kDriveKinematics.toChassisSpeeds(states);
-            m_trackedRotation = m_trackedRotation.plus(new Rotation2d(speeds.omegaRadiansPerSecond * 0.02));
+            m_combinedPoseEstimator.updateWithTime(sampleTimestamps[i], m_trackedRotation, modulePositions);
+            m_wheelOnlyPoseEstimator.updateWithTime(sampleTimestamps[i], m_trackedRotation, modulePositions);
         }
 
-        m_combinedPoseEstimator.update(m_trackedRotation, positions);
-        m_wheelOnlyPoseEstimator.update(m_trackedRotation, positions);
+        Logger.recordOutput("SwerveStates/Measured", getModuleStates());
+
+        if (DriverStation.isDisabled()) {
+            // Log empty setpoint states when disabled
+            Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
+
+            // Stop all modules when disabled to prevent continued unexpected movement
+            for (int i = 0; i < m_modules.length; i++) {
+                m_modules[i].stop();
+            }
+        }
+
         addVisionMeasurements();
 
         Pose2d combinedPose = getPose();

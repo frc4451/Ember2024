@@ -6,6 +6,7 @@ package frc.robot.subsystems.drive;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
@@ -31,6 +32,7 @@ public interface SwerveModuleIO {
         public double[] odometryTimestamps = new double[] {};
         public double[] odometryDrivePositionsMeters = new double[] {};
         public double[] odometryTurnPositionsRad = new double[] {};
+        public SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
     }
 
     public default void updateInputs(SwerveModuleIOInputs inputs) {
@@ -42,5 +44,19 @@ public interface SwerveModuleIO {
      * @param desiredState Desired state with speed and angle.
      */
     public default void setDesiredState(SwerveModuleState desiredState) {
+    }
+
+    default SwerveModulePosition[] calculateOdometryPositions(SwerveModuleIOInputs inputs) {
+        // Calculate positions for odometry
+        int sampleCount = inputs.odometryTimestamps.length; // All signals are sampled together
+        SwerveModulePosition[] odometryPositions = new SwerveModulePosition[sampleCount];
+        for (int i = 0; i < sampleCount; i++) {
+            Rotation2d angle = new Rotation2d(inputs.odometryTurnPositionsRad[i]);
+            odometryPositions[i] = new SwerveModulePosition(inputs.odometryDrivePositionsMeters[i], angle);
+        }
+        return odometryPositions;
+    }
+
+    public default void stop() {
     }
 }
