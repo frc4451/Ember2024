@@ -68,6 +68,12 @@ public final class Constants {
                 5 * Math.PI);
     }
 
+    /**
+     * <a
+     * href=https://docs.advantagekit.org/getting-started/template-projects/spark-swerve-template/#tuning>
+     * AdvantageKit Spark Swerve Template Tuning</a>
+     * for some helpful tuning information
+     */
     public static final class DriveConstants {
         // Driving Parameters - Note that these are not the maximum capable speeds of
         // the robot, rather the allowed maximum speeds

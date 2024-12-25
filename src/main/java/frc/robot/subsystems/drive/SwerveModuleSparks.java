@@ -59,10 +59,40 @@ public class SwerveModuleSparks implements SwerveModuleIO {
         m_turningSparkMax.setCANTimeout(SparkoidBurnManager.kConfigCANTimeout);
 
         for (int i = 0; i < SparkoidBurnManager.kConfigAttempts; i++) {
+            /// Configure PID's
             // Setup encoders and PID controllers for the driving and turning SPARK Flexes.
             m_drivingPIDController.setFeedbackDevice(m_drivingEncoder);
             m_turningPIDController.setFeedbackDevice(m_turningEncoder);
 
+            // Enable PID wrap around for the turning motor. This will allow the PID
+            // controller to go through 0 to get to the setpoint i.e. going from 350 degrees
+            // to 10 degrees will go through 0 rather than the other direction which is a
+            // longer route.
+            m_turningPIDController.setPositionPIDWrappingEnabled(true);
+            m_turningPIDController.setPositionPIDWrappingMinInput(ModuleConstants.kTurningEncoderPositionPIDMinInput);
+            m_turningPIDController.setPositionPIDWrappingMaxInput(ModuleConstants.kTurningEncoderPositionPIDMaxInput);
+
+            // Set the PID gains for the driving motor.
+            // Probably need tuning your own robot!
+            m_drivingPIDController.setP(ModuleConstants.kDrivingP);
+            m_drivingPIDController.setI(ModuleConstants.kDrivingI);
+            m_drivingPIDController.setD(ModuleConstants.kDrivingD);
+            m_drivingPIDController.setFF(ModuleConstants.kDrivingFF);
+            m_drivingPIDController.setOutputRange(
+                    ModuleConstants.kDrivingMinOutput,
+                    ModuleConstants.kDrivingMaxOutput);
+
+            // Set the PID gains for the turning motor.
+            // Probably need tuning your own robot!
+            m_turningPIDController.setP(ModuleConstants.kTurningP);
+            m_turningPIDController.setI(ModuleConstants.kTurningI);
+            m_turningPIDController.setD(ModuleConstants.kTurningD);
+            m_turningPIDController.setFF(ModuleConstants.kTurningFF);
+            m_turningPIDController.setOutputRange(
+                    ModuleConstants.kTurningMinOutput,
+                    ModuleConstants.kTurningMaxOutput);
+
+            /// Configure encoders
             // Apply position and velocity conversion factors for the driving encoder. The
             // native units for position and velocity are rotations and RPM, respectively,
             // but we want meters and meters per second to use with WPILib's swerve APIs.
@@ -76,44 +106,16 @@ public class SwerveModuleSparks implements SwerveModuleIO {
             m_turningEncoder.setVelocityConversionFactor(ModuleConstants.kTurningEncoderVelocityFactor);
 
             // Invert the turning encoder, since the output shaft rotates in the opposite
-            // direction of
-            // the steering motor in the FlexSwerve Module.
+            // direction of the steering motor in the MaxSwerve Module.
             m_turningEncoder.setInverted(ModuleConstants.kTurningEncoderInverted);
 
-            // Enable PID wrap around for the turning motor. This will allow the PID
-            // controller to go through 0 to get to the setpoint i.e. going from 350 degrees
-            // to 10 degrees will go through 0 rather than the other direction which is a
-            // longer route.
-            m_turningPIDController.setPositionPIDWrappingEnabled(true);
-            m_turningPIDController.setPositionPIDWrappingMinInput(ModuleConstants.kTurningEncoderPositionPIDMinInput);
-            m_turningPIDController.setPositionPIDWrappingMaxInput(ModuleConstants.kTurningEncoderPositionPIDMaxInput);
-
-            // Set the PID gains for the driving motor. Note these are example gains, and
-            // you
-            // may need to tune them for your own robot!
-            m_drivingPIDController.setP(ModuleConstants.kDrivingP);
-            m_drivingPIDController.setI(ModuleConstants.kDrivingI);
-            m_drivingPIDController.setD(ModuleConstants.kDrivingD);
-            m_drivingPIDController.setFF(ModuleConstants.kDrivingFF);
-            m_drivingPIDController.setOutputRange(
-                    ModuleConstants.kDrivingMinOutput,
-                    ModuleConstants.kDrivingMaxOutput);
-
-            // Set the PID gains for the turning motor. Note these are example gains, and
-            // you
-            // may need to tune them for your own robot!
-            m_turningPIDController.setP(ModuleConstants.kTurningP);
-            m_turningPIDController.setI(ModuleConstants.kTurningI);
-            m_turningPIDController.setD(ModuleConstants.kTurningD);
-            m_turningPIDController.setFF(ModuleConstants.kTurningFF);
-            m_turningPIDController.setOutputRange(
-                    ModuleConstants.kTurningMinOutput,
-                    ModuleConstants.kTurningMaxOutput);
-
+            /// Configure motors
             m_drivingSparkFlex.setIdleMode(ModuleConstants.kDrivingMotorIdleMode);
             m_turningSparkMax.setIdleMode(ModuleConstants.kTurningMotorIdleMode);
             m_drivingSparkFlex.setSmartCurrentLimit(ModuleConstants.kDrivingMotorCurrentLimit);
             m_turningSparkMax.setSmartCurrentLimit(ModuleConstants.kTurningMotorCurrentLimit);
+            m_drivingSparkFlex.enableVoltageCompensation(12.0);
+            m_turningSparkMax.enableVoltageCompensation(12.0);
             // m_turningSparkMax.setSmartCurrentLimit(ModuleConstants.kTurningMotorCurrentLimit,
             // 20);
             // m_turningSparkMax.setSecondaryCurrentLimit(insertThing);
