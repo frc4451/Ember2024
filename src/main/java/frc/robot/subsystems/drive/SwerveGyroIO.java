@@ -8,6 +8,9 @@ public interface SwerveGyroIO {
         public boolean isConnected = false;
         public double yawPositionRad = 0.0;
         public double yawVelocityRadPerSec = 0.0;
+
+        public double[] odometryYawTimestamps = new double[] {};
+        public double[] odometryYawPositionsRad = new double[] {};
     }
 
     public default void updateInputs(SwerveGyroIOInputs inputs) {

@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.drive;
 
+import java.util.Queue;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -30,6 +32,11 @@ public class SwerveModuleSparks implements SwerveModuleIO {
 
     private final double m_chassisAngularOffset;
     private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
+
+    // Queue inputs from odometry thread
+    private final Queue<Double> timestampQueue;
+    private final Queue<Double> drivePositionQueue;
+    private final Queue<Double> turnPositionQueue;
 
     /**
      * Constructs a Swerve Module and configures the driving and turning motor,
@@ -135,6 +142,13 @@ public class SwerveModuleSparks implements SwerveModuleIO {
         m_turningSparkMax.setCANTimeout(0);
 
         m_desiredState.angle = new Rotation2d(m_turningEncoder.getPosition());
+
+        // Create odometry queues
+        timestampQueue = SparkOdometryThread.getInstance().makeTimestampQueue();
+        drivePositionQueue = SparkOdometryThread.getInstance()
+                .registerSignal(m_drivingSparkFlex, m_drivingEncoder::getPosition);
+        turnPositionQueue = SparkOdometryThread.getInstance()
+                .registerSignal(m_turningSparkMax, m_turningEncoder::getPosition);
     }
 
     public void updateInputs(SwerveModuleIOInputs inputs) {
@@ -154,6 +168,24 @@ public class SwerveModuleSparks implements SwerveModuleIO {
         Rotation2d angle = new Rotation2d(inputs.turnAngularOffsetPositionRad);
         inputs.state = new SwerveModuleState(inputs.driveVelocityMetersPerSec, angle);
         inputs.position = new SwerveModulePosition(inputs.drivePositionMeters, angle);
+
+        // Update odometry inputs
+        inputs.odometryTimestamps = timestampQueue
+                .stream()
+                .mapToDouble((Double value) -> value)
+                .toArray();
+        inputs.odometryDrivePositionsMeters = drivePositionQueue
+                .stream()
+                .mapToDouble((Double value) -> value)
+                .toArray();
+        inputs.odometryTurnPositionsRad = turnPositionQueue
+                .stream()
+                .mapToDouble((Double value) -> value - m_chassisAngularOffset)
+                .toArray();
+
+        timestampQueue.clear();
+        drivePositionQueue.clear();
+        turnPositionQueue.clear();
     }
 
     /**

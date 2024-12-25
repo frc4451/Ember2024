@@ -60,6 +60,11 @@ public class SwerveModuleSim implements SwerveModuleIO {
         Rotation2d angle = new Rotation2d(inputs.turnAngularOffsetPositionRad);
         inputs.state = new SwerveModuleState(fakeSpeed, angle);
         inputs.position = new SwerveModulePosition(fakePos, angle);
+
+        // Update odometry inputs (high-frequency odometry doesn't matter in sim so don't bother with registering)
+        inputs.odometryTimestamps = new double[] {Timer.getFPGATimestamp()};
+        inputs.odometryDrivePositionsMeters = new double[] {inputs.drivePositionMeters};
+        inputs.odometryTurnPositionsRad = new double[] {inputs.turnAngularOffsetPositionRad};
     }
 
     /**

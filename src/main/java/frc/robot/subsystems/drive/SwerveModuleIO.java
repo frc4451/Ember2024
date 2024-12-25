@@ -27,6 +27,10 @@ public interface SwerveModuleIO {
 
         public SwerveModuleState state = new SwerveModuleState();
         public SwerveModulePosition position = new SwerveModulePosition();
+
+        public double[] odometryTimestamps = new double[] {};
+        public double[] odometryDrivePositionsMeters = new double[] {};
+        public double[] odometryTurnPositionsRad = new double[] {};
     }
 
     public default void updateInputs(SwerveModuleIOInputs inputs) {
